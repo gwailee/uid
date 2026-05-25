@@ -491,6 +491,3 @@ If you use this work in any publication, product, or service, please cite:
   url={https://github.com/gwailee/uid}
 }
 
-
-
-#
