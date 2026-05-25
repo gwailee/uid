@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!--
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
