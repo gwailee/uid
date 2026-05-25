@@ -490,8 +490,3 @@ If you use this work in any publication, product, or service, please cite:
   doi={10.5281/zenodo.20372493},
   url={https://github.com/gwailee/uid}
 }
-
-
-
-#   u i d  
- 
