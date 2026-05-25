@@ -1,0 +1,105 @@
+═══════════════════════════════════════════════════════════════════════════
+                            DUAL LICENSE NOTICE
+═══════════════════════════════════════════════════════════════════════════
+
+Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
+All rights reserved.
+
+Authors:
+  Gui LI <guilichina@163.com>
+  Dangyang JIE <jiedy@jodell.cn>
+  Haitao KANG <kanght@jodell.cn>
+
+Project: Unified Intelligo-Dynamics (UID) — A Three-Tier Physical Theory
+Repository: https://github.com/gwailee/uid
+
+═══════════════════════════════════════════════════════════════════════════
+
+This work is licensed under a DUAL LICENSE model:
+
+1. NONCOMMERCIAL LICENSE (Default for Academic and Personal Use)
+   ─────────────────────────────────────────────────────────────────────
+   For academic research, educational purposes, and personal non-profit use,
+   this work is licensed under the PolyForm Noncommercial License 1.0.0.
+   
+   Full license text: See LICENSE-NONCOMMERCIAL in this repository
+   Official source: https://polyformproject.org/licenses/noncommercial/1.0.0/
+   
+   Summary: You may use, modify, and distribute this work for noncommercial
+   purposes, provided you give appropriate credit and indicate if changes
+   were made.
+
+2. COMMERCIAL LICENSE (Required for Commercial Use)
+   ─────────────────────────────────────────────────────────────────────
+   For any commercial, for-profit, or production use (including but not
+   limited to: integration into commercial products, deployment in
+   production systems, use in revenue-generating services, or incorporation
+   into proprietary software), you MUST obtain a separate commercial license
+   from Suzhou Jodell Robotics Co., Ltd.
+   
+   Full license text: See LICENSE-COMMERCIAL in this repository
+   
+   To obtain a commercial license, contact:
+     Email: lig@jodell.cn
+     Company: Suzhou Jodell Robotics Co., Ltd.
+     Address: Suzhou, Jiangsu Province, China
+
+═══════════════════════════════════════════════════════════════════════════
+
+WHICH LICENSE APPLIES TO YOU?
+
+✓ You are covered by the NONCOMMERCIAL LICENSE if:
+  - You are conducting academic research at a university or research institute
+  - You are using this work for educational purposes (teaching, coursework)
+  - You are experimenting with this work for personal learning
+  - You are publishing academic papers that cite or build upon this work
+  - You are a nonprofit organization using this work for noncommercial purposes
+
+✗ You MUST obtain a COMMERCIAL LICENSE if:
+  - You are integrating this work into a commercial product or service
+  - You are using this work in a production system that generates revenue
+  - You are a for-profit company using this work in any capacity
+  - You are deploying this work in a commercial cloud service
+  - You are using this work to provide paid consulting or services
+  - You are incorporating this work into proprietary software
+
+═══════════════════════════════════════════════════════════════════════════
+
+CITATION REQUIREMENT (Applies to Both Licenses)
+
+If you use this work in any publication, product, or service, you must cite:
+
+  LI, Gui, JIE, Dangyang, & KANG, Haitao. (2026). Intelligence Is a 
+  Non-Equilibrium Field: A Three-Tier Physical Theory of Unified 
+  Intelligo-Dynamics (UID). Zenodo. https://doi.org/10.5281/zenodo.20372493
+
+BibTeX:
+  @article{li2026uid,
+    title={Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical 
+           Theory of Unified Intelligo-Dynamics (UID)},
+    author={LI, Gui and JIE, Dangyang and KANG, Haitao},
+    journal={Zenodo},
+    year={2026},
+    doi={10.5281/zenodo.20372493},
+    url={https://github.com/gwailee/uid}
+  }
+
+═══════════════════════════════════════════════════════════════════════════
+
+DISCLAIMER
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+═══════════════════════════════════════════════════════════════════════════
+
+For questions about licensing, contact:
+  Corresponding Author: Gui LI <guilichina@163.com>
+  Commercial Licensing: lig@jodell.cn
+
+Last updated: 2026-05-25

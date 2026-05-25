@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Models & checkpoints
+*.pt
+*.pth
+*.bin
+out/
+checkpoints/
+
+# Data caches
+data_cache/
+*.txt
+!requirements.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

@@ -1,0 +1,11 @@
+# Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
+# Author: Gui LI <guilichina@163.com>
+# Date: 2026-05-25
+#
+# Pin to relatively recent stable versions; CPU-only also works.
+torch>=2.1.0
+transformers>=4.36.0
+numpy>=1.24.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+tqdm>=4.65.0
