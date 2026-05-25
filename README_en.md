@@ -40,24 +40,16 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 <div align="center">
 
-# Unified Intelligo-Dynamics: A Three-Tier Theoretical Framework
+# Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID)
 
-**UID: The Complete Theory of CID · QID · FID**
+## Attention Is Not All You Need: A Non-Equilibrium Physical Theory of Intelligent Architectures
 
 ***Authors***: Gui LI <guilichina@163.com>, Dangyang JIE <jiedy@jodell.cn>, Haitao KANG <kanght@jodell.cn>
 
 ***Affiliation***: Suzhou Jodell Robotics Co., Ltd., Suzhou, China
 
-***Corresponding author***: **Gui LI**, Ph.D. He received his B.Sc. in
-Physics from Northwest University, and his M.Sc. and Ph.D. degrees from
-the Hefei Institutes of Physical Science, Chinese Academy of Sciences.
-He is currently with Suzhou Jodell Robotics Co., Ltd., where he leads
-research on **Intelligo-Dynamics** — a unified physical framework for
-intelligent architectures spanning classical (CID), quantum (QID) and
-field-geometric (FID) regimes — and drives its falsifiable validation
-and engineering deployment in robotic cognitive brains, motor-control
-cerebella, dexterous-hand manipulation systems, large language models,
-and dedicated AI chips. E-mail: guilichina@163.com
+***Corresponding author***: **Gui LI**, Ph.D. He received his B.Sc. in Physics from Northwest University of China, and his M.Sc. and Ph.D. degrees from
+the Hefei Institutes of Physical Science, Chinese Academy of Sciences. He is currently with Suzhou Jodell Robotics Co., Ltd., where he leads research on **Unified Intelligo-Dynamics** — a unified physical framework for intelligent architectures spanning classical (CID), quantum (QID) and field-geometric (FID) regimes — and drives its falsifiable validation and engineering deployment in robotic cognitive brains, motor-control cerebella, dexterous-hand manipulation systems, large language models, and dedicated AI chips. E-mail: guilichina@163.com
 
 </div>
 

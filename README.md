@@ -40,15 +40,14 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 <div align="center">
 
-# 统一智动力学：CID · QID · FID 完整理论
-
-**Unified Intelligo-Dynamics: A Three-Tier Theoretical Framework**
+# 智能是一个非平衡场：统一智动力学（UID）的三层物理理论
+## ——注意力并不够：智能架构的非平衡物理基础
 
 ***作者***: 李贵 <guilichina@163.com>，介党阳 <jiedy@jodell.cn>，康海涛 <kanght@jodell.cn>
 
 ***单位***: 苏州钧舵机器人有限公司，苏州，中国
 
-***通讯作者***：李贵（Gui LI），博士。学士毕业于西北大学物理学院，硕士、博士均毕业于中国科学院合肥物质科学研究院，现任职于苏州钧舵机器人有限公司（Suzhou Jodell Robotics Co., Ltd.），主要从事智动力学（Intelligo-Dynamics）的理论与工程研究。提出并发展面向智能架构的开放系统物理统一理论框架——CID/QID/FID 三层体系，并主导其在机器人认知大脑、运动控制小脑、灵巧手操作系统、大语言模型与专用智能芯片中的可证伪验证与工程落地。E-mail：guilichina@163.com
+***通讯作者***：李贵（Gui LI），博士。学士毕业于西北大学物理学院，硕士、博士均毕业于中国科学院合肥物质科学研究院，现任职于苏州钧舵机器人有限公司（Suzhou Jodell Robotics Co., Ltd.），主要从事智动力学（Unified Intelligo-Dynamics,UID）的理论与工程研究。提出并发展面向智能架构的开放系统物理统一理论框架——CID/QID/FID 三层体系，并主导其在机器人认知大脑、运动控制小脑、灵巧手操作系统、大语言模型与专用智能芯片中的可证伪验证与工程落地。E-mail：guilichina@163.com
 
 </div>
 
