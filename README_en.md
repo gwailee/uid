@@ -41,7 +41,8 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 **CID · QID · FID — Complete Theoretical System**
 
-[![CI](https://github.com/gwailee/uid/actions/workflows/ci.yml/badge.svg)](https://github.com/gwailee/uid/actions/workflows/ci.yml) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20372493.svg)](https://doi.org/10.5281/zenodo.20372493) [![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm--NC-blue)](LICENSE)
+[CI](https://github.com/gwailee/uid/actions/workflows/ci.yml) | [DOI](https://doi.org/10.5281/zenodo.20372493) | [License: PolyForm Noncommercial](LICENSE)
+
 
 ***Authors***: Gui LI <guilichina@163.com>, Dangyang JIE <jiedy@jodell.cn>, Haitao KANG <kanght@jodell.cn>
 
@@ -61,7 +62,7 @@ The v0.1 validation suite contained methodological flaws that made its "verified
 
 The v2.0 release:
 - ✅ Provides the **complete infrastructure** for rigorous validation
-- ⏳ Has NOT yet completed the actual large-scale validation experiments (see [ROADMAP.md](./ROADMAP.md))
+- ⏳ Has NOT yet completed the actual large-scale validation experiments
 - 🎯 Commits to **publish all results — positive or negative**
 
 **Falsifying a theory is just as valuable as confirming it** — this is the fundamental principle of scientific progress.
