@@ -1,7 +1,7 @@
 <!--
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
-Date:   2026-05-30
+Date:   2026-05-27
 -->
 
 # UID Validation Roadmap
