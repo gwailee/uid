@@ -723,7 +723,7 @@ then with J_past fixed, 𝓘 = I(φ(t); J_future | J_past) = 0.
 
 **Key proviso**: The proof assumes external J is not observed by the
 system internally (open-loop). If closed-loop, an extension is
-required. Stric proof in appendix A.
+required. 
 
 ### 3.4 What This Tells Us
 
@@ -1005,7 +1005,11 @@ where:
 
 **All four are indispensable**: removing any one of them severely
 weakens intelligent behaviour.
-
+    A rigorous proof of the necessity chain
+"predictive capacity → broken detailed balance → curl term required"
+is given in **Appendix A**; the appendix also identifies the
+sufficiency direction (curl term → positive lower bound on predictive
+capacity) as an open problem and outlines candidate thermodynamic tools.
 
 
 ## Chapter 7 — Shape of the Potential: Associative-Memory Capacity
