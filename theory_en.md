@@ -1005,7 +1005,8 @@ where:
 
 **All four are indispensable**: removing any one of them severely
 weakens intelligent behaviour.
-    A rigorous proof of the necessity chain
+    
+A rigorous proof of the necessity chain
 "predictive capacity → broken detailed balance → curl term required"
 is given in **Appendix A**; the appendix also identifies the
 sufficiency direction (curl term → positive lower bound on predictive
