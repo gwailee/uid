@@ -1,9 +1,9 @@
 <!--
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
-Date:   2026-05-25
+Date:   2026-05-30
 
-This README is part of the UID Theory reference implementation.
+This README is part of the UID Theory reference implementation (v2.0).
 
 DUAL LICENSE:
   - PolyForm Noncommercial License 1.0.0  (free for academic / personal use)
@@ -23,17 +23,15 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 </div>
 
 <div align="center">
-<a href="./README.md">README（中文）</a> | <a href="./README_en.md">README（English）</a>
+<a href="./README.md"><b>README（中文）</b></a> | <a href="./README_en.md">README（English）</a>
 </div>
 
 <div align="center">
-<a href="./30minutes_report.md">30 分钟读懂 UID 理论（中文）</a> |
-<a href="./30minutes_report_en.md">Understand UID in 30 Minutes（English）</a>
+<a href="./30minutes_report.md">30 分钟读懂 UID 理论（中文）</a> | <a href="./30minutes_report_en.md">Understand UID in 30 Minutes（English）</a>
 </div>
 
 <div align="center">
-<a href="./theory.md">UID 理论全文（中文）</a> |
-<a href="./theory_en.md">UID Theory (English)</a>
+<a href="./theory.md">UID 理论全文（中文）</a> | <a href="./theory_en.md">UID Theory (English)</a>
 </div>
 
 <br>
@@ -42,102 +40,144 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 # 统一智动力学：CID · QID · FID 完整理论
 
-**Unified Intelligo-Dynamics: A Three-Tier Theoretical Framework**
+**Unified Intelligo-Dynamics (UID): A Three-Tier Theoretical Framework**
 
-***作者***: 李贵 <guilichina@163.com>，介党阳 <jiedy@jodell.cn>，康海涛 <kanght@jodell.cn>
+[![CI](https://github.com/gwailee/uid/actions/workflows/ci.yml/badge.svg)](https://github.com/gwailee/uid/actions/workflows/ci.yml) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20372493.svg)](https://doi.org/10.5281/zenodo.20372493) [![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm--NC-blue)](LICENSE)
 
-***单位***: 苏州钧舵机器人有限公司，苏州，中国
+***作者***：李贵 <guilichina@163.com>、介党阳 <jiedy@jodell.cn>、康海涛 <kanght@jodell.cn>
 
-***通讯作者***：李贵（Gui LI），博士。学士毕业于西北大学物理学院，硕士、博士均毕业于中国科学院合肥物质科学研究院，现任职于苏州钧舵机器人有限公司（Suzhou Jodell Robotics Co., Ltd.），主要从事智动力学（Unified Intelligo-Dynamics,UID）的理论与工程研究。提出并发展面向智能架构的开放系统物理统一理论框架——CID/QID/FID 三层体系，并主导其在机器人认知大脑、运动控制小脑、灵巧手操作系统、大语言模型与专用智能芯片中的可证伪验证与工程落地。E-mail：guilichina@163.com
+***单位***：苏州钧舵机器人有限公司（Suzhou Jodell Robotics Co., Ltd.），苏州，中国
 
 </div>
 
-# Unified Intelligo-Dynamics (UID) Theory Implementation on MiniMind
-
-> **统一智动力学 (Unified Intelligo-Dynamics, UID)** 三层理论框架的工程参考实现，
-> 基于 [MiniMind](https://github.com/jingyaogong/minimind) 提供的 tokenizer 与
-> 数据集进行端到端可证伪验证。
+***通讯作者***：李贵（Gui LI），博士。学士毕业于西北大学物理学院，硕士、博士均毕业于中国科学院合肥物质科学研究院，现任职于苏州钧舵机器人有限公司，主要从事**统一智动力学（Unified Intelligo-Dynamics, UID）**的理论与工程研究。提出并发展面向智能架构的开放系统物理统一理论框架——CID/QID/FID 三层体系，并主导其在机器人认知大脑、运动控制小脑、灵巧手操作系统、大语言模型与专用智能芯片中的可证伪验证与工程落地。E-mail：guilichina@163.com
 
 ---
 
-## 📋 项目概述 / Project Overview
+## ⚠️ 重要提示：v2.0 诚实版本说明
+
+**本仓库当前为 v2.0（诚实验证版）**，是基于详细同行评审反馈对 v0.1 的完整重写。
+
+v0.1 版本的验证套件存在方法学缺陷，使其"已验证"声明在科学上站不住脚。详情见 [KNOWN_LIMITATIONS.md](./KNOWN_LIMITATIONS.md)。**v0.1 的任何实证主张都不应被引用为已验证**。
+
+v2.0 版本：
+- ✅ 提供了进行严格验证所需的**完整基础设施**
+- ⏳ 大规模验证实验**尚未完成**（见 [ROADMAP.md](./ROADMAP.md)）
+- 🎯 承诺**公开发布所有结果**（无论正面还是负面）
+
+**证伪一个理论与证实它同等有价值**——这是科学进步的根本原则。
+
+---
+
+## 📋 项目概述
 
 本项目实现并验证 **UID 三层理论**：
 
 | 层级 | 全称 | 状态 |
 |---|---|---|
-| **CID** | Classical Intelligo-Dynamics — 经典智动力学 | ✅ 可严格工程化，立即可验证 |
-| **QID** | Quantum Intelligo-Dynamics — 量子智动力学 | ⚠ 经典模拟实现，真实优势待量子硬件 |
-| **FID** | Field Intelligo-Dynamics — 场智动力学 | 🔬 探索性几何探针，待经验校准 |
+| **CID** | Classical Intelligo-Dynamics（经典智动力学）| ✅ 可严格工程化，待大规模实验验证 |
+| **QID** | Quantum Intelligo-Dynamics（量子智动力学）| ⚠ 经典模拟实现，真实量子优势待量子硬件 |
+| **FID** | Field Intelligo-Dynamics（场智动力学）| 🔬 诊断性几何探针，待经验校准 |
 
-理论核心论断：**Transformer / Mamba / Diffusion 等主流架构都是 CID 主方程在
-特定极限下的特解**。本仓库通过对照实验给出这一论断在小规模上的可证伪检验。
+理论的核心工程论断：
 
-> The repository's central claim — *that mainstream architectures are
-> limiting cases of the CID master equation* — is rigorously falsifiable
-> at small scale via the validation suite below.
+> **基于 CID 主方程构建的模型架构，可以在参数量、能耗或两者方面显著优于标准 Transformer。**
+
+这是本仓库要严格检验的**可证伪假设**。
 
 ---
 
-## 🎯 核心可证伪预言 / Falsifiable Predictions
+## 🎯 核心可证伪预言
 
-| # | 预言量 | 理论值 | 来源 | 状态 |
-|---|---|---|---|---|
-| 1 | 雪崩规模指数 τ | 1.5 ± 0.2 | CID 第 13 章 | (A) 已在皮层数据实测 |
-| 2 | Hurst 指数 H | 0.6 – 0.8 | CID 第 5 章 | (A) 已在脑电实测 |
-| 3 | 功率谱斜率 β | 0.7 – 1.3 (1/f) | CID 第 5 章 | (A) 已在多系统实测 |
-| 4 | 参数效率 vs Transformer | ≥ 5×（目标 10×）| CID 第 11 章 | (C) 待验证目标 |
-| 5 | Berry 相位（QID） | 训练后非零 | QID 第 3 章 | (C) 待验证目标 |
-| 6 | Fisher 度量各向异性 | 训练随步数增长 | FID 第 1 章 | (C) 待验证目标 |
+| # | 预言量 | 理论值 | 状态 |
+|---|---|---|---|
+| 1 | 雪崩规模指数 τ | 1.5 ± 0.2 | (A) 已在皮层数据独立实证 |
+| 2 | Hurst 指数 H | 0.6 – 0.8 | (A) 已在人脑 EEG 独立实证 |
+| 3 | 1/f 谱斜率 β | 0.7 – 1.3 | (A) 已在多项研究验证 |
+| 4 | 参数效率 vs Transformer | ≥ 3×（终期 ≥ 5×）| (C) 待 Phase 1 验证 |
+| 5 | 推理能效改进 | ≥ 3× | (C) 待 Phase 1 验证 |
+| 6 | 关闭噪声注入后的临界涌现 | β 与 H 仍在区间内 | (C) 待 Phase 1 验证 |
 
 **等级说明**：
-(A) 在外部体系（生物大脑）已实证；(B) 理论严格但实证待补；(C) 明确的可证伪工程目标。
+- (A) 已在外部独立体系（生物大脑）实证
+- (B) 理论严格但实证待补
+- (C) 明确的可证伪工程目标
 
-> 任何**显著偏离**这些区间的实测结果都构成对 UID 理论的反驳证据 ——
-> 这正是科学的核心.
+> 任何**显著偏离**这些区间的实测结果都构成对 UID 理论的反驳证据 —— 这正是科学的核心。
 
 ---
 
-## 📁 项目结构 / Repository Layout
+## 🆕 v2.0 相对 v0.1 的关键改进
+
+| 模块 | v0.1 状态 | v2.0 修复 |
+|---|---|---|
+| **参数效率测试** | 比较等大模型，5× 阈值从未参与判断 | 改为 iso-FLOP 缩放律研究，跨 10M–1B 模型族 |
+| **临界指数测量** | 循环论证（注入噪声 → 测出噪声）| 测量时禁用噪声注入 |
+| **雪崩检测** | 使用 \|logits_a − logits_b\|（错误指标）| 正确的 Beggs-Plenz 协议（z-score 阈值穿越）|
+| **幂律拟合** | 对数分箱线性回归（不可靠）| Clauset-Shalizi-Newman MLE + KS 检验 + bootstrap |
+| **样本量** | 1 条序列 × 256 时间步 | 10,000+ 条序列 × 4096+ 时间步 |
+| **基线强度** | `TinyTransformerLM` 玩具版 | 现代 Transformer（RoPE + RMSNorm + SwiGLU）|
+| **消融完整性** | 4 组（缺 `cid_no_memory`）| 9 组（含关键的 "transformer + 所有已知技巧" 对照）|
+| **能耗测量** | Landauer 极限理论推算 | 实测 `nvidia-smi` 推理能耗 |
+| **已发布结果** | 无（仅"预期"投影）| 真实结果提交到 `results/` 目录 |
+| **CI/CD** | 无 | GitHub Actions：lint + 测试 + 冒烟 + 每晚训练 |
+
+完整对比见 [CHANGELOG.md](./CHANGELOG.md)。
+
+---
+
+## 📁 项目结构
 
 ```
 uid/
-├── README.md                         本文件
-├── LICENSE                           双许可证总说明
-├── LICENSE-NONCOMMERCIAL             PolyForm Noncommercial 1.0.0
-├── LICENSE-COMMERCIAL                商业许可证模板
+├── README.md                          本文件
+├── KNOWN_LIMITATIONS.md               v0.1 缺陷的诚实声明
+├── ROADMAP.md                         验证路线图（含预注册证伪条件）
+├── CHANGELOG.md                       v0.1 → v2.0 完整变更
+├── LICENSE / LICENSE-NONCOMMERCIAL / LICENSE-COMMERCIAL
 ├── requirements.txt
-├── test_uid_on_minimind.py           ⭐ 一键端到端验证脚本
+├── pyproject.toml
 │
-├── uid_theory/                       UID 理论核心实现
-│   ├── cid/                          经典智动力学
-│   │   ├── colored_noise.py          色噪声生成器  (1/f^β)
-│   │   ├── vortex_field.py           双热浴旋度场  [W1, W2] x
-│   │   ├── memory_kernel.py          亚欧姆记忆核  γ(t) ~ t^(-α)
-│   │   ├── hopfield_potential.py     Modern Hopfield 势能
-│   │   └── cid_layer.py              CID 主层
+├── uid_theory/                        UID 理论核心实现
+│   ├── cid/                           经典智动力学
+│   │   ├── cid_layer.py               v2.0 新增 set_noise_injection() API
+│   │   ├── colored_noise.py           色噪声生成器（1/f^β）
+│   │   ├── vortex_field.py            双热浴旋度场 [W1, W2] x
+│   │   ├── memory_kernel.py           亚欧姆记忆核 γ(t) ~ t^(-α)
+│   │   └── hopfield_potential.py      Modern Hopfield 势能
 │   │
-│   ├── qid/                          量子智动力学（经典模拟）
-│   │   ├── berry_phase.py            Berry 几何相位
-│   │   ├── quantum_noise.py          含零点项的量子色噪声
-│   │   └── qid_layer.py              QID 主层
+│   ├── qid/                           量子智动力学（经典模拟）
+│   ├── fid/                           场智动力学（诊断探针）
 │   │
-│   ├── fid/                          场智动力学（几何探针）
-│   │   ├── fisher_metric.py          Fisher 信息度量
-│   │   ├── curvature.py              标量曲率代理
-│   │   └── fid_layer.py              FID 主层
-│   │
-│   └── verification/
-│       └── prediction_test.py        可证伪测试套件
+│   └── verification/                  v2.0 严格验证套件
+│       ├── powerlaw_estimator.py      Clauset-Shalizi-Newman MLE
+│       ├── critical_exponents.py      DFA + 谱分析（支持关闭噪声注入）
+│       ├── avalanche_detector.py      正确的 Beggs-Plenz 协议
+│       ├── energy_meter.py            实测 nvidia-smi 能耗
+│       └── ablation_suite.py          9 组完整消融
 │
-└── model/
-    ├── model_uid.py                  UID 因果语言模型
-    └── model_baseline.py             对照用的最小 Transformer 基线
+├── model/
+│   ├── modern_transformer.py          RoPE + RMSNorm + SwiGLU 强基线
+│   ├── known_tricks_baseline.py       Transformer + 所有已知技巧（关键对照）
+│   └── model_uid.py                   UID 因果语言模型
+│
+├── experiments/                       完整实验脚本
+│   ├── run_scaling_law.py             核心实验：iso-FLOP 缩放律
+│   ├── run_critical_exponents.py      临界指数严格测量
+│   ├── run_energy_benchmark.py        真实硬件能耗
+│   ├── run_ablation.py                9 组完整消融
+│   └── run_all.py                     端到端流水线
+│
+├── results/                           真实实验结果（待填充）
+│   └── README.md                      结果目录索引
+│
+├── tests/                             单元测试（pytest）
+└── .github/workflows/                 CI + 每晚训练
 ```
 
 ---
 
-## 🚀 快速开始 / Quick Start
+## 🚀 快速开始
 
 ### 1. 环境准备
 
@@ -147,77 +187,92 @@ cd uid
 pip install -r requirements.txt
 ```
 
-`requirements.txt` 已包含 `torch`、`transformers`、`scipy`、`matplotlib`、
-`numpy`、`tqdm`。
-
-### 2. 一键运行（自动准备 MiniMind）
+### 2. 运行单元测试
 
 ```bash
-# CPU 冒烟测试 (~5 分钟)
-python test_uid_on_minimind.py --quick
-
-# 完整测试 (单张 RTX 3090 ~1-2 小时)
-python test_uid_on_minimind.py --full
-
-# 仅复跑验证 (使用已有 checkpoint)
-python test_uid_on_minimind.py --skip-train
+pip install -r requirements-dev.txt
+pytest tests/ -v
 ```
 
-`test_uid_on_minimind.py` 会自动：
-
-1. **克隆 MiniMind** 到 `./minimind/`（若不存在）；
-2. **加载 MiniMind tokenizer**（缺失时回退到 `gpt2`）；
-3. **加载数据集**：若 `./minimind/dataset/pretrain_hq.jsonl` 存在则使用，
-   否则构造一份小型合成数据集（仅供冒烟测试）；
-4. **训练 4 个对照模型**：`transformer / cid_no_vortex / cid_no_noise / cid_full`；
-5. **运行 4 项可证伪测试**：τ、H、β、参数效率；
-6. **生成报告**：`./uid_results/<timestamp>/results.json` + `report.png`。
-
-### 3. 下载真实数据（可选，强烈推荐用于完整测试）
-
-从 [ModelScope](https://www.modelscope.cn/datasets/gongjy/minimind_dataset/files)
-下载 `pretrain_hq.jsonl` 到 `./minimind/dataset/`。
+### 3. CPU 冒烟测试（约 10 分钟）
 
 ```bash
-mkdir -p ./minimind/dataset
-# 把 pretrain_hq.jsonl 放到该目录
-ls -lh ./minimind/dataset/pretrain_hq.jsonl
+# 下载真实小型数据集（不使用合成数据）
+python -c "
+from datasets import load_dataset
+import json, os
+os.makedirs('data/wikitext-2', exist_ok=True)
+ds = load_dataset('wikitext', 'wikitext-2-raw-v1', split='train[:1000]')
+with open('data/wikitext-2/train.jsonl', 'w') as f:
+    for ex in ds:
+        if ex['text'].strip():
+            f.write(json.dumps({'text': ex['text']}) + '\n')
+"
+
+# 运行 9 组完整消融（小规模）
+python experiments/run_ablation.py \
+    --data_path data/wikitext-2/train.jsonl \
+    --tokenizer_path gpt2 \
+    --scale 10M \
+    --epochs 1 \
+    --seeds 42 \
+    --batch_size 4 \
+    --max_seq_len 128 \
+    --output_dir /tmp/smoke
 ```
+
+### 4. 完整实验（需要 GPU）
+
+```bash
+# 端到端流水线：缩放律 + 消融 + 临界指数 + 能耗
+python experiments/run_all.py \
+    --data_path data/wikitext-103/train.jsonl \
+    --tokenizer_path gpt2 \
+    --seeds 42 43 44
+```
+
+⚠️ **完整实验需要数日 GPU 计算**。本仓库提供工具与方法，实际大规模运行属于 Phase 1 的下一步（见 [ROADMAP.md](./ROADMAP.md)）。
 
 ---
 
-## 🔬 实验设计 / Experiment Design
+## 🔬 实验设计
 
-### 四组对照模型 / Four Ablation Variants
+### 九组完整消融变体（v2.0 新增 5 组）
 
-| 模型 | 旋度 v | 色噪声 ξ | 记忆核 γ | 量子修正 | 用途 |
-|---|---|---|---|---|---|
-| `transformer` | ❌ | ❌ | ❌ | ❌ | 基线 (baseline) |
-| `cid_no_vortex` | ❌ | ✅ | ✅ | ❌ | 旋度项贡献消融 |
-| `cid_no_noise` | ✅ | ❌ | ✅ | ❌ | 色噪声项贡献消融 |
-| `cid_full` | ✅ | ✅ | ✅ | ❌ | 完整 CID |
+#### A 组：CID 组件消融
 
-在 `--full` 模式下，所有模型使用同一组超参数：
-`hidden_size=512, num_layers=8, num_heads=8, max_len=256`。
+| 变体 | 旋度 v | 色噪声 ξ | 记忆核 γ | 用途 |
+|---|---|---|---|---|
+| `cid_full` | ✅ | ✅ | ✅ | 完整 CID 主方程 |
+| `cid_no_vortex` | ❌ | ✅ | ✅ | 旋度项贡献消融 |
+| `cid_no_memory` | ✅ | ❌ | ✅ | 记忆核贡献消融（**v2.0 新增**）|
+| `cid_no_noise` | ✅ | ✅ | ❌ | 色噪声项贡献消融 |
 
-### 验证流程 / Validation Pipeline
+#### B 组：已知技巧基线（**v2.0 新增**）
+
+| 变体 | 描述 |
+|---|---|
+| `transformer_baseline` | 现代 Transformer（RoPE + RMSNorm + SwiGLU）|
+| `transformer_plus_noise` | 仅添加色噪声正则 |
+| `transformer_plus_conv` | 仅添加 depthwise 因果卷积 |
+| `transformer_plus_linear` | 仅添加额外线性项 |
+| `transformer_plus_all_tricks` | **三项已知技巧的组合（关键对照）** |
+
+**关键证伪测试**：如果 `cid_full` 不能显著优于 `transformer_plus_all_tricks`，则 UID 的"物理框架"贡献被证伪——增益（如果有）来自已知技巧本身，而非物理组织方式。
+
+### 验证流程
 
 ```mermaid
 flowchart TD
-    A["test_uid_on_minimind.py"] --> B["加载 MiniMind tokenizer + 数据"]
-    B --> C["构建 4 个对照模型"]
-    C --> D["相同超参 + 相同数据训练"]
-    D --> E["UIDPredictionTester.run_all"]
+    A["run_all.py 端到端流水线"] --> B["1. 缩放律实验<br/>iso-FLOP × 10M-1B 模型族"]
+    A --> C["2. 9 组完整消融<br/>含关键对照基线"]
+    A --> D["3. 临界指数测量<br/>禁用噪声注入"]
+    A --> E["4. 实测能耗<br/>nvidia-smi 轮询"]
 
-    E --> F1["test_avalanche_exponent → τ"]
-    E --> F2["test_hurst_exponent → H"]
-    E --> F3["test_power_spectrum → β"]
-    E --> F4["test_parameter_efficiency"]
-
-    F1 --> G["results.json + report.png"]
-    F2 --> G
-    F3 --> G
-    F4 --> G
+    B --> F["scaling_curves.png<br/>等损失水平间距"]
+    C --> G["summary.json<br/>cid_full vs all_tricks 统计显著性"]
+    D --> H["verdict.md<br/>涌现确认/否定"]
+    E --> I["energy_per_token.json<br/>实测 J/token"]
 ```
 
 ---
@@ -236,257 +291,177 @@ dφ/dt  =  -∇U(φ)               ← 联想记忆
 代码对应（见 `uid_theory/cid/cid_layer.py`）：
 
 ```python
-# 1. 联想记忆  -∇U  →  HopfieldAttention
-grad_term   = torch.exp(self.log_w_grad)   * self.attn(h, causal_mask=mask)
+# 1. 联想记忆 -∇U → HopfieldAttention
+grad_term   = torch.exp(self.log_w_grad) * self.attn(h, causal_mask=mask)
 
-# 2. 旋度  v(φ) = (T1-T2)[W1, W2] φ  →  VortexField (对易子结构)
+# 2. 旋度 v(φ) = (T1-T2)[W1, W2] φ → VortexField (对易子结构)
 vortex_term = torch.exp(self.log_w_vortex) * self.vortex(h)[0]
 
-# 3. 色阻尼  γ(t) ~ t^(-α)  →  MemoryKernel (depthwise causal conv)
-mem_term    = -torch.exp(self.log_w_mem)   * self.memory(h)
+# 3. 色阻尼 γ(t) ~ t^(-α) → MemoryKernel (depthwise 因果卷积)
+mem_term    = -torch.exp(self.log_w_mem) * self.memory(h)
 
-# 4. 色噪声  S(ω) ~ ω^(-β)  →  FastColoredNoise (FFT shaping)
+# 4. 色噪声 S(ω) ~ ω^(-β) → FastColoredNoise (FFT 整形)
+# v2.0 新增：可通过 set_noise_injection(False) 在测量时禁用
 noise_term  = self.noise_scale * self.noise(B, S, h.device, h.dtype)
 
 # Euler-Maruyama 离散：dt 已吸收进各项权重
 x = x + grad_term + vortex_term + mem_term + noise_term
 ```
 
-### 与 Transformer 的关系 / Reduction to Transformer
+### CID 与 Transformer 的关系
 
 在以下极限下，CID 严格退化为标准 Transformer：
 
-| 极限 | 代码开关 |
+| 极限条件 | 代码开关 |
 |---|---|
 | 关闭旋度 v = 0 | `use_vortex=False` |
 | 关闭色噪声 ξ = 0 | `use_colored_noise=False` |
 | 退化色阻尼为白噪声 γ → δ | `use_memory=False` |
 | 标准缩放 β = 1/√d_k | `HopfieldAttention.scale` 已实现 |
 
-这印证理论第 8、10 章的论断：**"Transformer 是 CID 的最简极限"**。
+这印证理论第 8、10 章的论断：**"Transformer 是 CID 的最简极限"**。但 v2.0 的关键证伪测试是：单纯加回"已知技巧"组合是否就够了？还是 CID 的物理组织方式确实带来增量？
 
 ---
 
-## 📈 预期结果 / Expected Outcomes
+## 📊 预注册证伪条件
 
-在 `--full` 模式（单卡 3090，约 1-2 小时）下，预期数量级如下：
+遵循开放科学的最佳实践，我们**预注册**以下证伪条件。如在 Phase 1 后任一未满足，我们将公开承认相应 UID 主张被**证伪**：
 
-| 指标 | Transformer | CID full |
-|---|---|---|
-| Eval perplexity（同等参数）| 基线 | 持平或略低 |
-| 雪崩指数 τ | 无明确约束 | **1.5 ± 0.2** |
-| Hurst H | 接近 0.5（白噪声样）| **0.6 – 0.8** |
-| 功率谱 β | < 0.5 | **0.7 – 1.3** |
-| 参数效率比 | 1× | **≥ 5×**（完整训练后） |
+1. **参数效率**：在 100M 规模 iso-FLOP 缩放律研究中，CID 曲线在等损失处必须比现代 Transformer 基线向左偏移 **≥ 3×**，**且**比 "Transformer + 所有已知技巧" 基线向左偏移 **≥ 1.5×**。
 
-在 `--quick` 模式（CPU，约 5 分钟）下，**参数效率指标通常 FAIL**（因为训练量太
-小），但 τ / H / β 应已显示与 Transformer 基线明显不同的趋势。**这正是可证伪
-测试的健康表现** — 在足够训练后才能严格判定。
+2. **临界指数涌现**（噪声注入**关闭**后）：
+   - 训练后的 CID 必须在 ≥80% 的层呈现 β ∈ [0.7, 1.3]
+   - 雪崩指数 τ（通过 Clauset MLE + KS 检验，p > 0.1）必须 ∈ [1.3, 1.7]
+
+3. **能耗效率**：实测每 token 焦耳数（通过 `nvidia-smi` 轮询）必须 ≤ 现代 Transformer 基线在等困惑度下的 **1/3**。
+
+**我们承诺无论结果如何都公开发布。**
 
 ---
 
-## ⚠️ 诚实声明 / Honest Disclaimers
+## ⚠️ 诚实声明
 
 | # | 声明 |
 |---|---|
-| 1 | **CID 已可工程化**：本仓库 CID 部分理论严谨，代码可立即训练验证，主要预言已在生物系统（皮层雪崩、EEG）独立实证。 |
-| 2 | **QID 是经典代理**：本实现使用经典神经网络模拟量子相干（Berry 相位、含零点项的色噪声、现象学 Lindblad 通道），**不是**严格 Kraus 分解；真实量子优势需 NISQ 或容错量子硬件。 |
-| 3 | **FID 是探索性纲领**：Fisher 度量与曲率代理在本实现中承担**诊断与软正则**角色，**不是**任何具体流形上严格定义的场方程数值解。 |
-| 4 | **结果可能与预期有偏差**：训练规模、数据质量、随机种子都会影响实测值。**任何偏差都是科学进步的契机**。 |
+| 1 | **CID 层可工程化但待大规模验证**：v2.0 提供了完整的验证基础设施，但实际大规模实验（10M–1B 模型族）的运行属于 Phase 1，尚未完成。 |
+| 2 | **QID 是经典代理**：本实现使用经典神经网络模拟量子相干（Berry 相位、含零点项的色噪声、现象学 Lindblad 通道），**不是**严格 Kraus 分解。真实量子优势需 NISQ 或容错量子硬件。**本代码无法验证 QID 的量子主张**。 |
+| 3 | **FID 是探索性纲领**：Fisher 度量与曲率代理承担**诊断与软正则**角色，**不是**任何具体流形上严格定义的场方程数值解。**本代码无法验证 FID 的场论主张**。 |
+| 4 | **CID 是本代码唯一可证伪/可证实的层级**。引用 UID 时应尊重这一范围。 |
+| 5 | **v0.1 的"已验证"主张不应被引用**：v0.1 的验证套件存在循环论证、样本不足等方法学缺陷，已在 v2.0 完全修复。详情见 [KNOWN_LIMITATIONS.md](./KNOWN_LIMITATIONS.md)。 |
 
 ---
 
-## 📚 引用文献 / Key References
+## 🗺️ 验证路线图
+
+| 阶段 | 时间 | 目标 |
+|---|---|---|
+| **Phase 0** | 2026 Q2 | ✅ 完成 v2.0 验证基础设施（本仓库当前状态）|
+| **Phase 1** | 2026 Q2–Q3 | 10M–100M 规模缩放律 + 9 组消融 + 临界涌现测试 |
+| **Phase 2** | 2026 Q3–Q4 | 300M–1B 规模验证 + 收紧证伪阈值 |
+| **Phase 3** | 2026 Q4 | 多硬件平台（H100/A100/边缘设备）能耗对比 |
+| **Phase 4** | 2027 Q1 | 邀请独立团队复现 |
+| **Phase 5** | 2027 Q2+ | 基于实证更新理论论文，投稿到正式期刊 |
+
+完整路线图见 [ROADMAP.md](./ROADMAP.md)。
+
+---
+
+## 📚 引用文献
 
 完整文献清单见 [`theory.md`](./theory.md) 附录 A。核心一手文献（含可点击 DOI）：
 
-- **Langevin, P.** (1908). *Comptes Rendus* 146, 530.
-  https://gallica.bnf.fr/ark:/12148/bpt6k3100t/f532
-- **Mori, H.** (1965). *Prog. Theor. Phys.* 33, 423.
-  https://doi.org/10.1143/PTP.33.423
-- **Zwanzig, R.** (1960). *J. Chem. Phys.* 33, 1338.
-  https://doi.org/10.1063/1.1731409
-- **Hopfield, J. J.** (1982). *PNAS* 79, 2554.
-  https://doi.org/10.1073/pnas.79.8.2554
-- **Bialek, W., Nemenman, I., & Tishby, N.** (2001).
-  *Neural Computation* 13, 2409.
-  https://doi.org/10.1162/089976601753195969
-- **Berry, M. V.** (1984). *Proc. R. Soc. A* 392, 45.
-  https://doi.org/10.1098/rspa.1984.0023
-- **Caldeira, A. O., & Leggett, A. J.** (1983). *Physica A* 121, 587.
-  https://doi.org/10.1016/0378-4371(83)90013-4
-- **Amari, S.** (1985). *Differential-Geometrical Methods in Statistics*.
-  https://doi.org/10.1007/978-1-4612-5056-2
-- **Beggs, J. M., & Plenz, D.** (2003). *J. Neurosci.* 23, 11167.
-  https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003
-- **Linkenkaer-Hansen, K., et al.** (2001). *J. Neurosci.* 21, 1370.
-  https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001
-- **Ramsauer, H., et al.** (2020). *Hopfield Networks Is All You Need*.
-  https://arxiv.org/abs/2008.02217
-- **Vaswani, A., et al.** (2017). *Attention Is All You Need*.
-  https://arxiv.org/abs/1706.03762
+- **Langevin, P.** (1908). *Comptes Rendus* 146, 530. [gallica.bnf.fr](https://gallica.bnf.fr/ark:/12148/bpt6k3100t/f532)
+- **Mori, H.** (1965). *Prog. Theor. Phys.* 33, 423. [doi.org/10.1143/PTP.33.423](https://doi.org/10.1143/PTP.33.423)
+- **Zwanzig, R.** (1960). *J. Chem. Phys.* 33, 1338. [doi.org/10.1063/1.1731409](https://doi.org/10.1063/1.1731409)
+- **Hopfield, J. J.** (1982). *PNAS* 79, 2554. [doi.org/10.1073/pnas.79.8.2554](https://doi.org/10.1073/pnas.79.8.2554)
+- **Bialek, W., Nemenman, I., & Tishby, N.** (2001). *Neural Computation* 13, 2409. [doi.org/10.1162/089976601753195969](https://doi.org/10.1162/089976601753195969)
+- **Clauset, A., Shalizi, C. R., & Newman, M. E.** (2009). *SIAM Review* 51(4), 661. [doi.org/10.1137/070710111](https://doi.org/10.1137/070710111)
+- **Berry, M. V.** (1984). *Proc. R. Soc. A* 392, 45. [doi.org/10.1098/rspa.1984.0023](https://doi.org/10.1098/rspa.1984.0023)
+- **Caldeira, A. O., & Leggett, A. J.** (1983). *Physica A* 121, 587. [doi.org/10.1016/0378-4371(83)90013-4](https://doi.org/10.1016/0378-4371(83)90013-4)
+- **Amari, S.** (1985). *Differential-Geometrical Methods in Statistics*. [doi.org/10.1007/978-1-4612-5056-2](https://doi.org/10.1007/978-1-4612-5056-2)
+- **Beggs, J. M., & Plenz, D.** (2003). *J. Neurosci.* 23, 11167. [doi.org/10.1523/JNEUROSCI.23-35-11167.2003](https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003)
+- **Linkenkaer-Hansen, K., et al.** (2001). *J. Neurosci.* 21, 1370. [doi.org/10.1523/JNEUROSCI.21-04-01370.2001](https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001)
+- **Ramsauer, H., et al.** (2020). *Hopfield Networks Is All You Need*. [arxiv.org/abs/2008.02217](https://arxiv.org/abs/2008.02217)
+- **Vaswani, A., et al.** (2017). *Attention Is All You Need*. [arxiv.org/abs/1706.03762](https://arxiv.org/abs/1706.03762)
 
 ---
 
-## 📝 引用本工作 / How to Cite
+## 📝 引用本工作
+
+如果您在论文、产品或服务中使用了本工作，请引用：
 
 ```bibtex
-@misc{uid_minimind_2026,
-  title     = {UID Theory Implementation on MiniMind: Empirical Validation
-               of Unified Intelligo-Dynamics},
-  author    = {Gui LI and Suzhou Jodell Robotics Co., Ltd.},
-  year      = {2026},
-  month     = {May},
-  note      = {Based on jingyaogong/minimind; dual-licensed under
-               PolyForm Noncommercial 1.0.0 (academic) and a Commercial
-               License from Suzhou Jodell Robotics Co., Ltd.},
-  email     = {guilichina@163.com}
+@article{li2026uid,
+  title  = {Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical 
+            Theory of Unified Intelligo-Dynamics (UID)},
+  author = {LI, Gui and JIE, Dangyang and KANG, Haitao},
+  year   = {2026},
+  publisher = {Zenodo},
+  doi    = {10.5281/zenodo.20372493},
+  url    = {https://github.com/gwailee/uid}
 }
 ```
 
+**纯文本引用**：
+
+> LI, Gui, JIE, Dangyang, & KANG, Haitao. (2026). Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID). Zenodo. https://doi.org/10.5281/zenodo.20372493
+
 ---
 
-## 📜 许可证 / License
+## 📜 许可证
 
-本项目采用 **双许可证 (Dual License)** 发布。
+本项目采用 **双许可证** 发布。
 
-> This project is released under a **DUAL LICENSE**.
-
-| 使用场景 / Use Case | 适用许可证 / Applicable License |
+| 使用场景 | 适用许可证 |
 |---|---|
-| 学术研究、教学、学生、个人、注册非营利机构、政府研究机构 / Academic research, teaching, students, individuals, nonprofits, public research labs | **PolyForm Noncommercial License 1.0.0**（免费 / Free）— 见 [`LICENSE-NONCOMMERCIAL`](./LICENSE-NONCOMMERCIAL) |
-| 任何商业、营利或生产用途 / Any commercial, for-profit, or production use | **Commercial License**（付费授权 / Paid, written license required）— 见 [`LICENSE-COMMERCIAL`](./LICENSE-COMMERCIAL) |
+| 学术研究、教学、学生、个人、注册非营利机构、政府研究机构 | **PolyForm Noncommercial License 1.0.0**（免费）— 见 [`LICENSE-NONCOMMERCIAL`](./LICENSE-NONCOMMERCIAL) |
+| 任何商业、营利或生产用途 | **Commercial License**（需付费授权）— 见 [`LICENSE-COMMERCIAL`](./LICENSE-COMMERCIAL) |
 
-**双许可适用判断**：完整规则见 [`LICENSE`](./LICENSE)。简要说明：
+**双许可适用判断**（完整规则见 [`LICENSE`](./LICENSE)）：
 
-- ✅ **免费可用**：高校教师/学生的科研与教学、个人学习、未涉及商业目标的实验、
-  非营利机构的研究工作。
-- ❌ **需要商业授权**：将本代码或其衍生作品用于（a）任何为营利实体创造收入或
-  价值的活动；（b）生产环境部署；（c）随商业产品/服务分发；（d）作为付费
-  服务（含 SaaS）托管；（e）有偿咨询、技术服务或培训。
+- ✅ **免费可用**：高校教师/学生的科研与教学、个人学习、非营利机构的研究工作
+- ❌ **需要商业授权**：将本代码或其衍生作品用于（a）任何为营利实体创造收入或价值的活动；（b）生产环境部署；（c）随商业产品/服务分发；（d）作为付费服务（含 SaaS）托管；（e）有偿咨询、技术服务或培训
 
-### 商业授权咨询 / Commercial Licensing Inquiry
+### 商业授权咨询
 
-任何企业（含外资、合资、有限责任公司、股份公司、个体工商户）若要将本仓库
-用于上述商业场景，**必须**先获得 Suzhou Jodell Robotics Co., Ltd. 的书面授权。
-
-> Any for-profit entity wishing to use this codebase commercially **must**
-> first obtain a written license from Suzhou Jodell Robotics Co., Ltd.
-
-请通过以下方式联系授权事宜：
+任何企业（含外资、合资、有限责任公司、股份公司、个体工商户）若要将本仓库用于上述商业场景，**必须**先获得 Suzhou Jodell Robotics Co., Ltd. 的书面授权。
 
 | 联系项 | 内容 |
 |---|---|
-| **公司** | Suzhou Jodell Robotics Co., Ltd. （苏州钧舵机器人有限公司） |
+| **公司** | Suzhou Jodell Robotics Co., Ltd.（苏州钧舵机器人有限公司）|
 | **联系人** | Gui LI |
 | **邮箱** | **lig@jodell.cn** |
 | **邮件主题前缀** | `[UID Commercial License]` |
 
-申请时请提供：被授权方法定名称与注册地、预期用途与部署规模、商业上线时间表、
-授权谈判联系人。
+申请时请提供：被授权方法定名称与注册地、预期用途与部署规模、商业上线时间表、授权谈判联系人。
 
-### 商标说明 / Trademark Notice
+### 商标说明
 
-"UID"、"Unified Intelligo-Dynamics"、"CID"、"QID"、"FID"、
-"Suzhou Jodell Robotics" 及相关标识均为 Suzhou Jodell Robotics Co., Ltd.
-的专有标识。未经书面许可不得用于商业宣传或产品命名。
+"UID"、"Unified Intelligo-Dynamics"、"CID"、"QID"、"FID"、"Suzhou Jodell Robotics" 及相关标识均为 Suzhou Jodell Robotics Co., Ltd. 的专有标识。未经书面许可不得用于商业宣传或产品命名。
 
-### 免责声明 / Disclaimer
+### 免责声明
 
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-> OR IMPLIED. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-> FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM USE OF THIS
-> SOFTWARE.
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM USE OF THIS SOFTWARE.
 
 ---
 
-## 🙏 致谢 / Acknowledgements
+## 🙏 致谢
 
-- [**MiniMind**](https://github.com/jingyaogong/minimind) by **jingyaogong**
-  — 提供高质量的小模型基础架构与数据集，使端到端可证伪验证成为可能；
-  We thank jingyaogong for the high-quality small-LM baseline and dataset
-  that made our end-to-end falsification suite possible.
-- **UID 理论的物理先驱们**（按时间顺序）：Langevin、Einstein、Fokker、Planck、
-  Mori、Zwanzig、Lindblad、Caldeira-Leggett、Berry、Amari、Hopfield、Bak-Tang-
-  Wiesenfeld、Bialek、Friston、Beggs-Plenz、Linkenkaer-Hansen 等。
-- **现代深度学习架构的奠基者**：Vaswani et al.（Transformer）、Ramsauer et al.
-  （Modern Hopfield Networks）、Gu & Dao（Mamba）、He et al.（ResNet）。
+- **同行评审者**：特别感谢匿名评审者对 v0.1 的详细批评，促成了 v2.0 的完整重写。诚实的批评让 UID 成为了更严谨的项目。详情见 [KNOWN_LIMITATIONS.md](./KNOWN_LIMITATIONS.md)。
+- **[MiniMind](https://github.com/jingyaogong/minimind) by jingyaogong**：提供高质量的小模型基础架构与数据集。
+- **UID 理论的物理先驱们**（按时间顺序）：Langevin、Einstein、Fokker、Planck、Mori、Zwanzig、Lindblad、Caldeira-Leggett、Berry、Amari、Hopfield、Bak-Tang-Wiesenfeld、Bialek、Friston、Beggs-Plenz、Linkenkaer-Hansen 等。
+- **现代深度学习架构的奠基者**：Vaswani et al.（Transformer）、Ramsauer et al.（Modern Hopfield Networks）、Gu & Dao（Mamba）、He et al.（ResNet）。
+- **统计方法学先驱**：Clauset、Shalizi & Newman（幂律拟合金标准）、Peng et al.（DFA 方法）。
+- **开放科学工具生态**：PyTorch、Hugging Face、pytest、ruff —— 让严格验证成为可能。
 
 ---
 
-## 🗺️ 路线图 / Roadmap
-
-| 阶段 | 时间 | 目标 |
-|---|---|---|
-| **Phase 1** | 2026 Q2 | ✅ CID 完整实现 + 四模型对照验证（本仓库） |
-| **Phase 2** | 2026 Q3 | CID-1B vs Transformer-10B 大规模参数效率验证 |
-| **Phase 3** | 2026 Q4 | QID-MPS（张量网络）量子层正式实现，纠缠熵临界标度测试 |
-| **Phase 4** | 2027 Q1+ | FID 几何场方程经验校准与软模式探测 |
-| **Phase 5** | 2027+ | 跨基质验证：FlyWire 果蝇连接组 + 小鼠皮层数据回归 CID 主方程 |
-
----
+<div align="center">
 
 > **统一智动力学的核心目标**：把"智能"从一种工程现象提升为一种物理理论。
-> CID 已可编码，QID 已可模拟，FID 已可探索。**所有结果都是可证伪的 ——
-> 这是科学的核心**。
+> 
+> CID 可编码，QID 可模拟，FID 可探索。**所有结果都是可证伪的——这是科学的核心。**
 
-> The central aim of UID is to lift *intelligence* from an engineering
-> phenomenon to a physical theory. CID is codable today, QID is
-> simulatable today, FID is explorable today. **All results are
-> falsifiable — that is the core of science.**
+</div>
+```
 
----
-
-## 📜 License and Citation
-
-### Dual License
-
-This project is licensed under a **dual license** model:
-
-#### 1. Noncommercial License (Default)
-
-For **academic research, educational purposes, and personal non-profit use**, this work is licensed under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/).
-
-**You can freely:**
-- ✅ Use UID for academic research
-- ✅ Modify and experiment with the code
-- ✅ Publish papers based on UID
-- ✅ Use UID for teaching and education
-- ✅ Share UID with other researchers
-
-**You must:**
-- 📝 Cite our work (see below)
-- 📝 Include the license notice in distributions
-- ❌ Not use UID for commercial purposes
-
-#### 2. Commercial License (Required for Commercial Use)
-
-For **any commercial, for-profit, or production use**, you must obtain a separate commercial license from Suzhou Jodell Robotics Co., Ltd.
-
-**Commercial use includes:**
-- ❌ Integration into commercial products
-- ❌ Use in production systems
-- ❌ Use by for-profit companies (even internal tools)
-- ❌ Deployment in commercial cloud services
-- ❌ Use in paid consulting or services
-
-**To obtain a commercial license:**
-- 📧 Email: lig@jodell.cn
-- 🏢 Company: Suzhou Jodell Robotics Co., Ltd.
-- 📍 Location: Suzhou, China
-
-See [`LICENSE`](LICENSE), [`LICENSE-NONCOMMERCIAL`](LICENSE-NONCOMMERCIAL), and [`LICENSE-COMMERCIAL`](LICENSE-COMMERCIAL) for full details.
-
-### Citation
-
-If you use this work in any publication, product, or service, please cite:
-
-```bibtex
-@article{li2026uid,
-  title={Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID)},
-  author={LI, Gui and JIE, Dangyang and KANG, Haitao},
-  journal={Zenodo},
-  year={2026},
-  doi={10.5281/zenodo.20372493},
-  url={https://github.com/gwailee/uid}
-}

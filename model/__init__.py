@@ -22,6 +22,5 @@
 """
 
 from .model_uid import UIDConfig, UIDModel
-from .model_baseline import TinyTransformerLM
 
-__all__ = ["UIDConfig", "UIDModel", "TinyTransformerLM"]
+__all__ = ["UIDConfig", "UIDModel"]
