@@ -1,6 +1,6 @@
 # Known Limitations and Validation Roadmap
 
-**Last updated**: 2026-05-30
+**Last updated**: 2026-05-25
 
 This document **honestly acknowledges the methodological limitations** 
 of the current UID validation suite, in response to detailed peer 

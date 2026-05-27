@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
-# Date: 2026-05-30
+# Date: 2026-05-25
 """
 Tests for the CID layer, with special focus on the v2.0 fix:
 the disable_noise_injection mode.
