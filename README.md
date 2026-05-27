@@ -42,7 +42,8 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 **Unified Intelligo-Dynamics (UID): A Three-Tier Theoretical Framework**
 
-[![CI](https://github.com/gwailee/uid/actions/workflows/ci.yml/badge.svg)](https://github.com/gwailee/uid/actions/workflows/ci.yml) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20372493.svg)](https://doi.org/10.5281/zenodo.20372493) [![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm--NC-blue)](LICENSE)
+[CI](https://github.com/gwailee/uid/actions/workflows/ci.yml) | [DOI](https://doi.org/10.5281/zenodo.20372493) | [License: PolyForm Noncommercial](LICENSE)
+
 
 ***作者***：李贵 <guilichina@163.com>、介党阳 <jiedy@jodell.cn>、康海涛 <kanght@jodell.cn>
 
