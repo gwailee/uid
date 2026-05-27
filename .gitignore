@@ -1,30 +1,92 @@
+# Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
+# Author: Gui LI <guilichina@163.com>
+
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
-*.egg-info/
-.eggs/
+.Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Models & checkpoints
-*.pt
-*.pth
-*.bin
-out/
-checkpoints/
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Data caches
-data_cache/
-*.txt
-!requirements.txt
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+htmlcov/
+.hypothesis/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Linting
+.ruff_cache/
 
 # IDE
 .vscode/
 .idea/
 *.swp
+*.swo
+.DS_Store
 
-# Notebooks
-.ipynb_checkpoints/
+# Data (large files; users should download themselves)
+data/
+*.jsonl
+*.parquet
+
+# Checkpoints (track only small example checkpoints, not large ones)
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+!tests/fixtures/**.pt
+
+# Results (large training outputs)
+# Note: We KEEP results/ tracked, but exclude individual large files
+results/**/*.pt
+results/**/checkpoints/
+results/**/*.log
+
+# Logs and temporary
+*.log
+*.tmp
+/tmp/
 
 # OS
+Thumbs.db
 .DS_Store
+
+# Local config
+.env.local
+local_config.yaml

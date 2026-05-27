@@ -1,11 +1,21 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
-# Date: 2026-05-25
+# Date: 2026-05-30
 #
-# Pin to relatively recent stable versions; CPU-only also works.
-torch>=2.1.0
-transformers>=4.36.0
-numpy>=1.24.0
-scipy>=1.10.0
-matplotlib>=3.7.0
+# Production dependencies for UID v2.0
+# Pinned to relatively recent stable versions; CPU-only works.
+
+# Deep learning
+torch>=2.1.0,<3.0
+transformers>=4.36.0,<5.0
+
+# Scientific computing
+numpy>=1.24.0,<2.2
+scipy>=1.10.0,<2.0
+matplotlib>=3.7.0,<4.0
+
+# Data loading
+datasets>=2.14.0  # for loading WikiText, etc.
+
+# Utilities
 tqdm>=4.65.0

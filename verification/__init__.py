@@ -1,26 +1,28 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
-# Date:   2026-05-25
-#
-# This file is part of the UID Theory reference implementation.
-#
-# DUAL LICENSE:
-#   - PolyForm Noncommercial License 1.0.0  (academic / personal use)
-#     see LICENSE-NONCOMMERCIAL in the project root
-#   - Commercial License from Suzhou Jodell Robotics Co., Ltd.
-#     (required for any commercial / for-profit / production use)
-#     see LICENSE-COMMERCIAL in the project root
-#
-# For commercial licensing inquiries, contact: lig@jodell.cn
-# 本文件采用双许可证发布；商业使用须先获得苏州机器人有限公司书面授权，
-# 商业授权联系: lig@jodell.cn
+# Date: 2026-05-30
+"""
+UID verification suite v2.0.
 
-"""Falsification / validation subpackage.
+This version was rewritten in response to detailed peer review feedback. 
+See KNOWN_LIMITATIONS.md for the complete acknowledgment of v0.1 issues 
+and how each is addressed in v2.0.
 
-验证子包：对 UID 理论可证伪预言的实证检验器。
+Key modules:
+    powerlaw_estimator: Clauset-Shalizi-Newman MLE for power-law fitting
+    critical_exponents: Measure emergent signatures with noise-injection OFF
+    avalanche_detector: Proper spatio-temporal avalanche detection
+    energy_meter: Real hardware energy measurement (not theoretical)
+    ablation_suite: Full 5+ way ablation (includes cid_no_memory)
 """
 
-from .prediction_test import UIDPredictionTester
+from .powerlaw_estimator import (
+    PowerLawFit, fit_power_law, compare_with_exponential,
+)
 
-__all__ = ["UIDPredictionTester"]
+__all__ = [
+    "PowerLawFit",
+    "fit_power_law",
+    "compare_with_exponential",
+]

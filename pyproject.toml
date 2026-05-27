@@ -1,0 +1,157 @@
+# Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
+# Author: Gui LI <guilichina@163.com>
+# Date: 2026-05-30
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uid-theory"
+version = "2.0.0"
+description = "Unified Intelligo-Dynamics: A three-tier physical framework for intelligent architectures"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "PolyForm Noncommercial 1.0.0 OR Commercial License"}
+authors = [
+    {name = "Gui LI", email = "guilichina@163.com"},
+    {name = "Dangyang JIE", email = "jiedy@jodell.cn"},
+    {name = "Haitao KANG", email = "kanght@jodell.cn"},
+]
+keywords = [
+    "intelligo-dynamics",
+    "non-equilibrium-physics",
+    "deep-learning",
+    "language-models",
+    "scaling-laws",
+    "edge-ai",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/gwailee/uid"
+Documentation = "https://github.com/gwailee/uid/blob/main/README.md"
+Repository = "https://github.com/gwailee/uid"
+"Bug Tracker" = "https://github.com/gwailee/uid/issues"
+"Theory Paper" = "https://doi.org/10.5281/zenodo.20372493"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["uid_theory*", "model*", "experiments*"]
+
+# ============================================================
+# Ruff configuration
+# ============================================================
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    "data",
+    "results",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "N803",  # argument should be lowercase (we use Q, K, V)
+    "N806",  # variable should be lowercase (we use Q, K, V)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N802", "N803"]  # test names can be camelCase
+
+# ============================================================
+# Black configuration
+# ============================================================
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+  | data
+  | results
+)/
+'''
+
+# ============================================================
+# pytest configuration
+# ============================================================
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--tb=short",
+]
+markers = [
+    "slow: marks tests as slow (>10s; skipped by default with -m 'not slow')",
+    "gpu: marks tests requiring NVIDIA GPU",
+    "integration: marks integration tests requiring real data",
+]
+
+# ============================================================
+# Coverage configuration
+# ============================================================
+[tool.coverage.run]
+source = ["uid_theory", "model"]
+omit = [
+    "*/tests/*",
+    "*/experiments/*",  # experiments tested separately via smoke tests
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+# ============================================================
+# mypy configuration
+# ============================================================
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true
+follow_imports = "silent"
+check_untyped_defs = false  # too strict for research code
