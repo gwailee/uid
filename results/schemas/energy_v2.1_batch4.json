@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gwailee/uid/blob/main/results/schemas/energy_v2.1_batch4.json",
+  "title": "UID Energy Benchmark Result (energy_v2.1_batch4)",
+  "description": "Output of experiments/run_energy_benchmark.py running on uid_theory/verification/energy_meter.py v2.1 batch 4 (pynvml + idle baseline + above-idle + prefill/decode modes). Conforms to results/README.md §Schema 5.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "timestamp", "metadata", "results"],
+  "properties": {
+    "schema_version": { "const": "energy_v2.1_batch4" },
+    "timestamp": { "type": "string" },
+    "metadata": { "$ref": "#/$defs/metadataBlock" },
+    "results": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": { "$ref": "#/$defs/energyResult" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "metadataBlock": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "python_version",
+        "platform",
+        "torch_version",
+        "cuda_version",
+        "device_name",
+        "cli_args"
+      ],
+      "properties": {
+        "python_version": { "type": "string" },
+        "platform": { "type": "string" },
+        "torch_version": { "type": "string" },
+        "cuda_version": {
+          "anyOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "device_name": {
+          "anyOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "cli_args": { "type": "object" }
+      }
+    },
+    "energyResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_name",
+        "mode",
+        "device",
+        "gpu_name",
+        "sampler",
+        "sample_rate_hz",
+        "n_samples",
+        "n_warmup",
+        "n_measure",
+        "batch_size",
+        "seq_len",
+        "total_tokens",
+        "new_tokens_per_decode",
+        "wall_clock_seconds",
+        "idle_power_watts",
+        "idle_window_seconds",
+        "avg_power_watts",
+        "max_power_watts",
+        "power_above_idle_watts",
+        "total_energy_joules",
+        "energy_above_idle_joules",
+        "energy_per_token_joules",
+        "energy_per_token_above_idle_joules",
+        "notes",
+        "checkpoint",
+        "loaded_family"
+      ],
+      "properties": {
+        "model_name": { "type": "string" },
+        "mode": {
+          "type": "string",
+          "enum": ["prefill", "decode"]
+        },
+        "device": {
+          "type": "string",
+          "pattern": "^cuda"
+        },
+        "gpu_name": { "type": "string" },
+        "sampler": {
+          "type": "string",
+          "enum": ["pynvml", "nvidia_smi", "synthetic"]
+        },
+        "sample_rate_hz": { "type": "number", "minimum": 0 },
+        "n_samples": { "type": "integer", "minimum": 0 },
+        "n_warmup": { "type": "integer", "minimum": 0 },
+        "n_measure": { "type": "integer", "minimum": 1 },
+        "batch_size": { "type": "integer", "minimum": 1 },
+        "seq_len": { "type": "integer", "minimum": 1 },
+        "total_tokens": { "type": "integer", "minimum": 0 },
+        "new_tokens_per_decode": { "type": "integer", "minimum": 0 },
+        "wall_clock_seconds": { "type": "number", "minimum": 0 },
+        "idle_power_watts": { "type": "number" },
+        "idle_window_seconds": { "type": "number", "minimum": 0 },
+        "avg_power_watts": { "type": "number" },
+        "max_power_watts": { "type": "number" },
+        "power_above_idle_watts": { "type": "number" },
+        "total_energy_joules": { "type": "number" },
+        "energy_above_idle_joules": { "type": "number" },
+        "energy_per_token_joules": { "type": "number" },
+        "energy_per_token_above_idle_joules": { "type": "number" },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "checkpoint": { "type": "string" },
+        "loaded_family": { "type": "string" }
+      }
+    }
+  }
+}
