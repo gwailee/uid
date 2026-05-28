@@ -2,7 +2,13 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-28
-"""Unit tests for test_uid_on_minimind.py (data loaders).
+# UPDATE: 2026-05-28 (v2.1 batch 5)
+#   * Switched import source from test_uid_on_minimind -> data_loaders
+#     to follow the v2.1 rename of the data-loader module.
+#   * Added TestSftJsonl::test_truncation_keeps_recent_prompt and
+#     three companion tests covering the "keep the TAIL of the prompt
+#     when truncation is necessary" contract from data_loaders.SftJsonl.
+"""Unit tests for data_loaders.py (v2.1).
 
 Covers every promise made in the v2.1 rewrite of the data-loader
 module:
@@ -53,6 +59,10 @@ module:
        * Response positions in labels are NOT all IGNORE_INDEX.
        * Truncation never loses the entire response.
        * EOS appended when tokenizer exposes eos_token_id.
+       * **Aggressive truncation keeps the TAIL of the prompt**
+         (most recent context), NOT the head — this is the
+         instruction-tuning convention and matches data_loaders'
+         ``prompt_ids = prompt_ids[-max_prompt:]`` slice.
 
   §I — make_collate_fn:
        * Stacks per-sample tensors into a batch.
@@ -60,9 +70,8 @@ module:
        * Keys argument filters output dict.
 
   §J — pytest discovery contract:
-       * Importing test_uid_on_minimind does NOT contribute pytest
-         test items (the module name has a 'test_' prefix but exposes
-         no Test* / test_* symbols).
+       * Importing data_loaders does NOT contribute pytest test items
+         (the module exposes no Test* / test_* symbols).
 
 Run with::
 
@@ -73,7 +82,6 @@ from __future__ import annotations
 
 import importlib
 import json
-import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -81,10 +89,9 @@ import pytest
 import torch
 from torch.utils.data import DataLoader
 
-# Import the data-loader module under test. Despite its ``test_``
-# prefix, this is a regular module (verified in §J below).
-import test_uid_on_minimind as data_mod
-from test_uid_on_minimind import (
+# Import the data-loader module under test.
+import data_loaders as data_mod
+from data_loaders import (
     IGNORE_INDEX,
     PretrainJsonl,
     SftJsonl,
@@ -105,6 +112,12 @@ class _FakeTokenizer:
     Deterministic and dependency-free, so the tests don't need
     ``transformers`` installed. Mimics the subset of HuggingFace
     tokenizer API that ``_TokenizerAdapter`` uses.
+
+    The vocab is **shared as a process-wide cache** between successive
+    calls to encode(), which means the same word always maps to the
+    same id within one test process. This stability is what enables
+    §H's "keep recent prompt" tests to compare token-ids directly
+    between an un-truncated reference run and a truncated run.
     """
 
     PAD_ID = 0
@@ -404,7 +417,7 @@ class TestPretrainJsonlGetItem:
         # Wherever input_ids == pad_id, mask must be False.
         for i in range(ids.shape[0]):
             if ids[i].item() == pad_id:
-                assert mask[i].item() is False or bool(mask[i]) is False
+                assert bool(mask[i]) is False
 
     def test_last_label_is_ignored(self, tmp_path, tokenizer):
         ds = _make_simple_pretrain_dataset(tmp_path, tokenizer)
@@ -709,6 +722,279 @@ class TestSftJsonlGetItem:
         # be absent.
         assert not (sample["input_ids"] == _FakeTokenizer.EOS_ID).any().item()
 
+    # ------------------------------------------------------------------
+    # NEW (v2.1 batch 5): truncation keeps the recent prompt tail
+    # ------------------------------------------------------------------
+
+    def _build_sft_with_unique_prompt_words(
+        self,
+        tmp_path: Path,
+        tokenizer: _FakeTokenizer,
+        n_prompt_words: int,
+        response_text: str,
+        max_length: int,
+        prompt_prefix: str = "",
+        response_prefix: str = "\n",
+        append_eos: bool = True,
+    ) -> tuple[SftJsonl, List[int], List[int]]:
+        """Build an SftJsonl whose prompt is a sequence of UNIQUE words.
+
+        Returns ``(dataset, prompt_word_ids, response_token_ids)``:
+            * ``prompt_word_ids[i]`` is the token id assigned by the
+              fake tokenizer to the i-th prompt word
+              (``"pw{i:04d}"`` for i in 0..n-1).
+            * ``response_token_ids`` is the **fully tokenised**
+              response after the response_prefix and (optional) EOS
+              have been appended; this is what the truncator must
+              preserve.
+
+        Constructing unique prompt words lets us check, after
+        truncation, exactly which prompt words survived in the
+        sample's input_ids — and hence whether the TAIL of the
+        prompt was kept (the v2.1 contract).
+        """
+        # Build prompt with deterministic, unique words.
+        prompt_words = [f"pw{i:04d}" for i in range(n_prompt_words)]
+        prompt_text = " ".join(prompt_words)
+
+        # Pre-warm the tokenizer's vocab so that its assigned ids match
+        # what SftJsonl will see when it later encodes the same text.
+        prompt_word_ids = tokenizer.encode(
+            prompt_prefix + prompt_text, add_special_tokens=False,
+        )
+        response_token_ids = tokenizer.encode(
+            response_prefix + response_text, add_special_tokens=False,
+        )
+        if append_eos and tokenizer.eos_token_id is not None:
+            response_token_ids = response_token_ids + [
+                tokenizer.eos_token_id,
+            ]
+
+        p = tmp_path / "sft_recent.jsonl"
+        _write_jsonl_records(p, [
+            {"prompt": prompt_text, "response": response_text},
+        ])
+        ds = SftJsonl(
+            p, tokenizer,
+            max_length=max_length,
+            prompt_prefix=prompt_prefix,
+            response_prefix=response_prefix,
+            append_eos=append_eos,
+        )
+        return ds, prompt_word_ids, response_token_ids
+
+    def test_truncation_keeps_recent_prompt(
+        self, tmp_path, tokenizer,
+    ):
+        """When the prompt is too long to fit, truncation must keep
+        the TAIL of the prompt (most recent context), not the head.
+
+        This is the key instruction-tuning convention encoded in
+        ``data_loaders.SftJsonl`` via
+        ``prompt_ids = prompt_ids[-max_prompt:]``. Failing this test
+        means a future refactor accidentally switched to head-keeping
+        truncation, which would silently degrade SFT quality on long
+        prompts.
+        """
+        # Build a sample whose prompt is much longer than max_length
+        # can possibly hold, so the truncator MUST drop part of it.
+        n_prompt_words = 64
+        response_text = "tail_response_word"
+        max_length = 16
+
+        ds, prompt_word_ids, response_token_ids = (
+            self._build_sft_with_unique_prompt_words(
+                tmp_path, tokenizer,
+                n_prompt_words=n_prompt_words,
+                response_text=response_text,
+                max_length=max_length,
+            )
+        )
+
+        sample = ds[0]
+        ids: List[int] = sample["input_ids"].tolist()
+        mask: List[bool] = [bool(x) for x in sample["attention_mask"].tolist()]
+        # Strip pad positions to get only the 'real' tokens.
+        real_ids = [i for i, m in zip(ids, mask) if m]
+
+        # 1. The response tokens MUST appear at the very end of the
+        #    real-id sequence (response is preserved, not the prompt
+        #    head).
+        assert real_ids[-len(response_token_ids):] == response_token_ids, (
+            "Response was not preserved at the tail of the sample.\n"
+            f"  expected tail: {response_token_ids}\n"
+            f"  got tail:      {real_ids[-len(response_token_ids):]}"
+        )
+
+        # 2. The prompt portion of the real-id sequence is everything
+        #    BEFORE those response tokens.
+        kept_prompt = real_ids[: -len(response_token_ids)]
+        assert len(kept_prompt) >= 1, (
+            "After truncation, no prompt tokens survived; the "
+            "truncator over-truncated the prompt."
+        )
+
+        # 3. Critically, the surviving prompt tokens must match the
+        #    TAIL of the original full prompt token sequence
+        #    (most-recent context preserved).
+        expected_prompt_tail = prompt_word_ids[-len(kept_prompt):]
+        assert kept_prompt == expected_prompt_tail, (
+            "Truncation did NOT preserve the prompt tail.\n"
+            f"  kept prompt:      {kept_prompt}\n"
+            f"  expected tail:    {expected_prompt_tail}\n"
+            f"  full prompt head: {prompt_word_ids[:8]}...\n"
+            "If kept_prompt matches the prompt HEAD instead, the\n"
+            "v2.1 'recent prompt' contract has been broken."
+        )
+
+        # 4. As a sanity guard: if the last surviving prompt word is
+        #    pw0001, then truncation kept the head — explicit fail.
+        if kept_prompt:
+            assert kept_prompt[0] != prompt_word_ids[0], (
+                "kept_prompt starts with the FIRST prompt word "
+                f"(token id {prompt_word_ids[0]}); this means "
+                "truncation kept the prompt HEAD instead of the TAIL."
+            )
+
+    def test_truncation_keeps_recent_prompt_when_no_room_for_full_response(
+        self, tmp_path, tokenizer,
+    ):
+        """Edge case: response is long and prompt is also long; the
+        truncator must still preserve the response (potentially
+        truncating it to fit max_length-1) AND keep the most recent
+        prompt prefix that fits in whatever room is left over.
+
+        We focus the assertion on the tail-vs-head property of the
+        surviving prompt segment.
+        """
+        n_prompt_words = 64
+        response_text = "rword1 rword2 rword3 rword4 rword5"
+        max_length = 12
+
+        ds, prompt_word_ids, response_token_ids = (
+            self._build_sft_with_unique_prompt_words(
+                tmp_path, tokenizer,
+                n_prompt_words=n_prompt_words,
+                response_text=response_text,
+                max_length=max_length,
+            )
+        )
+
+        sample = ds[0]
+        ids: List[int] = sample["input_ids"].tolist()
+        mask: List[bool] = [bool(x) for x in sample["attention_mask"].tolist()]
+        real_ids = [i for i, m in zip(ids, mask) if m]
+
+        # The number of prompt tokens that survived in real_ids is
+        # |real_ids| minus however many response tokens fit. We don't
+        # know exactly how many response tokens were truncated (the
+        # implementation is allowed to keep all of them and chop more
+        # of the prompt), so we infer the boundary by finding the
+        # longest suffix of real_ids that is a PREFIX of
+        # response_token_ids OR equals response_token_ids exactly.
+        # Then everything before that suffix is the surviving prompt.
+        boundary = len(real_ids)
+        for k in range(len(real_ids), 0, -1):
+            candidate_resp_tail = real_ids[-k:]
+            # Does this suffix appear as a prefix of the full response?
+            if response_token_ids[:k] == candidate_resp_tail:
+                boundary = len(real_ids) - k
+                break
+        kept_prompt = real_ids[:boundary]
+
+        # If no prompt survived, the test has no signal — but the
+        # data_loaders implementation reserves at least 1 prompt slot
+        # via ``max_prompt = max(self.max_length - len(response_ids) - 1, 1)``
+        # so we expect at least one surviving prompt token in the
+        # vast majority of configurations.
+        if not kept_prompt:
+            pytest.skip(
+                "No prompt tokens survived this configuration; "
+                "skipping head-vs-tail check."
+            )
+
+        # The kept prompt must be a TAIL slice of the full prompt.
+        expected_tail = prompt_word_ids[-len(kept_prompt):]
+        assert kept_prompt == expected_tail, (
+            "Truncation kept the wrong prompt slice.\n"
+            f"  kept prompt:    {kept_prompt}\n"
+            f"  expected tail:  {expected_tail}\n"
+            f"  full prompt[:5]: {prompt_word_ids[:5]}"
+        )
+
+    def test_short_prompt_kept_in_full(self, tmp_path, tokenizer):
+        """Sanity check: when the prompt fits comfortably, truncation
+        is a no-op and the prompt is kept verbatim from the head."""
+        n_prompt_words = 3
+        response_text = "ans1 ans2"
+        max_length = 32  # plenty of room
+
+        ds, prompt_word_ids, response_token_ids = (
+            self._build_sft_with_unique_prompt_words(
+                tmp_path, tokenizer,
+                n_prompt_words=n_prompt_words,
+                response_text=response_text,
+                max_length=max_length,
+            )
+        )
+
+        sample = ds[0]
+        ids: List[int] = sample["input_ids"].tolist()
+        mask: List[bool] = [bool(x) for x in sample["attention_mask"].tolist()]
+        real_ids = [i for i, m in zip(ids, mask) if m]
+
+        # Full prompt + full response must both appear, in order.
+        assert real_ids[: len(prompt_word_ids)] == prompt_word_ids, (
+            "Short prompt was unexpectedly truncated."
+        )
+        assert real_ids[-len(response_token_ids):] == response_token_ids, (
+            "Response was not preserved at the tail."
+        )
+
+    def test_prompt_kept_words_are_contiguous(self, tmp_path, tokenizer):
+        """The surviving prompt segment must be a CONTIGUOUS slice of
+        the original prompt — i.e. the truncator does not drop tokens
+        from the middle. Combined with ``test_truncation_keeps_recent
+        _prompt`` this pins down the truncation policy exactly:
+        a single ``[-max_prompt:]`` slice.
+        """
+        n_prompt_words = 50
+        response_text = "rrr"
+        max_length = 18
+
+        ds, prompt_word_ids, response_token_ids = (
+            self._build_sft_with_unique_prompt_words(
+                tmp_path, tokenizer,
+                n_prompt_words=n_prompt_words,
+                response_text=response_text,
+                max_length=max_length,
+            )
+        )
+
+        sample = ds[0]
+        ids: List[int] = sample["input_ids"].tolist()
+        mask: List[bool] = [bool(x) for x in sample["attention_mask"].tolist()]
+        real_ids = [i for i, m in zip(ids, mask) if m]
+        kept_prompt = real_ids[: -len(response_token_ids)] \
+            if len(real_ids) >= len(response_token_ids) else []
+
+        if not kept_prompt:
+            pytest.skip("No prompt tokens survived; cannot test contiguity.")
+
+        # Find where kept_prompt begins inside the original prompt.
+        # Because kept_prompt is supposed to be a tail slice, this
+        # start index equals len(prompt_word_ids) - len(kept_prompt).
+        start = len(prompt_word_ids) - len(kept_prompt)
+        assert start >= 0
+        original_tail = prompt_word_ids[start:]
+        assert kept_prompt == original_tail, (
+            "Surviving prompt segment is not a contiguous tail of "
+            "the original prompt; the truncator may be dropping "
+            "tokens from the middle.\n"
+            f"  kept_prompt:   {kept_prompt}\n"
+            f"  original_tail: {original_tail}"
+        )
+
 
 # ======================================================================
 # §I — make_collate_fn
@@ -766,9 +1052,9 @@ class TestCollateFn:
 
 
 class TestModuleDoesNotPolluteDiscovery:
-    """The data-loader module has a ``test_`` prefix for historical
-    reasons. Pytest must not collect any test items FROM IT, otherwise
-    every CI run would silently re-run import side effects."""
+    """The data-loader module must not contribute pytest test items
+    by accident, otherwise every CI run would silently re-run import
+    side effects."""
 
     def test_no_test_functions_in_module(self):
         names = [n for n in dir(data_mod) if n.startswith("test_")]
@@ -776,7 +1062,7 @@ class TestModuleDoesNotPolluteDiscovery:
         # ``_test``); top-level public ``test_*`` is forbidden.
         public_test_names = [n for n in names if not n.startswith("_")]
         assert public_test_names == [], (
-            f"data-loader module exposes public test_* names: "
+            f"data_loaders module exposes public test_* names: "
             f"{public_test_names}. These would be collected by pytest."
         )
 
@@ -786,7 +1072,7 @@ class TestModuleDoesNotPolluteDiscovery:
             if n.startswith("Test") and isinstance(getattr(data_mod, n), type)
         ]
         assert names == [], (
-            f"data-loader module exposes Test* classes: {names}. "
+            f"data_loaders module exposes Test* classes: {names}. "
             "These would be collected by pytest."
         )
 
