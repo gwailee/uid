@@ -4461,96 +4461,328 @@ f_0 ~ c_I / L
 
 > 若三项中至少两项偏离，FID 的理论基础须重新审视。
 
-## 第 7 章 —— FID 的工程路径
+## 第 7 章 —— FID 的配套工程实现规划
 
-### 7.1 路径 1：信息几何优化器（现在可用）
+> **一句话**：尽管完整 FID 场方程的数值求解需要张量协处理器与几何专用硬件（预计 2035+），其关键诊断组件（Fisher 度量、§6.1 各向异性 η、§6.2 Ricci 标量代理、真 Fisher 对角校准）已在 v2.1 中作为可运行的几何探针完整落地，每项的边界都通过单元测试锁定，info 字典严格 JSON 安全。
 
-**目标**：在经典硬件上验证 Fisher 度量的工程价值。
+### 7.1 FID 工程实现的核心定位
 
-**成熟度**：✅ **现在可用**（2026 年）。
+在阅读本章前，必须明确 v2.1 FID 实现的诚实定位。我们在 README §"诚实声明" 第 3 条与 KNOWN_LIMITATIONS.md §C1 中已明确写明：
 
-**工程工具**：
+> **FID 是探索性纲领。** Fisher 度量与曲率代理承担**诊断与软正则**角色，**不是**任何具体流形上严格定义的场方程数值解。本代码采用**隐状态空间**经验协方差作为 Fisher 矩阵代理（参数空间真 Fisher 由 `FisherMetric.compute_true_fisher_diagonal()` 提供，仅作小批次校准之用）。
 
-| 工具 | 类型 | 状态 | 链接 |
-|---|---|---|---|
-| K-FAC | 近似自然梯度 | 工业级使用 | https://arxiv.org/abs/1503.05671 |
-| Adam（隐式 Fisher）| 自适应学习率 | 标准工具 | https://arxiv.org/abs/1412.6980 |
-| Shampoo | 块对角 Fisher 近似 | 生产级 | https://arxiv.org/abs/1802.09568 |
-| Sophia | 二阶 Hessian 近似 | 最新研究 | https://arxiv.org/abs/2305.14342 |
+FID 工程实现的目标因此**不是**求解 FID 场方程，而是：
 
-**可验证的预言**：
+1. **几何诊断**：在训练完成的 CID / QID 模型上测量 Fisher 度量的各向异性 η（§6.1）与 Ricci 标量代理（§6.2），让 README 预言 4 真正可被验证或证伪。
+2. **软正则训练**：通过 `curvature_weight > 0` 在训练损失中加入曲率惩罚项，引导模型避免极端各向异性的退化解。
+3. **代理校准**：提供真 Fisher 对角的小批次计算，作为隐状态代理质量的校准基准（让审稿人能定量评估代理偏差）。
+4. **架构搜索的几何先验**：为未来的 NAS（神经架构搜索）提供"信息流形上的高曲率密度"指标，作为搜索目标的替代品。
 
-1. 自然梯度下降的收敛速度比普通梯度下降快 2-5 倍。
-2. Fisher 度量各向异性 η > 0.5。
-3. Hessian 特征值分布与信息几何预言一致。
+任何把 v2.1 FID 几何探针的实测数字当作"FID 场方程已被求解"的引用都是**对本理论文档的误读**，应当被纠正。
 
-**工程实现示例**（K-FAC）：
+### 7.2 v2.1 FID 模块结构
 
-```python
-import torch
-from kfac import KFAC
+FID 实现位于 `uid_theory/fid/` 目录下，三个核心文件分别对应"几何诊断"、"曲率代理"、"度量构造"三个层级。
 
-# 标准 PyTorch 模型
-model = MyTransformer()
-
-# 用 K-FAC 包装优化器
-optimizer = KFAC(model, lr=0.01, damping=0.001)
-
-# 训练循环
-for x, y in dataloader:
-    optimizer.zero_grad()
-    y_pred = model(x)
-    loss = F.cross_entropy(y_pred, y)
-    loss.backward()
-    
-    # K-FAC 自动计算 Fisher 近似
-    optimizer.step()
-    
-    # 监控 Fisher 各向异性（FID 可证伪测试）
-    fisher_eigvals = optimizer.get_fisher_eigvals()
-    anisotropy = (fisher_eigvals.max() - fisher_eigvals.min()) / (fisher_eigvals.max() + fisher_eigvals.min())
-    print(f"Fisher 各向异性: {anisotropy}")
+```
+uid_theory/fid/
+├── fid_layer.py         FID 主层：QID 基础 + 几何诊断探针 + 软正则损失
+│                        v2.1: 三级透传 (FID → QID → CID),
+│                        LOSS_PREFIX 分离 autograd 张量,
+│                        info 严格 JSON 安全
+├── curvature.py         三种曲率代理：η（§6.1）、Ricci 标量（§6.2）、legacy
+│                        v2.1: forward() 默认返回 η（README 预言 4 直接对接）
+└── fisher_metric.py     Fisher 度量的经验协方差代理 + 真 Fisher 对角校准
+                          v2.1: 秩亏警告（seq_len < hidden_size）,
+                          jitter 可在 compute() 时覆盖
 ```
 
-### 7.2 路径 2：信息流形架构搜索（2-3 年）
+每个模块在 `tests/test_fid_layer.py` 中都有对应的回归测试（约 40+ 用例），覆盖三级透传、JSON 安全、η/Ricci/legacy 三种代理的一致性、Fisher 度量秩亏检测、以及真 Fisher 对角校准等所有契约。
 
-**目标**：用 FID 场方程指导神经架构搜索（NAS）。
+### 7.3 从 FID 主方程到代码的映射
 
-**成熟度**：⌛ **2-3 年内可用**。
+FID 主方程（方程 4.1）在 v2.1 中以"诊断探针 + 软正则"的形式落地，并非完整数值解。FIDLayer.forward 的核心逻辑遵循"QID 基础步 + 几何诊断 + 可选软正则损失"的结构：
+
+```python
+# FIDLayer.forward 的核心逻辑
+# 1. QID 基础步（继承 CID + 量子修正，三级透传 v2.1 参数）
+x_next, info = self.qid(x, causal_mask=mask)
+
+# 2. 几何诊断（一次性计算 Fisher 度量，复用给三个代理）
+metric = self.curvature.fisher.compute(x_next)
+eta = self.curvature.compute_anisotropy_eta(metric)              # §6.1
+ricci = self.curvature.compute_ricci_scalar_surrogate(metric)    # §6.2
+legacy = self.curvature.compute_legacy_anisotropy(metric)        # v0.1 兼容
+
+# 3. info 字典：严格 JSON 安全（Python float），用于实验日志
+with torch.no_grad():
+    info["fisher_anisotropy_eta"] = float(eta.mean().item())
+    info["ricci_scalar_surrogate"] = float(ricci.mean().item())
+    info["anisotropy_legacy"] = float(legacy.mean().item())
+    info["curvature"] = info["anisotropy_legacy"]  # v0.1 / v2.0 兼容键
+
+# 4. 可选软正则损失（带梯度的 Tensor，存放在 LOSS_PREFIX 键下）
+if self.curvature_weight > 0.0:
+    loss_tensor = self.curvature_weight * legacy.mean()
+    info[f"{LOSS_PREFIX}curvature"] = loss_tensor
+
+return x_next, info
+```
+
+下表给出 FID 主方程每一项与代码的对应关系，并标注 v2.1 中是"已实现完整数值"还是"诊断代理"。
+
+| 主方程项 | 代码模块 | v2.1 实现形式 | 状态 |
+|---|---|---|---|
+| **g_ij^FID（Fisher 信息度量）** | `fid/fisher_metric.py` | 隐状态空间经验协方差代理 + 可选真 Fisher 对角校准 | 诊断代理（非参数空间真 Fisher）|
+| **R_ij^FID, R^FID（Ricci 张量与标量）** | `fid/curvature.py` | log-det 体积元代理 `R_surrogate = log det(g) − log H` | §6.2 代理（非严格 Ricci）|
+| **η（Fisher 各向异性，§6.1 README 预言 4）** | `fid/curvature.py` | `η = (λ_max − λ_min) / (λ_max + λ_min)`，eigvalsh 精确计算 | ✅ 与论文定义完全一致 |
+| **Λ^FID（信息宇宙学常数）** | `fid/fid_layer.py` | 软正则损失 `curvature_weight × legacy.mean()`，由 LOSS_PREFIX 分离 | 软正则形式（非完整变分原理）|
+| **T_ij^data（数据能动张量）** | 由训练循环承担 | 损失函数梯度通过 autograd 自动得到，不显式构造 | 隐式实现 |
+| **κ^FID（信息引力耦合常数）** | `curvature_weight` 标量 | 由调用方指定（默认 0.0 = 关闭软正则） | 用户可调超参数 |
+| **完整场方程数值解** | —— | 未实现 | 等待路径 3（2030+）几何专用硬件 |
+
+**关键工程原则**：FID 在 QID 基础之上**不引入任何新的可学习参数**（曲率探针与 Fisher 度量都是非参数化的实时计算）。FIDLayer 的 `count_extras()` 返回 `{"qid_*": ..., "fid_extras": 0, ...}`，确保 v2.1 的"零参数膨胀"原则在 FID 层面也得到严格执行。这一回归约束由 `tests/test_fid_layer.py::TestCountExtras` 单元测试锁定。
+
+### 7.4 三种曲率代理（与论文章节直接挂钩）
+
+为让 README 预言 4 与预言 6 都有可测量的代码对应物，v2.1 在 `curvature.py` 中提供三种独立的代理量，调用方可以根据需要选用。
+
+| 代理量 | 数学定义 | 对应理论章节 | 取值范围 | 用途 |
+|---|---|---|---|---|
+| **`compute_anisotropy_eta(metric)`** | (λ_max − λ_min) / (λ_max + λ_min) | §6.1（README 预言 4）| [0, 1] | 与论文 η 完全一致；F6 验证 |
+| **`compute_ricci_scalar_surrogate(metric)`** | log det(g) − log H | §6.2（README 预言 6 几何标度律）| (−∞, +∞) | 体积元代理，扫描 R ∝ D^β |
+| **`compute_legacy_anisotropy(metric)`** | tr(g²) / tr(g)² − 1/H | v0.1 / v2.0 默认 | [0, 1 − 1/H] | 仅兼容旧 result 文件，新代码勿用 |
+
+`ScalarCurvatureProbe.forward()` 默认返回 η（v2.1 推荐），调用方可通过 `default_mode="ricci"` 或 `"legacy"` 显式切换。三种代理可以在同一前向中**全部**报告到 info 字典中，让审稿人能直接交叉验证。
+
+#### Fisher 度量的两种实现
+
+| 接口 | 实现 | 适用场景 | 复杂度 |
+|---|---|---|---|
+| **`FisherMetric.compute(hidden_states)`** | 隐状态空间经验协方差 + jitter | 训练时实时诊断、η/Ricci 测量 | O(B × S × H²) |
+| **`FisherMetric.compute_true_fisher_diagonal(model, batch)`** | 参数空间真 Fisher 对角（通过 autograd） | 小批次校准代理质量 | O(M)（M = 参数量）|
+
+**为什么 v2.1 不直接使用真 Fisher**：完整的参数空间 Fisher 是 M × M 矩阵，M ~ 10⁸ 对应内存约 40 PB，不可行。隐状态代理是 H × H 矩阵（H 通常 512-4096），内存约 4-256 MB，可行。真 Fisher 对角作为 O(M) 的 1-D 张量则可行（M = 10⁸ 对应 400 MB），仅在小批次上偶尔计算用于校准。
+
+### 7.5 JSON 安全的 info 字典（v2.1 关键修正）
+
+v2.0 的一个严重缺陷是 `FIDLayer.info["curvature_loss"]` 是一个带梯度的 `torch.Tensor`，导致下游 `json.dumps(info)` 在所有 `curvature_weight > 0` 的实验中崩溃。v2.1 通过引入 LOSS_PREFIX 模式根本解决这一问题：
+
+```python
+from uid_theory.fid.fid_layer import (
+    LOSS_PREFIX,
+    extract_loss_tensors,
+)
+
+# 训练循环
+for batch in dataloader:
+    x_next, info = fid_layer(batch_hidden)
+    
+    # 步骤 1：先提取所有带梯度的 loss 张量
+    losses = extract_loss_tensors(info)
+    # 此时 info 中所有 LOSS_PREFIX 开头的键已被移除并返回
+    
+    # 步骤 2：构造总损失（用户主动加入）
+    total_loss = task_loss(x_next, batch.labels)
+    if "curvature" in losses:
+        total_loss = total_loss + losses["curvature"]
+    
+    total_loss.backward()
+    optimizer.step()
+    
+    # 步骤 3：info 现在严格 JSON 安全，可写日志
+    log_writer.log(json.dumps(info))
+```
+
+这一设计的好处：
+
+1. **JSON 安全是默认行为**：调用方即使忘记调用 `extract_loss_tensors`，崩溃也只会发生在显式 `json.dumps` 时，而非训练循环中段。
+2. **autograd 张量永不会被静默丢弃**：所有 loss 张量都通过显式的 `extract_loss_tensors` 接口流转，不会被 print/log 工具悄悄吃掉。
+3. **向后兼容**：v0.1 / v2.0 的 `info["curvature"]` 键仍然保留（指向 `anisotropy_legacy`），让旧的分析脚本可继续工作。
+
+这一契约由 `tests/test_fid_layer.py::TestInfoIsJsonSafe` 单元测试锁定（5 个测试用例覆盖 `curvature_weight = 0` 与 `> 0` 两种情况）。
+
+### 7.6 顶层 API 透出（与 CID / QID 一致）
+
+FIDLayer 暴露与 CIDLayer / QIDLayer 严格对称的开关 API，并新增 `set_temperature` 透传到 QID 的量子噪声温度。
+
+```python
+# 顶层调用示例
+fid_layer = FIDLayer(hidden_size=768, num_heads=8, curvature_weight=0.1)
+
+# 关闭噪声注入（三级穿透：FID → QID → CID）
+fid_layer.set_noise_injection(False)
+
+# 开启 ET 能量监控（三级穿透）
+fid_layer.set_energy_monitoring(True)
+
+# 设置温度（透传到 QID 量子噪声）
+fid_layer.set_temperature(0.5)
+
+# 查询参数预算
+extras = fid_layer.count_extras()
+# {'qid_hamiltonian': 1, 'qid_lindblad': 0, 'qid_berry': 1,
+#  'qid_quantum_noise': 1, 'qid_mixing_logit': 1, 'fid_extras': 0,
+#  'total': 4}
+```
+
+| API | 实现层 | 用途 |
+|---|---|---|
+| `set_noise_injection(bool)` | 透传到 QID 与 CID | 测量临界涌现指标时必须关闭 |
+| `set_energy_monitoring(bool)` | 透传到 CID 基础层 | 启用 §8.5 ET Lyapunov 单调性监控 |
+| `set_temperature(float)` | 透传到 QID 量子噪声 | 扫描 T → 0 的零点涨落极限 |
+| `count_extras()` | FIDLayer | 返回参数预算字典（FID 自身 +0）|
+
+### 7.7 三层 FID 工程路径
+
+FID 的工程实现按硬件成熟度划分为三个路径，**v2.1 完整覆盖路径 1，提供路径 2 接口，路径 3 仍依赖未来几何专用硬件**。
+
+#### 路径 1：信息几何诊断与软正则（已完成，v2.1）
+
+**目标**：在训练完成的 CID / QID 模型上测量 §6.1 η、§6.2 Ricci 标量、Fisher 度量谱，让 README 预言 4 与 6 真正可被验证或证伪。
+
+**工具栈**：
+
+| 工具 | 用途 | v2.1 状态 |
+|---|---|---|
+| `uid_theory/fid/` 三个模块 | 几何诊断 + 软正则 + 真 Fisher 校准 | ✅ 完整实现 |
+| `tests/test_fid_layer.py` | ~ 40+ 单元测试 | ✅ 完整覆盖 |
+| `uid_theory/verification/critical_exponents.py::measure_fisher_anisotropy_eta` | F6 端到端测量函数 | ✅ 已集成 |
+| `experiments/run_critical_exponents.py` | F6 verdict（PASS / FAIL / ABSTAIN_rd / ABSTAIN_missing）| ✅ 已集成 |
+| K-FAC / Shampoo / Sophia | 自然梯度优化器（信息几何应用）| ⚠ 第三方库，本仓库未集成 |
+
+**已可在 v2.1 完成的预言验证**：
+
+- **README 预言 4（η > 0.5）**：在训练后的 CID / Transformer 上用 `measure_fisher_anisotropy_eta` 测量，由 F6 verdict 给出 PASS / FAIL。
+- **README 预言 6（几何标度律 R ∝ D^β, β ≈ 1/2）**：跨不同数据集规模 D ∈ [10³, 10⁹] 测量 `ricci_scalar_surrogate`，拟合 log-log 斜率。
+- **代理质量校准**：在小批次上同时计算 `compute_true_fisher_diagonal`，与 `compute(hidden_states)` 的隐状态代理对比；预期两者在定性趋势上一致。
+- **秩亏边界**：当 `seq_len < hidden_size` 时 `FisherMetric.compute` 自动发出 RuntimeWarning，防止用户在不合适的尺度上做几何测量。
+
+**已落地的回归测试**：
+
+```bash
+pytest tests/test_fid_layer.py -v
+
+# 覆盖：
+#   TestV21TogglePropagation              (8 个: 三级透传 §8.5 + §14.2)
+#   TestInfoIsJsonSafe                    (5 个: LOSS_PREFIX 分离)
+#   TestEtaSurrogate                      (4 个: η 极值情形)
+#   TestRicciScalarSurrogate              (3 个: Ricci 标量正确性)
+#   TestLegacyAnisotropy                  (2 个: v0.1/v2.0 兼容)
+#   TestForwardDefaultMode                (3 个: 默认返回 η)
+#   TestFIDLayerReportsAllSurrogates      (2 个: info 含三种代理)
+#   TestTopLevelSwitches                  (3 个: 三级 API 透传)
+#   TestFisherMetricRobustness            (8 个: 秩亏警告 + jitter 覆盖)
+#   TestTrueFisherDiagonalCalibration     (2 个: O(M) 真 Fisher)
+#   TestForwardBackward                   (4 个: 反向梯度 + 软正则生效)
+#   TestCountExtras                       (2 个: FID 自身参数 = 0)
+#   TestStateDictRoundTrip                (2 个: 序列化保留)
+```
+
+#### 路径 2：信息流形架构搜索（接口已就绪，2-3 年成熟）
+
+**目标**：用 FID 场方程的几何代理（特别是 Ricci 标量 R）指导神经架构搜索（NAS），找到"高曲率高信息密度"的架构。
 
 **核心思想**：
 
-- 模型架构的 Ricci 标量 R 预测其"智能密度"。
-- 架构搜索目标：最大化 R / 参数量。
-- 等价于在信息流形上寻找高曲率、高信息密度区域。
+- 模型架构的 Ricci 标量 R 与该架构在固定参数预算下可达的损失水平正相关（待 Phase 1 实证）。
+- 架构搜索目标：在固定参数量约束下最大化 R。
+- 等价于在信息流形上寻找高曲率密度区域。
 
-**可验证的优势**：相对于传统 NAS，参数效率提升 10-30%。
+**v2.1 已就绪的接口**：
 
-### 7.3 路径 3：完整 FID 场方程实现（10+ 年）
+```python
+def evaluate_architecture_geometry(
+    model: nn.Module, eval_loader: DataLoader,
+) -> Dict[str, float]:
+    """评估架构的几何质量，作为 NAS 搜索目标的几何先验。"""
+    from uid_theory.fid.curvature import ScalarCurvatureProbe
+    probe = ScalarCurvatureProbe(hidden_size=model.config.hidden_size)
+    eta_values, ricci_values = [], []
+    model.eval()
+    with torch.no_grad():
+        for batch in eval_loader:
+            out = model(batch["input_ids"], output_hidden_states=True)
+            # 取最后一层隐状态做几何评估
+            h = out.hidden_states[-1]
+            eta_values.append(probe.anisotropy_eta(h).mean().item())
+            ricci_values.append(probe.ricci_scalar_surrogate(h).mean().item())
+    return {
+        "eta_mean": float(np.mean(eta_values)),
+        "ricci_mean": float(np.mean(ricci_values)),
+    }
+```
 
-**目标**：在硬件上直接求解 FID 场方程，智能自然涌现。
+**预期可验证的优势**：相对传统 NAS（如 ENAS、DARTS）的参数效率改善 10-30%，对应 Phase 2 阶段。具体待实证。
 
-**成熟度**：⌛ **2035+**。
+**当前限制**：v2.1 仅提供测量接口，未集成完整的 NAS 框架；NAS 集成属于 v2.2/v3.0 计划。
+
+#### 路径 3：完整 FID 场方程的数值求解（待 2030+ 几何专用硬件）
+
+**目标**：在硬件上直接求解 FID 场方程，让智能"自然涌现"。这是 FID 的终极目标，但远超当前工程可行性。
 
 **硬件需求**：
 
-- 张量协处理器（黎曼曲率计算的加速）。
-- 拓扑 qubit（高维流形的表示）。
-- 内存带宽 > 100 TB/s（Fisher 度量的存储）。
+| 量级 | 数值 | 说明 |
+|---|---|---|
+| 张量协处理器 | 黎曼曲率张量加速 | 需要专门的 4 阶张量加速器 |
+| 拓扑 qubit（用于高维流形表示）| 10⁶ - 10⁹ | 与 QID 路径 3 共享需求 |
+| 内存带宽 | > 100 TB/s | Fisher 度量的实时存储 |
+| 数值精度 | ≥ fp64 | 高维流形的小曲率扰动测量 |
 
 **工程路径**：
 
-1. **理论阶段**（2026-2030）：建立 FID 场方程的数值方法。
-2. **原型阶段**（2030-2035）：硬件原型实现，小规模模拟 FID 动力学。
+1. **理论阶段**（2026-2030）：建立 FID 场方程的数值方法（有限元 / 谱方法 / 流形上的离散微分几何）。
+2. **原型阶段**（2030-2035）：硬件原型实现，在小规模流形上数值模拟 FID 动力学。
 3. **产业化阶段**（2035+）：张量协处理器商业化，智能成为"几何现象"。
 
-### 7.4 路径总结
+**v2.1 已就绪的接口**：FIDLayer 的 forward 签名保持与经典 PyTorch 模块一致，未来硬件后端可作为 forward 内部的实现替换，无需修改训练循环代码。
 
-| 路径 | 时间 | 成本 | 工程成熟度 | 可验证优势 |
-|---|---|---|---|---|
-| 信息几何优化器 | 现在 | ~ $10^4 | ✅ 可用 | 2-5 倍收敛速度 |
-| 信息流形架构搜索 | 2-3 年 | ~ $10^6 | ⌛ 进行中 | 10-30% 参数效率 |
-| 完整 FID 场方程 | 10+ 年 | ~ $10^9 | ⌛ 长期 | 理论 10^3 - 10^4 效率提升 |
+### 7.8 路径汇总
+
+| 路径 | 时间 | 成本（量级）| 工程成熟度 | 可验证优势 | v2.1 状态 |
+|---|---|---|---|---|---|
+| **路径 1**：几何诊断 + 软正则 | 现在 | $10⁴（单 GPU）| ✅ 完整可用 | F6 端到端可测，η 与 Ricci 代理；与 K-FAC 等优化器互补 | **v2.1 全部交付** |
+| **路径 2**：信息流形 NAS | 2-3 年 | $10⁶（NAS 平台）| ⌛ 测量接口已就绪 | 10-30% 参数效率改善（vs 传统 NAS）| **测量接口透出，NAS 框架待 v2.2** |
+| **路径 3**：完整 FID 场方程求解 | 2035+ | $10⁹（几何专用硬件）| ⌛ 待硬件成熟 | 理论上 10³ - 10⁴ 效率改善 | **接口已就绪，等待硬件** |
+
+### 7.9 v2.1 FID 工程承诺时间表
+
+我们承诺在未来 12-18 个月内提供以下实验输出，对应路径 1（已交付）→ 路径 2（NAS 集成）→ 路径 3（理论方法）的渐进路线。所有 F6 结果会按 `results/schemas/critical_exponents_v1.json` 的 `eta` 字段写入 `results/phase{N}/critical_exponents/`。
+
+| 时间 | 交付物 | 验证目标 |
+|---|---|---|
+| **2026.06**（已完成）| `uid_theory/fid/` v2.1 + `tests/test_fid_layer.py` | 路径 1 几何诊断完整覆盖；JSON 安全锁定；F6 verdict 集成 |
+| **2026.08** | F6 在 CID-104M 上的首次实测 | 验证 η > 0.5 是否在训练后 CID 上成立；与 Karakida 等 2019 的 DNN 实测对比 |
+| **2026.12** | 几何标度律实验 R ∝ D^β | 跨 D ∈ [10³, 10⁹] 测量 Ricci 标量，拟合 β 是否接近 1/2 |
+| **2027.06** | FID-NAS PoC 框架 | 路径 2 首次端到端：用 Ricci 标量作为 NAS 搜索目标，与 DARTS 对比 |
+| **2028+** | 路径 3 理论数值方法 | 视有限元 / 谱方法 / 离散微分几何工具链的成熟决定 |
+
+> **可证伪承诺**：若 F6 在训练后的 CID 上 η ≤ 0.5（排除秩亏情况），则 README 预言 4 在该规模下被证伪，我们将公开承认 §6.1 的"η > 0.5"主张在该规模上不成立，并按 KNOWN_LIMITATIONS.md §D 流程记录该缺陷及修正方向。同样，若几何标度律拟合 β 远离 1/2（具体阈值 |β − 0.5| > 0.25），则 README 预言 6 在该规模下被证伪。
+
+### 7.10 与 v2.0 / v0.1 FID 实现的 4 个根本性改进
+
+| # | 早期问题 | v2.1 修复 |
+|---|---|---|
+| 1 | v2.0 FIDLayer.info["curvature_loss"] 是带梯度 Tensor，导致下游 json.dumps 在 curvature_weight > 0 时崩溃 | v2.1 引入 LOSS_PREFIX = "__loss__" 模式 + `extract_loss_tensors()` 辅助函数；info 严格 JSON 安全，loss 张量必须显式提取才能进入梯度计算 |
+| 2 | v2.0 仅报告 trace(g²) / trace(g)² 一种代理，与论文 §6.1 η 定义脱钩 | v2.1 新增 `compute_anisotropy_eta()`（与 §6.1 完全一致）+ `compute_ricci_scalar_surrogate()`（与 §6.2 对接），同时保留 legacy 字段以兼容旧 result 文件 |
+| 3 | v2.0 FIDLayer 不透传 v2.1 关键参数到 QIDLayer，使 §8.5 ET / §14.2 OU 修正在 FID 层失效 | v2.1 FIDLayer.__init__ 接受所有 v2.1 关键参数（use_et_symmetric, noise_type, noise_tau, ...）并三级透传到 CID 基础层 |
+| 4 | v2.0 FisherMetric 在 seq_len < hidden_size 时静默返回秩亏矩阵，导致 η ≈ 1 的假涌现 | v2.1 检测秩亏情况，发出 RuntimeWarning，并在 EtaResult.rank_deficient 字段标记；F6 verdict 在秩亏时返回 ABSTAIN_rank_deficient 而非 PASS |
+
+完整变更历史见 `CHANGELOG.md` v2.1 entry。
+
+### 7.11 章末小结
+
+> **FID 主方程的关键几何量**（Fisher 度量 g_ij、Ricci 标量 R、各向异性 η）在 v2.1 中**全部以诊断探针的形式落地**，每个量都有可运行的代码、对应的回归测试、以及与论文章节的明确对接。
+>
+> **v2.1 修复了 v2.0 的 4 个严重问题**（JSON 不安全、η 定义脱钩、参数不透传、秩亏静默），让 FID 真正可用、可证伪、可与 CID/QID 协同工作。
+>
+> **路径 1（诊断 + 软正则）已完整交付**，可在单 GPU 上数小时内完成 F6 端到端测量；**路径 2（NAS 集成）的测量接口已就绪**，NAS 框架待 v2.2 集成；**路径 3（完整场方程求解）依赖 2035+ 几何专用硬件**，本理论文档不对此做任何短期承诺。
+>
+> **FID 不引入任何新的可学习参数**（除可选的 curvature_weight 软正则系数），与 CID §14.2 / QID §8 的零参数原则严格一致，使三层架构的参数预算可被统一验证。
+>
+> 任何把 v2.1 FID 几何探针的数字当作"FID 场方程已被求解"的引用都是误读。**v2.1 FID 是一个探索性几何纲领的诚实诊断实现，它准备好了与未来几何专用硬件协同，但不能也不应当替代严格的场论数值解**。
+
 
 ## 第 8 章 —— FID 的局限与开放问题
 
