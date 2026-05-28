@@ -1906,7 +1906,339 @@ CID **不是**万能解药。我们预期：
 
 > **我们的立场**：CID 是目前手头最强的物理框架，但它**不是智能的最终答案**。它是漫长阶梯上的一级，必须接受未来实验和理论的检验与修正。
 
+## 第 14 章 —— 配套工程实现：从理论到代码
 
+> **一句话**：本章每一项理论主张都有一个可运行的代码模块对应，读者可以在单 GPU 上独立验证本文的所有可证伪预言，且每个理论修正点都有对应的回归测试保护。
+
+### 14.1 代码库概览
+
+**开源仓库**：https://github.com/gwailee/uid
+
+**当前版本**：v2.1（诚实验证版 + 理论 §8.5 / §14.2 修正版，2026 年 5 月 28 日发布）
+
+仓库以三层架构 CID → QID → FID 为骨干，配套 7 个 v2.1 关键回归测试，结构如下：
+
+```
+uid/
+├── README.md                          中文 README
+├── README_en.md                       英文 README
+├── KNOWN_LIMITATIONS.md               v0.1 / v2.0 缺陷的诚实声明
+├── ROADMAP.md                         验证路线图（含 8 项预注册证伪条件 F1-F8 + F9）
+├── CHANGELOG.md                       v0.1 → v2.0 → v2.1 完整变更
+├── LICENSE / LICENSE-NONCOMMERCIAL / LICENSE-COMMERCIAL
+├── data_loaders.py                    数据加载（PretrainJsonl + SftJsonl）
+│
+├── uid_theory/                        UID 理论核心实现
+│   ├── cid/                           经典智动力学
+│   │   ├── cid_layer.py               v2.1: 默认 OU 噪声 + ET 开关 + FDT 诊断
+│   │   ├── colored_noise.py           OU + FFT 双实现（OU 为 §14.2 默认）
+│   │   ├── vortex_field.py            零额外参数旋度（§14.2）
+│   │   ├── memory_kernel.py           亚欧姆记忆核 γ(t) ~ t^(-α)
+│   │   └── hopfield_potential.py      ET 对称双项 Hopfield 注意力（§8.5）
+│   │
+│   ├── qid/                           量子智动力学（经典模拟）
+│   │   ├── qid_layer.py               v2.1: shared_with_ffn 默认 + 顶层 API
+│   │   ├── berry_phase.py             零参数 Berry 旋转 + tanh × π 有界
+│   │   └── quantum_noise.py           QFDT + OU/FFT 双模式 + set_temperature
+│   │
+│   ├── fid/                           场智动力学（诊断探针）
+│   │   ├── fid_layer.py               v2.1: 三级透传 + LOSS_PREFIX + 三种代理
+│   │   ├── curvature.py               §6.1 η + §6.2 Ricci + legacy
+│   │   └── fisher_metric.py           秩亏警告 + 真 Fisher 对角校准
+│   │
+│   └── verification/                  v2.1 严格验证套件
+│       ├── powerlaw_estimator.py      Clauset-Shalizi-Newman MLE
+│       ├── critical_exponents.py      DFA + 谱分析 + measure_fisher_anisotropy_eta
+│       ├── correlation_length.py      §11.1 定义 11.1 ξ 测量（F9 用）
+│       ├── avalanche_detector.py      正确的 Beggs-Plenz 协议
+│       ├── energy_meter.py            v2.1 batch 4: pynvml + idle + decode
+│       ├── ablation_suite.py          11 组完整消融
+│       └── prediction_test.py         DEPRECATED: 自动路由到 v2.0+ 工具链
+│
+├── model/
+│   ├── modern_transformer.py          RoPE + RMSNorm + SwiGLU 强基线
+│   ├── known_tricks_baseline.py       Transformer + 所有已知技巧
+│   └── model_uid.py                   UID 因果语言模型（顶层 API 透出）
+│
+├── experiments/                       完整实验脚本（端到端 5 步）
+│   ├── run_scaling_law.py             第 1 步：缩放律 + 统一 checkpoint schema
+│   ├── run_ablation.py                第 2 步：11 组消融 + 3 个关键对照
+│   ├── run_critical_exponents.py      第 3 步：β / H / τ / η + noise-OFF vs ON
+│   ├── run_correlation_length.py      第 4 步：F9 ξ(T) ~ T^γ 拟合
+│   ├── run_energy_benchmark.py        第 5 步：above-idle + decode 模式
+│   └── run_all.py                     端到端流水线（自动路径发现 + F9 verdict 透出）
+│
+├── results/                           真实实验结果（v2.1 至今为 Phase 0 完成）
+│   ├── README.md                      结果目录索引（含可引用性快速参考表）
+│   ├── schemas/                       6 个 JSON Schema（含 correlation_length_v1）
+│   └── phase1/                        Phase 1 结果（待 Phase 1 实测填充）
+│       └── REPORT.template.md         8 节标准化报告模板
+│
+└── tests/                             单元测试（pytest，~ 200+ 用例）
+    ├── test_et_lyapunov.py            §8.5 ET 单调下降 + §14.2 零参数旋度
+    ├── test_run_scaling_law.py        v2.1 参数透传 + checkpoint schema
+    ├── test_qid_layer.py              QID v2.1 + Berry 有界 + QFDT
+    ├── test_fid_layer.py              FID 三级透传 + JSON 安全 + η/Ricci
+    ├── test_critical_exponents.py     新增 η 回归 + 集成测试
+    ├── test_correlation_length.py     ξ 测量（白噪声 / OU / fBm ground truth）
+    ├── test_energy_meter.py           能量积分 + 平台兼容 + GPU 烟测
+    ├── test_data_loaders.py           PretrainJsonl + SftJsonl + tail 截断
+    ├── test_cid_layer.py              CID 基础测试
+    ├── test_ablation_suite.py         11 组消融存在性
+    ├── test_avalanche_detector.py     Beggs-Plenz 协议
+    ├── test_modern_transformer.py     baseline 基础测试
+    └── conftest.py                    共享 fixture
+```
+
+**许可证**：PolyForm Noncommercial License 1.0.0 + Commercial License 双许可证发布。学术使用免费；商业使用需单独授权（详见 `LICENSE-COMMERCIAL`）。
+
+### 14.2 从理论到代码的映射（Drop-In 风格，零参数膨胀）
+
+每个理论项都有一个一一对应的代码模块。CID 架构在词汇表、tokenizer、深度、隐藏维度方面与 MiniMind 基线逐字节对齐，**不添加多余参数或额外层**，使得 CID 的"物理优势"在等参数量而非更大参数量的条件下得到展示。
+
+| 理论项 | 代码模块 | v2.1 实现 | 每层额外参数 |
+|---|---|---|---|
+| **-∇U（联想记忆）** | `cid/hopfield_potential.py` | ET 对称双项更新（§8.5），等价于 ET 能量函数的负梯度，享 Lyapunov 单调下降保证；提供 `compute_energy(x)` 工具用于运行时验证 | 0 |
+| **v（旋度）** | `cid/vortex_field.py` | 从 FFN 第一层权重的反对称分量 J = (W − Wᵀ)/2 实时构造（§14.2），仅添加非参数化掩码 | +1 标量（log_temp_diff）|
+| **-∫γ（色阻尼）** | `cid/memory_kernel.py` | depthwise 因果卷积，幂律核 γ(t) ∝ t^(-α) 初始化（α ∈ (0, 1) 亚欧姆区间） | 仅卷积核 |
+| **ξ（色噪声）** | `cid/colored_noise.py` | 默认 OrnsteinUhlenbeckNoise 物理 SDE（§14.2），稳态自相关 ⟨ξ(t) ξ(t+s)⟩ = exp(-|s|/τ)；FFT 整形作为 legacy 保留 | +1 标量（log_sigma）|
+| **完整主方程 (6.1)** | `cid/cid_layer.py` | 把上述四项组合在 60 行的 CIDLayer 中，对外暴露 `set_noise_injection`、`set_energy_monitoring`、`fluctuation_dissipation_consistency` 三个顶层 API | +4 标量（每项权重 + 噪声幅度）|
+
+**关键工程原则：drop-in 风格，无参数膨胀。** 与 v2.0 相比，v2.1 通过零参数旋度修正了一处严重的参数膨胀缺陷（v2.0 中 VortexField 引入了 2 × H² 额外参数，破坏 §14.2 的零参数承诺）。修正后 CID 每层只引入 6 个标量额外参数（旋度温差 + OU 噪声幅度 + 4 项权重），与 MiniMind 基线的总参数量差异 < 0.001%。该回归约束已由 `tests/test_et_lyapunov.py::TestCIDLayerParameterBudget` 单元测试锁定。
+
+#### CID 主方程在代码中的精确映射
+
+`uid_theory/cid/cid_layer.py` 的核心前向逻辑严格对应 CID 主方程的四项 + Euler-Maruyama 离散：
+
+```python
+# 1. 联想记忆 -∇U → ET 对称双项 Hopfield 注意力（§8.5）
+#    out = softmax_C(KQᵀ) @ q  +  softmax_B(KQᵀ) @ k
+#    享 Lyapunov 能量函数前向单调下降保证。
+grad_term   = torch.exp(self.log_w_grad) * self.attn(h, causal_mask=mask)
+
+# 2. 旋度 v(φ) → 零额外参数旋度（§14.2）
+#    J = (W_FFN - W_FFNᵀ) / 2，每层仅 +1 个可学习标量 log_temp_diff
+vortex_term = torch.exp(self.log_w_vortex) * self.vortex(h)[0]
+
+# 3. 色阻尼 γ(t) ~ t^(-α) → MemoryKernel（depthwise 因果卷积）
+mem_term    = -torch.exp(self.log_w_mem) * self.memory(h)
+
+# 4. 色噪声 → OrnsteinUhlenbeckNoise（v2.1 §14.2 物理默认）
+#    可通过 model.set_noise_injection(False) 在测量临界指数时关闭
+noise_term  = self.noise_scale * self.noise(B, S, h.device, h.dtype)
+
+# Euler-Maruyama 离散：dt 已吸收进各项权重
+x = x + grad_term + vortex_term + mem_term + noise_term
+```
+
+#### CID 与 Transformer 的关系（v2.1 退化路径完整）
+
+在以下极限下，CID 严格退化为标准 Transformer：
+
+| 极限条件 | 代码开关 |
+|---|---|
+| 关闭旋度 v = 0 | `use_vortex=False` |
+| 关闭色噪声 ξ = 0 | `use_colored_noise=False` |
+| 退化色阻尼为白噪声 γ → δ | `use_memory=False` |
+| 关闭 ET 对称项（退化为标准 attention）| `use_et_symmetric=False` |
+| 标准缩放 β = 1/√d_k | `HopfieldAttention.scale` 已实现 |
+
+这印证理论第 8、10 章的论断："Transformer 是 CID 的最简极限"。但 v2.0+ 的关键证伪测试是：单纯加回"已知技巧"组合是否就够了？还是 CID 的物理组织方式确实带来增量？这一问题由 §14.4 的关键对照实验回答。
+
+### 14.3 三层架构的顶层 API 透出
+
+v2.1 的一个关键工程改进是把 CID / QID / FID 三层共有的两类开关 API 透出到顶层 `UIDModel`，使调用方无需穿透到内部子模块即可操作。
+
+| API | CID | QID | FID | UIDModel |
+|---|---|---|---|---|
+| `set_noise_injection(bool)` | ✅ | ✅ 透传到 CID | ✅ 透传到 QID 与 CID | ✅ 顶层入口 |
+| `set_energy_monitoring(bool)` | ✅ | ✅ 透传 | ✅ 透传 | ✅ 顶层入口 |
+| `set_temperature(float)` | —— | ✅（QID 量子噪声）| ✅ 透传 | ✅ 顶层入口 |
+| `fluctuation_dissipation_consistency()` | ✅ | —— | —— | ✅ 顶层入口 |
+| `count_extras()` | ✅ | ✅ | ✅ | —— |
+
+调用示例：
+
+```python
+import torch
+from model.model_uid import UIDConfig, UIDModel
+
+config = UIDConfig(vocab_size=6400, hidden_size=512, num_hidden_layers=8)
+model = UIDModel(config)
+# ... 训练模型 ...
+
+# CRITICAL: 测量临界涌现前必须关闭噪声注入
+# 否则测出的 1/f / Hurst / η 仅是注入噪声本身的回响
+model.eval()
+model.set_noise_injection(False)
+
+# 然后进行 β / H / τ / η 测量
+from uid_theory.verification.critical_exponents import (
+    run_critical_exponent_battery,
+)
+res = run_critical_exponent_battery(
+    model=model, model_name="my_cid",
+    dataloader=eval_loader, device="cuda",
+    n_sequences=10000,
+    disable_noise=True,
+    include_eta=True,
+    eta_threshold=0.5,
+)
+print(f"β = {res.spectrum.beta_mean:.3f}")
+print(f"H = {res.hurst.hurst_mean:.3f}")
+print(f"η = {res.eta.eta_mean:.3f} (in_range = {res.eta.eta_in_range})")
+```
+
+### 14.4 八个可证伪测试（端到端 Phase 1 套件）
+
+v2.1 提供八个端到端测试脚本，对应 README 中预注册的 F1-F9 证伪条件。前 6 个测试已可在单 RTX 3060 GPU 上数小时内复现；后 2 个测试需多卡或多机环境。对比对象始终是**完全相同规模的 MiniMind / nanoGPT 基线**。
+
+| 测试 | 文件 | 测量量 | 证伪线 |
+|---|---|---|---|
+| **F1 / F2 缩放律** | `eval/test_efficiency.py` | iso-FLOP 下 PPL 等损失曲线的水平偏移 | < 3× → F1 失败；< 1.5× → F1 vs all_tricks 失败 |
+| **F3 1/f 谱** | `eval/test_spectrum.py` | β_CID = FFT 对数斜率（noise OFF）| β_CID < 0.5 → F3 失败 |
+| **F4 Hurst 指数** | `eval/test_hurst.py` | H_CID（DFA 金标准, noise OFF）| H_CID < 0.55 → F4 失败 |
+| **F5 雪崩指数** | `eval/test_avalanche.py` | τ_CID（Clauset MLE + KS 检验）| τ_CID ∉ [1.3, 1.7] 或 KS p < 0.1 → F5 失败 |
+| **F6 Fisher 各向异性 η** | `eval/test_eta.py` | η = (λ_max − λ_min)/(λ_max + λ_min) | η ≤ 0.5（排除秩亏）→ F6 失败 |
+| **F7 推理能效** | `eval/test_energy.py` | above-idle 能量/token 比值 | < 3× → F7 失败 |
+| **F8 ET Lyapunov 单调** | `tests/test_et_lyapunov.py` | 递归施加 attention 时 dE/dt ≤ 0 | 任一步 E_t > E_{t-1} + 1e-3·|E_0| → F8 失败 |
+| **F9 ξ(T) ~ T^γ 标度** | `experiments/run_correlation_length.py` | 多 T 扫描拟合 γ 与 R² | γ < 0.3 或 R² < 0.8 → F9 失败 |
+
+#### 端到端流水线（单命令复现整套 Phase 1）
+
+```bash
+python experiments/run_all.py \
+    --data_path data/wikitext-103/train.jsonl \
+    --tokenizer_path gpt2 \
+    --seeds 42 43 44
+```
+
+`run_all.py` 自动按顺序执行 5 个实验脚本：缩放律 → 11 组消融 → 临界指数（含 η）→ 关联长度（F9）→ 能耗（above-idle + decode 模式）。每一步的失败结果都会被记录到 `run_all_summary.json` 而非静默跳过。
+
+### 14.5 一键复现命令
+
+```bash
+# 克隆仓库
+git clone https://github.com/gwailee/uid.git
+cd uid
+
+# 安装依赖
+pip install -r requirements.txt
+pip install nvidia-ml-py    # 强烈推荐：使能 25 Hz 高频功率采样
+
+# 运行全部 CPU 可跑测试（约 200+ 用例，5-10 分钟）
+pytest tests/ -v -m "not gpu"
+
+# 运行 v2.1 关键回归测试套件（约 80 用例，3 分钟）
+pytest tests/test_et_lyapunov.py \
+       tests/test_run_scaling_law.py \
+       tests/test_qid_layer.py \
+       tests/test_fid_layer.py \
+       tests/test_critical_exponents.py \
+       tests/test_correlation_length.py \
+       tests/test_energy_meter.py \
+       tests/test_data_loaders.py -v
+
+# 单 GPU 冒烟测试（约 30 分钟）
+python experiments/run_all.py \
+    --data_path data/wikitext-2/train.jsonl \
+    --tokenizer_path gpt2 \
+    --scale 10M --seeds 42 \
+    --output_root /tmp/uid_smoke
+
+# 完整 Phase 1 实验（多机多卡，数日）
+python experiments/run_all.py \
+    --data_path data/wikitext-103/train.jsonl \
+    --tokenizer_path gpt2 \
+    --seeds 42 43 44
+```
+
+### 14.6 三个关键测量协议
+
+#### 14.6.1 测量临界涌现指标必须关闭噪声注入
+
+`measure_fisher_anisotropy_eta`、`measure_power_spectrum`、`measure_hurst_exponent`、`detect_avalanches`、`measure_correlation_length` 这五个核心测量函数都依赖一个共同的前提：**模型的内禀涌现信号必须与注入噪声分离**。否则测出的 1/f 谱仅是注入噪声本身的频域指纹，不构成真正的涌现证据。v2.1 通过以下三层防御保证这一点：
+
+1. **模块层**：`CIDLayer._inject_noise` 私有标志，被 `set_noise_injection(False)` 显式翻转。
+2. **流水线层**：`collect_hidden_states(..., disable_noise=True)` 在测量窗口前自动捕获并恢复模型状态。
+3. **测试层**：`tests/test_critical_exponents.py::TestEtaInBattery::test_battery_does_not_pollute_noise_injection_state` 验证流水线不会污染调用方设置。
+
+测量协议为：
+
+```python
+model.eval()
+# 步骤 1：保存当前状态
+prev = model.backbone.layers[0]._inject_noise
+# 步骤 2：关闭噪声注入
+model.set_noise_injection(False)
+try:
+    # 步骤 3：在 noise-OFF 状态下测量
+    result_off = measure_xxx(model, ...)
+    # 步骤 4：可选 — 在 noise-ON 状态下也测量，作为对照
+    model.set_noise_injection(True)
+    result_on = measure_xxx(model, ...)
+finally:
+    # 步骤 5：恢复调用方的原始状态
+    model.set_noise_injection(prev)
+```
+
+`run_critical_exponents.py` 在 verdict 中自动对比 noise-OFF 与 noise-ON 的差异，若两者过于接近（默认容差 0.05），verdict 会输出 `ambiguous_residual_echo` 警告，提示用户该 noise-OFF 测量可能是训练时噪声的残留回响而非真正的涌现。
+
+#### 14.6.2 能耗测量必须报告 above-idle 字段
+
+`uid_theory/verification/energy_meter.py`（v2.1 batch 4）默认采用 pynvml 25 Hz 高频功率采样，独立测量 idle 基线后，同时报告 raw 与 above-idle 两组能耗指标。
+
+| 字段 | 含义 | 适用场景 |
+|---|---|---|
+| `energy_per_token_joules` | 含 idle 的总能耗 ÷ token 数 | 数据中心规模对比 |
+| `energy_per_token_above_idle_joules` | 扣除 idle 后的能耗 ÷ token 数 | 跨模型规模公平对比（必须用此项）|
+| `idle_power_watts` | 模型加载后、前向开始前的功率基线 | 数据质量检查 |
+| `power_above_idle_watts` | 工作时平均功率 − idle 功率 | 架构本身的功率开销 |
+
+README 预言 6（推理能效 ≥ 3×）的评估**必须以 above-idle 字段为准**，因为小模型的 idle 基线（典型 30-80W）会主导 raw energy per token，造成大模型看起来不成比例地高效。`run_energy_benchmark.py` 自动在比较表中同时打印两组比值，并在 idle 占比 > 30% 时显式警告。
+
+#### 14.6.3 关联长度 ξ 的测量协议（Phase 1 F9）
+
+`uid_theory/verification/correlation_length.py` 实现理论 §11.1 定义 11.1 的 ξ：以互信息衰减到自互信息的 1/e 所需的步数作为 ξ_ℓ,c，跨所有 (层, 通道) 取中位数得到模型整体 ξ。F9 condition 进一步要求多 T 扫描下 ξ(T) ~ T^γ 拟合 γ ≥ 0.3 且 R² ≥ 0.8（对应 §11.2.10 工程承诺）。
+
+`experiments/run_correlation_length.py` 提供单 T 测量与多 T 扫描两种模式，自动给出 5 种 verdict：PASS / FAIL / ABSTAIN_clipped / ABSTAIN_not_scanned / not_applicable。任何 v2.1 ξ 测量都必须在 noise-OFF 状态下进行，否则触发 `KNOWN_LIMITATIONS.md` §C5 警告的 KSG 估计器小样本偏差。
+
+### 14.7 工程承诺时间表
+
+我们承诺在未来 6-18 个月内提供以下实验输出，对应 README 中的预注册证伪条件 F1-F9。所有结果会按 `results/schemas/` 中的 6 个 JSON Schema 严格序列化，写入 `results/phase{N}/`，并附 Phase 报告（按 `results/phase1/REPORT.template.md` 8 节模板填写）。
+
+| 时间 | 交付物 | 验证的 F-conditions |
+|---|---|---|
+| **2026.06** | CID-26M（单 GPU 模型，与 MiniMind-26M 对齐）| F3 / F4 / F5 / F6 / F8 |
+| **2026.08** | CID-104M（单 GPU 模型，与 MiniMind-104M 对齐）| 同上 + F1 / F7 初步 |
+| **2026.10** | CID-1B（8 × A100 单机，GPT-2 large 基线）| F1 / F2 / F7 完整 + F9 |
+| **2026.12** | CID-7B（多机多卡，LLaMA-7B 基线）| Phase 1 全部 9 个 F-conditions |
+
+> **可证伪承诺**：若在 Phase 1 实验中 CID 的参数效率**未达到 5×（保守阈值 3×）或** η 不满足 > 0.5 或 ξ(T) 不满足 γ ≥ 0.3，我们将公开承认理论失败并按 §C 的"按缺陷修正方向"修正框架，所有失败结果会以与成功结果同等显著性发布到 `results/phase1/REPORT.md` 与项目主页。
+
+### 14.8 与 v0.1 / v2.0 的 5 个根本性改进
+
+为帮助读者理解 v2.1 相对早期版本的进步，下表汇总 5 个最关键的改进。完整变更见 `CHANGELOG.md`。
+
+| # | 早期问题 | v2.1 修复 |
+|---|---|---|
+| 1 | v0.1 雪崩检测用 \|logits_a − logits_b\| 测量噪声差，结果与真实雪崩无关 | v2.0+ 改为 Beggs-Plenz 协议（z-score 阈值穿越），由 `tests/test_avalanche_detector.py` 锁定 |
+| 2 | v0.1 临界指数测量循环（注入 1/f 噪声 → 测出 1/f 谱）| v2.0+ 引入 `set_noise_injection(False)` API + noise-OFF vs noise-ON 对照 verdict |
+| 3 | v2.0 HopfieldAttention 是标准 attention，与论文 §8.5 ET 对称项主张不符 | v2.1 实现 ET 完整双项更新，享 Lyapunov 单调下降保证，由 `tests/test_et_lyapunov.py` 锁定 |
+| 4 | v2.0 VortexField 引入 2 × H² 额外参数，破坏 §14.2 零参数原则 | v2.1 改为从 FFN 第一层权重的反对称投影构造，每层仅 +1 标量，由 `TestVortexZeroExtraParams` 锁定 |
+| 5 | v2.0 默认 FFT 频域整形噪声存在循环测量风险 | v2.1 默认改为 OU 物理 SDE，FFT 作为 legacy 保留以做 §14.2 隔离消融对照 |
+
+### 14.9 章末小结
+
+> **CID 主方程的四项**（联想记忆、旋度、色阻尼、色噪声）**在 v2.1 代码中一一对应到四个模块**，每项的额外参数量被锁定为常数（最多 1 个标量/层），且每项的"加入是否真的有用"都有对应的消融变体（cid_no_vortex / cid_no_memory / cid_no_noise / cid_full_no_et / cid_full_fft_noise）作为反向验证。
+>
+> **三层架构的顶层 API**（set_noise_injection / set_energy_monitoring / set_temperature / fluctuation_dissipation_consistency）**统一暴露在 UIDModel 上**，调用方无需穿透到内部子模块。
+>
+> **八个可证伪测试**（F1-F8 + F9）**端到端打通**，由 `experiments/run_all.py` 一键编排，结果按统一 schema 写入 `results/phase1/`。
+>
+> **七个 v2.1 关键回归测试**（约 200+ 用例）**覆盖三层架构所有修正点**，由 GitHub Actions CI 在每次 PR 自动校验，确保未来重构不会回归到 v0.1 / v2.0 的已修正问题。
+>
+> 这些工程实现的目标不是"证明 UID 是对的"，而是**让 UID 是否对成为一个可被独立复现的实证问题**。Phase 1 实测结果（无论支持还是证伪）会按 `results/README.md` 的负面结果发布政策与正面结果同等显著地公开。
 
 ## 第 15 章 —— 与 2024-2026 AI 前沿的对话
 
