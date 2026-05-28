@@ -1374,7 +1374,7 @@ N_Trans / N_CID ≤ (d / B) · log(ξ_CID / ξ_Trans) · [1 + O(1 / log ξ_Trans
 N_Trans / N_CID ≤ C · log(ξ_CID / ξ_Trans)            ... (11.1)
 ```
 
-定理证毕。∎
+定理证毕。
 
 ### 11.2.5 关于定理 11.1 的若干说明
 
