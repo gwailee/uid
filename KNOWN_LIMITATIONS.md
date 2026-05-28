@@ -200,3 +200,289 @@ results. All seven have been fixed in v2.1.
 Energy Transformer paper) requires the attention update to be the
 **negative gradient of an ET energy function**, which has TWO terms:
 
+```
+−dE/dg = softmax_C(K Q^T) @ q   +   softmax_B(K Q^T) @ k
+                                  ^^^^^^^^^^^^^^^^^^^^^^
+                                  the ET symmetric term
+```
+
+v2.0's `HopfieldAttention` implemented only the first term — i.e.
+standard scaled dot-product attention. The Lyapunov-guaranteed
+monotonic energy descent that §8.5 claims for CID was therefore not
+realised in code.
+
+**Why it matters.** Any v2.0 claim about "the CID Hopfield attention
+descends an energy function" was structurally false. The theory
+paper itself acknowledges this gap in §8.5 (the section that opens
+with "What is required is to change 'subsequent versions should
+supplement' into directly providing the corrected HopfieldAttention
+in the body of this paper").
+
+**FIXED IN**: v2.1 `uid_theory/cid/hopfield_potential.py` implements
+the dual-term update; `tests/test_et_lyapunov.py` verifies monotonic
+descent.
+
+### B2 — `VortexField` introduced 2H² extra parameters, violating §14.2 (severity: 🔴 critical)
+
+**Defect.** Theory §14.2 explicitly requires the vortex term to be
+constructed from the antisymmetric part of an EXISTING weight (e.g.
+the FFN first-layer weight), with **zero extra matrix parameters**.
+v2.0 instead instantiated two independent `nn.Linear(H, H, bias=False)`
+inside `VortexField`, adding **`2 × H × H` parameters per layer**.
+
+For H=768 this is roughly 1.18M extra parameters per layer; for an
+8-layer model, ~9.4M extra — comparable to an entire MiniMind-26M
+model. This directly inflates v2.0's CID parameter count and makes
+the "≥10× parameter efficiency" prediction harder to evaluate fairly.
+
+**FIXED IN**: v2.1 `uid_theory/cid/vortex_field.py` rebuilds the
+operator on-the-fly from an external `weight_ref`. The only
+learnable parameter is one scalar (`log_temp_diff`).
+`tests/test_et_lyapunov.py::TestVortexZeroExtraParams` verifies the
+zero-extra-params contract.
+
+### B3 — `VortexField` silent no-op inside the baseline (severity: 🔴 critical)
+
+**Defect.** v2.0's `model/known_tricks_baseline.py` instantiated
+`VortexField(hidden_size)` without passing any `weight_ref`. Because
+v2.0's `VortexField` always created its own weights internally, this
+worked; but in v2.1 (where `VortexField` requires a reference) the
+caller forgot to update the baseline call, and the result was that
+the curl operator silently degenerated to zero.
+
+Consequence: in v2.1 (before this bug was caught), the
+`transformer_plus_linear` and `transformer_plus_all_tricks` variants
+were NOT actually testing what their names claimed — the "extra linear
+term" was a no-op. Any v2.0 → v2.1 transition that didn't catch this
+bug would have produced a contrast in which CID "won" trivially.
+
+**Why it matters.** The central falsification test in v2.0 was
+"does `cid_full` beat `transformer_plus_all_tricks`?" — if the
+baseline silently has its key term zeroed out, this question is
+unanswerable.
+
+**FIXED IN**: v2.1 `model/known_tricks_baseline.py` passes
+`weight_ref=ffn.W1.weight` to `VortexField` and includes a
+`_get_ffn_first_weight()` helper for SwiGLU variants.
+Regression test in `tests/test_data_loaders.py` is not the right
+place; see `tests/test_run_scaling_law.py` instead.
+
+### B4 — Default colored noise was FFT shaping, not physical OU (severity: 🟠 high)
+
+**Defect.** Theory §14.2 prefers the colored noise to be generated
+by a local SDE (specifically an Ornstein-Uhlenbeck process) so that
+it self-consistently couples to the sub-Ohmic memory kernel via the
+fluctuation-dissipation theorem. v2.0's default was FFT spectral
+shaping, which is non-local: every output token has global
+correlations with every other token. This creates a
+"circular-measurement" risk: even with noise injection off at
+measurement time, the trained weights may carry the imprint of the
+non-physical correlations, so the measured 1/f signature partially
+reflects the injected spectrum.
+
+**FIXED IN**: v2.1 default is `noise_type="ou"` with the discrete-OU
+update `xi[t+1] = decay * xi[t] + sqrt(1-decay²) * N(0,1)`.
+`tests/test_critical_exponents.py::TestEtaInBattery` verifies the
+end-to-end pipeline.
+
+### B5 — `UIDConfig` dropped v2.1 fields on `save_pretrained` / `from_pretrained` (severity: 🟠 high)
+
+**Defect.** Adding `noise_type`, `noise_tau`, `use_et_symmetric` to
+the `UIDConfig.__init__` signature is necessary for HuggingFace
+serialisation to preserve them. v2.0 (and the early v2.1 transition)
+forgot to add the fields to `__init__`, so `cfg.to_dict()` would
+omit them, and `UIDConfig.from_dict(cfg.to_dict())` would silently
+revert them to defaults.
+
+**Why it matters.** Anyone training a CID model with non-default
+settings (e.g. `noise_type="fft"` for the §14.2 isolation
+ablation), then saving and reloading the checkpoint, would have
+gotten back an OU-noise model — silently invalidating their
+experiment.
+
+**FIXED IN**: v2.1 `model/model_uid.py` adds the three fields to
+`UIDConfig.__init__`. `tests/test_run_scaling_law.py::
+TestUnifiedCheckpoint::test_config_dict_present_for_cid_model`
+verifies the round trip.
+
+### B6 — `run_scaling_law.py` never saved checkpoints (severity: 🟠 high)
+
+**Defect.** v2.0's `run_scaling_law.py` only wrote `results.json` and
+`scaling_curves.png`. But `run_critical_exponents.py` and
+`run_energy_benchmark.py` both required `.pt` checkpoint files. As a
+result, when a user ran `run_all.py`, the latter two experiments
+were silently skipped via "checkpoint not found" branches — but the
+final summary report did not flag this loudly. Any v2.0 end-to-end
+"validation" run that relied on these downstream experiments was
+therefore vacuous.
+
+**FIXED IN**: v2.1 `run_scaling_law.py` saves
+`{family}_{scale}_seed{seed}.pt` in a unified v2.1 schema, and
+`run_all.py` discovers them via `find_checkpoint()` and warns
+loudly if anything is missing.
+
+### B7 — `FIDLayer.info["curvature_loss"]` broke JSON serialisation (severity: 🟡 medium)
+
+**Defect.** v2.0's `FIDLayer.forward` returned a Python dict
+containing both Python scalars (e.g. `info["curvature"] = 0.42`) AND
+an autograd-bearing `torch.Tensor` (`info["curvature_loss"]`). The
+caller was expected to extract the tensor and add it to the loss
+manually. But the typical `run_*.py` pipeline called
+`json.dumps(info)` on the result — which crashes on a Tensor. So any
+experiment that turned on `curvature_weight > 0` would have failed
+silently at JSON-dump time, often after hours of training.
+
+**FIXED IN**: v2.1 introduces `LOSS_PREFIX = "__loss__"` and an
+`extract_loss_tensors(info)` helper. Loss tensors are stored under a
+key with the LOSS_PREFIX so a `json.dumps` cannot accidentally pick
+them up; the caller is required to call `extract_loss_tensors()`
+explicitly before serialisation. `tests/test_fid_layer.py::
+TestInfoIsJsonSafe` verifies the contract.
+
+### Verdict on v2.0 empirical claims
+
+> ⚠ **v2.0 empirical numbers should be re-run on v2.1 before
+> citation.** Specifically:
+>
+> * Any benchmark that relied on `transformer_plus_linear` or
+>   `transformer_plus_all_tricks` is invalidated by B3.
+> * Any benchmark that depended on `save_pretrained` round-tripping
+>   the CID config is invalidated by B5.
+> * Any end-to-end `run_all.py` summary that included
+>   "critical exponents" or "energy" steps is invalidated by B6.
+> * Any experiment with `curvature_weight > 0` is invalidated by B7.
+> * Any claim about ET energy descent or "zero extra parameters" is
+>   invalidated by B1 / B2.
+>
+> v2.0 was a major methodological improvement and remains correct
+> in spirit, but the implementation bugs above mean its concrete
+> numbers should not be cited.
+
+---
+
+## §C — v2.1 (current release, 2026-05-28)
+
+v2.1 has fixed every defect in §A and §B. **However, three categories
+of limitation remain by design**, and any v2.1 citation should
+acknowledge them.
+
+### C1 — CID is the only tier that is fully falsifiable in this codebase (severity: 🟡 by design)
+
+**Statement.** Only the CID tier maps from theory equations to runnable
+code without external dependencies. QID and FID have **structural**
+limitations that this codebase cannot overcome:
+
+* **QID** is a classical surrogate. The "Lindblad channels" are
+  phenomenological linear maps, not true Kraus decompositions. The
+  "quantum noise" is FFT or OU shaping of classical Gaussian noise
+  with a QFDT-shaped envelope. The "Berry phase" is a paired
+  rotation in real (not complex) space. Real quantum advantage
+  requires NISQ or fault-tolerant quantum hardware.
+* **FID** is a diagnostic geometric probe, not a numerical solver
+  for the FID field equation. The Fisher metric used is the
+  hidden-state empirical covariance, not the parameter-space true
+  Fisher matrix (which is O(M²) and infeasible). The "Ricci scalar
+  surrogate" is `log det(g) − log H`, a volume-element proxy.
+
+**Implication.** Any v2.1 citation should say "CID is implemented and
+tested; QID and FID are exploratory probes". The README enforces this
+in its "Honest statement" section.
+
+### C2 — Phase 1 large-scale experiments are not yet complete (severity: 🟡 schedule)
+
+**Statement.** v2.1 ships the **infrastructure** for the full
+validation programme but the actual runs at 10M-1B scale have not
+been executed. The eight pre-registered falsification conditions in
+README §"Pre-registered falsification conditions" cannot be
+evaluated until Phase 1 runs complete.
+
+**Implication.** A paper citing v2.1 should say "the validation
+infrastructure is complete and pre-registered; Phase 1 results are
+pending (see ROADMAP §Phase 1)". A paper citing v2.1 should **not**
+make any empirical claim of the form "CID achieves Xx parameter
+efficiency" until Phase 1 has been run and reported.
+
+### C3 — Some validation methods are statistical surrogates (severity: 🟡 by design)
+
+**Statement.** Even with v2.1's infrastructure, the following
+measurements are NOT direct verifications of the theory paper:
+
+* **Fisher anisotropy η** is measured on the hidden-state empirical
+  covariance, not on the parameter-space Fisher matrix that Theory
+  §2.2 / §6.1 actually defines. `EtaResult.rank_deficient` flags
+  the case where `seq_len < hidden_size` makes even this surrogate
+  unreliable. Compare against the theory's quantitative form is
+  meaningful only at the order-of-magnitude level.
+* **Avalanche τ via the Beggs-Plenz protocol** measures activity
+  cascades in hidden-state z-scores; the original Beggs-Plenz
+  protocol applies to spike counts in cortical recordings. The
+  analogy is mechanistic and well-established in the criticality
+  literature but is not a strict identity.
+* **Energy per token "above-idle"** is a hardware-specific
+  measurement; idle baseline depends on driver state, ambient
+  temperature, and other processes on the same GPU. Cross-hardware
+  comparisons require the Phase 3 multi-hardware roadmap.
+
+**Implication.** A paper citing v2.1 numbers should report the v2.1
+methodology AND its surrogate status, e.g.: "measured Fisher anisotropy
+η = 0.72 on the hidden-state empirical covariance (parameter-space
+true Fisher is provided as `FisherMetric.compute_true_fisher_diagonal`
+for calibration; see CHANGELOG §v2.1)".
+
+### Verdict on v2.1 empirical claims
+
+> ⏳ **v2.1 has no large-scale empirical claims to cite yet.** When
+> Phase 1 runs are reported, they will be the first set of UID
+> empirical numbers safe to cite. Until then, cite only:
+> (a) the theory paper itself; and
+> (b) the v2.1 infrastructure as the means of pre-registered
+>     falsification.
+
+---
+
+## §D — Contact for newly discovered defects
+
+If you identify a defect in any version of this codebase that is
+**not** listed above, please file an issue or email **lig@jodell.cn**
+with subject prefix `[UID Defect Report]`. We commit to:
+
+1. Adding the defect to this document within 7 days, with severity
+   classification and "FIXED IN" placeholder.
+2. Fixing it in the next minor release, OR explicitly justifying why
+   it is a "by-design" limitation (in which case it goes under §C of
+   the current version).
+3. Re-running any pre-Phase-1 numbers that the defect invalidates,
+   and updating CHANGELOG.md accordingly.
+
+如发现本文件未列出的缺陷，请提交 issue 或发送邮件至 **lig@jodell.cn**
+（主题前缀 `[UID Defect Report]`）。我们承诺：
+1. 7 天内更新本文件，注明严重度与 "FIXED IN" 占位；
+2. 在下一个 minor release 中修复（或明确说明为"设计内限制"，归入当前
+   版本的 §C）；
+3. 重跑被该缺陷影响的所有 Phase-1 前数据，同步更新 CHANGELOG.md。
+
+---
+
+## Honest closing statement
+
+> Every project that claims to "verify" predictions in machine
+> learning, physics, or any quantitative science faces the same
+> tension: between the speed of releasing impressive-looking results
+> and the rigour required to make those results actually mean what
+> they appear to say. v0.1 of this project tilted too far toward the
+> first; v2.0 over-corrected and introduced its own bugs; v2.1
+> tries to honestly state what is and is not yet validated.
+>
+> If you read this file and think "wow, they admit a lot" — good.
+> That is the entire point. A theory paper that hides its limitations
+> earns one paper. A theory paper that documents its limitations
+> earns a research programme.
+>
+> 任何在机器学习、物理或任何定量科学中声称"已验证"预言的项目，都面
+> 临同一矛盾：发布漂亮结果的速度，与让这些结果真正名副其实所需的严谨
+> 性之间的冲突。本项目 v0.1 偏向了前者，v2.0 矫枉过正引入了新 bug，
+> v2.1 努力诚实陈述哪些已验证、哪些尚未。
+>
+> 如果你读完本文件感到"他们承认得真多" —— 这正是本意。一篇隐藏局限
+> 的论文换来一篇引用；一篇记录局限的论文换来一个研究计划。
+```
