@@ -37,9 +37,9 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 <div align="center">
 
-# Unified Intelligo-Dynamics (UID): A Three-Tier Theoretical Framework
+# Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID)
 
-**CID · QID · FID — Complete Theoretical System**
+## Attention Is Not All You Need: A Non-Equilibrium Physical Theory of Intelligent Architectures
 
 [CI](https://github.com/gwailee/uid/actions/workflows/ci.yml) | [DOI](https://doi.org/10.5281/zenodo.20372493) | [License: PolyForm Noncommercial](LICENSE)
 
