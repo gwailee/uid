@@ -1544,7 +1544,7 @@ The "dozens of times" or "hundreds of times" compression claims commonly seen on
 >
 > The subsequent §11.3-11.4 give engineering deployment commitments and energy-efficiency decomposition; §11.5 argues that this upper bound is complementary to the Alman-Song-Gupta complexity lower bound.
 
-### 11.3 Falsifiable Engineering Target
+## 11.3 Falsifiable Engineering Target
 
 **Engineering commitment**:
 
@@ -1557,7 +1557,7 @@ The "dozens of times" or "hundreds of times" compression claims commonly seen on
 | Training-energy goal | ~ 6× reduction |
 | **Falsification condition** | **If measured speedup < 5×, the theory must be revised** |
 
-### 11.4 Decomposition of Energy Efficiency
+## 11.4 Decomposition of Energy Efficiency
 
 | Source | Saving factor | Comment |
 |---|---|---|
