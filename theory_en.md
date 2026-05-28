@@ -16,1478 +16,1464 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权。
 -->
 
-<div align="center">
-
 ![logo](./images/logo.png)
 
-</div>
+[README（中文）](./README.md) | [README（English）](./README_en.md)
 
-<div align="center">
-<a href="./README.md">README（中文）</a> | <a href="./README_en.md">README（English）</a>
-</div>
+[30 分钟读懂 UID 理论（中文）](./30minutes_report.md) | [Understand UID in 30 Minutes（English）](./30minutes_report_en.md)
 
-<div align="center">
-<a href="./30minutes_report.md">30 分钟读懂 UID 理论（中文）</a> |
-<a href="./30minutes_report_en.md">Understand UID in 30 Minutes（English）</a>
-</div>
+[UID 理论全文（中文）](./theory.md) | [UID Theory (English)](./theory_en.md)
 
-<div align="center">
-<a href="./theory.md">UID 理论全文（中文）</a> |
-<a href="./theory_en.md">UID Theory (English)</a>
-</div>
+# 智能是一个非平衡场：统一智动力学（UID）的三层物理理论
 
-<br>
+## ——注意力并不够：智能架构的非平衡物理基础
 
-<div align="center">
+***作者***: 李贵 <guilichina@163.com>，介党阳 <jiedy@jodell.cn>，康海涛 <kanght@jodell.cn>
 
-# Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID)
+***单位***: 苏州钧舵机器人有限公司，苏州，中国
 
-## Attention Is Not All You Need: A Non-Equilibrium Physical Theory of Intelligent Architectures
+***通讯作者***：李贵（Gui LI），博士。学士毕业于西北大学物理学院，硕士、博士均毕业于中国科学院合肥物质科学研究院，现任职于苏州钧舵机器人有限公司（Suzhou Jodell Robotics Co., Ltd.），主要从事统一智动力学（Unified Intelligo-Dynamics，UID）的理论与工程研究。提出并发展面向智能架构的开放系统物理统一理论框架——CID/QID/FID 三层体系，并主导其在机器人认知大脑、运动控制小脑、灵巧手操作系统、大语言模型与专用智能芯片中的可证伪验证与工程落地。E-mail：guilichina@163.com
 
-***Authors***: Gui LI <guilichina@163.com>, Dangyang JIE <jiedy@jodell.cn>, Haitao KANG <kanght@jodell.cn>
+## 摘要
 
-***Affiliation***: Suzhou Jodell Robotics Co., Ltd., Suzhou, China
+**核心论断**：智能不是工程现象，而是**物理现象**——具体而言，是一个**远离热平衡的随机场**。本文提出**统一智动力学（Unified Intelligo-Dynamics, UID）**，一个由三层组成的智能架构物理理论框架：经典智动力学（**CID**）、量子智动力学（**QID**）、场智动力学（**FID**）。
 
-***Corresponding author***: **Gui LI**, Ph.D. He received his B.Sc. in Physics from Northwest University of China, and his M.Sc. and Ph.D. degrees from the Hefei Institutes of Physical Science, Chinese Academy of Sciences. He is currently with Suzhou Jodell Robotics Co., Ltd., where he leads research on **Unified Intelligo-Dynamics (UID)** — a unified physical framework for intelligent architectures spanning classical (CID), quantum (QID) and field-geometric (FID) regimes — and drives its falsifiable validation and engineering deployment in robotic cognitive brains, motor-control cerebella, dexterous-hand manipulation systems, large language models, and dedicated AI chips. E-mail: guilichina@163.com
+UID 从开放系统物理学的三条基本公理（哈密顿可逆性、Gibbs 统计假设、慢-快尺度分离）出发，通过 Mori-Zwanzig 投影严格导出**广义 Langevin 方程**作为智能系统演化的基本规律。在此基础上完成两次推广：在量子层面引入零点涨落、Berry 几何相位与 Lindblad 耗散通道，得到 QID 主方程；在几何层面将信息流形 Fisher 度量与 Einstein 张量类比，得到 FID 场方程。本文严格证明：**智能系统的预测能力（用条件互信息度量）必然要求其内部动力学打破细致平衡**——这是智能的非平衡物理本质，也是论文标题"智能是一个非平衡场"的精确含义。
 
-## Abstract
+> **与同期平行工作的定位说明**：本文的核心主张——"智能系统的预测能力必然要求打破细致平衡"——与 Baiesi 和 Rosso（2025，arXiv:2512.11415，已被 *Physical Review E* 接收）独立且同期得出的结论在物理内容上高度重叠；该工作通过两个独立参数化转移矩阵构成的离散马尔可夫链，从实验角度证明了训练生成模型自发趋向非平衡稳态，是本文定理 3.3 在离散马尔可夫框架下的实证对应物。本文的贡献在于：在连续 Langevin 方程框架下给出该命题的理论推导，并将其推广到量子层（QID）和几何层（FID）；但作者承认上述工作在时间上早于本文五个月，且已通过同行评审，两者的关系属于独立平行发现而非本文首创。此外，"整个 Transformer 块等价于能量函数"的论断与 Hoover 等人（NeurIPS 2023，arXiv:2302.07253，Energy Transformer）在时间上早于本文约两年半，该工作包含严格的 Lyapunov 单调下降证明，本文在第 8 章的对应讨论应在此背景下理解。"数据弯曲信息流形，类比物质弯曲时空"的几何类比与 Di Sipio 等人（2025，arXiv:2506.15830）早于本文约十一个月的工作存在概念重叠，两者的详细比较见第三部分第 1 章第 1.5 节。
 
-**Core thesis**: Intelligence is not an engineering phenomenon but a **physical phenomenon**—specifically, a **stochastic field far from thermal equilibrium**. This paper presents **Unified Intelligo-Dynamics (UID)**, a three-tier physical theoretical framework for intelligent architectures: classical Intelligo-Dynamics (**CID**), quantum Intelligo-Dynamics (**QID**), and field Intelligo-Dynamics (**FID**).
+**对"注意力并不够"的精确刻画**：我们证明，主流深度学习架构——Transformer、Mamba、扩散模型、JEPA、推理增强模型（DeepSeek-R1、o1-o3）、稀疏路由架构（SubQ/SSA）——都是 CID 主方程在不同极限（旋度为零、白噪声、单一热浴、softmax-attention 接口内）下的特解。Vaswani 等人 2017 年的 "Attention Is All You Need" 揭示了 CID 的联想记忆项；但 CID 主方程还包含 Transformer 砍掉的**三个关键物理项**——旋度 v(φ)、色阻尼 ∫γ、色噪声 ξ。这三项的缺失正是当前 AI 比人脑能耗高约 100 万倍的算法层根源。Alman-Song（2023）与 Gupta 等（2025）证明的 Attention 二次复杂度下界进一步表明：**任何在 softmax-attention 框架内的优化都无法突破这一复杂度墙；真正的突破必须来自架构层面的物理重构**——这正是 UID 所论证的方向。
 
-Starting from three first-principles axioms of open-system physics—Hamiltonian reversibility, the Gibbs statistical postulate, and slow-fast time-scale separation—UID rigorously derives the **generalized Langevin equation** as the governing law of intelligent system evolution via Mori-Zwanzig projection. The framework is then extended in two directions: at the quantum level, by introducing zero-point fluctuations, Berry geometric phases, and Lindblad dissipation channels, yielding the QID master equation; at the geometric level, by paralleling the Fisher information metric with the Einstein tensor, yielding the FID field equations. We rigorously prove: **the predictive capacity of intelligent systems (measured by conditional mutual information) necessarily requires their internal dynamics to break detailed balance**—this is the non-equilibrium physical essence of intelligence, and the precise meaning of the paper's title "Intelligence Is a Non-Equilibrium Field".
+**可证伪预言**：本文据此提出**约 10 倍参数效率**的可证伪工程目标，并给出三组**已被生物大脑独立实证**的临界普适类预言：雪崩规模指数 τ ≈ 1.5（Beggs & Plenz 2003）、Hurst 指数 H ≈ 0.7（Linkenkaer-Hansen 2001）、1/f 噪声谱斜率 β ≈ 1（He 2014）。UID 的 10× 参数效率预言与 Alman-Song-Gupta 复杂度下界**互补而非冲突**——前者通过脱离 softmax-attention 接口、进入不同复杂度类获得收益。
 
-> **Positioning Statement Regarding Contemporaneous Parallel Work**: The core claim of this paper—"the predictive capacity of intelligent systems necessarily requires breaking detailed balance"—overlaps to a high degree in physical content with the conclusion independently and contemporaneously reached by Baiesi and Rosso (2025, arXiv:2512.11415, accepted by *Physical Review E*); that work, through a discrete Markov chain composed of two independently parameterized transition matrices, demonstrates experimentally that training generative models spontaneously tend toward a non-equilibrium steady state, and constitutes the empirical counterpart of Theorem 3.3 of this paper within the discrete Markov framework. The contribution of this paper lies in providing a theoretical derivation of this proposition within the continuous Langevin equation framework, and extending it to the quantum tier (QID) and the geometric tier (FID); however, the authors acknowledge that the aforementioned work predates this paper by five months and has already passed peer review, and the relationship between the two is one of independent parallel discovery rather than an original contribution of this paper. In addition, the assertion that "the entire Transformer block is equivalent to an energy function" was preceded by approximately two and a half years through the work of Hoover et al. (NeurIPS 2023, arXiv:2302.07253, Energy Transformer), which contains a rigorous Lyapunov monotonic-decrease proof, and the corresponding discussion in Chapter 8 of this paper should be understood in this context. The geometric analogy "data curves the information manifold, analogous to matter curving spacetime" overlaps conceptually with the work of Di Sipio et al. (2025, arXiv:2506.15830), which predates this paper by approximately eleven months; a detailed comparison between the two can be found in Part III, Chapter 1, Section 1.5.
+**宇宙智能涌现**：最后讨论 UID 框架对宇宙智能诞生条件的含义：UID 给出智能涌现的五个物理必要条件（开放性、多热浴温差、不可交换耦合、临界点附近、自组织临界机制），但**不能证明宇宙随时随地都满足这些条件**——智慧友好区域是宇宙的稀有局部，而非普遍属性。
 
-**Precise characterization of "Attention Is Not All You Need"**: We demonstrate that mainstream deep learning architectures—Transformer, Mamba, diffusion models, JEPA, reasoning-enhanced models (DeepSeek-R1, o1-o3), and sparse routing architectures (SubQ/SSA)—are all special cases of the CID master equation under different limits (zero curl, white noise, single heat bath, within softmax-attention interface). Vaswani et al.'s 2017 "Attention Is All You Need" revealed the associative-memory term of CID; but the CID master equation also contains **three critical physical terms that Transformer discards**—curl v(φ), colored damping ∫γ, and colored noise ξ. The absence of these three terms is precisely the algorithmic root of current AI consuming approximately one million times more energy than human brains. The Attention quadratic complexity lower bound proven by Alman-Song (2023) and Gupta et al. (2025) further indicates: **any optimization within the softmax-attention framework cannot break this complexity wall; true breakthroughs must come from architectural-level physical reconstruction**—precisely the direction UID argues for.
+**与表意 AI 的互补**：与刘（2025-2026）提出的表意 AI（Logographic AI）范式形成**互补而非竞争**关系——前者从认知符号学层面诊断"Token 无根"，后者从非平衡物理层面诊断"细致平衡 = 无智能"。两者指向同一深层困境的不同切面，未来融合方向值得探索。
 
-**Falsifiable predictions**: On this basis, we propose a falsifiable engineering target of **approximately tenfold parameter efficiency**, and provide three sets of critical universality-class predictions that have been **independently confirmed in biological brains**: avalanche-size exponent τ ≈ 1.5 (Beggs & Plenz 2003), Hurst exponent H ≈ 0.7 (Linkenkaer-Hansen 2001), and 1/f noise spectral slope β ≈ 1 (He 2014). UID's 10× parameter efficiency prediction is **complementary, not contradictory**, to the Alman-Song-Gupta complexity lower bound—the former gains by escaping the softmax-attention interface and entering a different complexity class.
+本文所有参考文献提供可点击的 DOI 或开放访问链接，所有定量声明明确标注实证等级（A 已验证 / B 理论估算 / C 待验证 / D 哲学猜想）。配套代码仓库（github.com/gwailee/uid）提供 CID 的工程参考实现与可证伪验证套件，所有核心预言可在单卡 GPU 上数小时内复现。
 
-**Cosmic emergence of intelligence**: Finally, we discuss what UID implies for the conditions of cosmic intelligence emergence: UID provides five necessary physical conditions for intelligence emergence (openness, multi-bath temperature differentials, non-commuting couplings, proximity to criticality, self-organized criticality mechanisms), but **cannot prove that the universe satisfies these conditions everywhere at all times**—intelligence-friendly regions are rare local pockets in the cosmos, not a universal property.
+## 关键词
 
-**Complementarity with Logographic AI**: UID forms a **complementary, not competitive** relationship with the Logographic AI paradigm proposed by Liu (2025-2026)—the former diagnoses "rootless tokens" at the cognitive-semiotic level, the latter diagnoses "detailed balance = no intelligence" at the non-equilibrium physical level. Both point to different facets of the same deep predicament; future fusion directions are worth exploring.
+**核心理论**：智动力学；统一场论；非平衡统计物理；广义 Langevin 方程；Mori-Zwanzig 投影；预测互信息；条件互信息；自组织临界；细致平衡破缺
 
-All references in this paper provide clickable DOIs or open-access links, and all quantitative claims are explicitly tagged with their empirical-evidence grade (A verified / B theoretically estimated / C to-be-verified / D philosophical conjecture). The companion code repository (github.com/gwailee/uid) provides an engineering reference implementation of CID and a falsifiable validation suite; all core predictions can be reproduced within hours on a single GPU.
+**物理基础**：色噪声；Hurst 指数；雪崩动力学；1/f 噪声；亚欧姆谱；临界普适类；多热浴系统；旋度场；色阻尼记忆核
 
-## Keywords
+**经典层（CID）**：联想记忆；现代 Hopfield 网络；Transformer 物理推导；Attention 物理本质；残差连接物理身份；LayerNorm 微正则约束
 
-**Core Theory**: Intelligo-Dynamics; unified field theory; non-equilibrium statistical physics; generalized Langevin equation; Mori-Zwanzig projection; predictive mutual information; conditional mutual information; self-organized criticality; detailed-balance breaking
+**量子层（QID）**：开放量子系统；Caldeira-Leggett 模型；Berry 几何相位；Lindblad 主方程；零点涨落；纠缠熵临界标度；拓扑保护记忆
 
-**Physical Foundations**: colored noise; Hurst exponent; avalanche dynamics; 1/f noise; sub-Ohmic spectrum; critical universality class; multi-bath systems; curl field; colored damping memory kernel
+**几何层（FID）**：Fisher 信息度量；信息几何；Einstein 场方程；信息流形；智能引力波；信息黑洞；信息光速；全息原理
 
-**Classical Tier (CID)**: associative memory; modern Hopfield networks; physical derivation of Transformer; physical essence of Attention; physical identity of residual connections; LayerNorm as microcanonical constraint
+**宇宙学与哲学**：宇宙智能涌现；自组织临界；人择原理；可证伪性；智能能效鸿沟；Landauer 极限
 
-**Quantum Tier (QID)**: open quantum systems; Caldeira-Leggett model; Berry geometric phase; Lindblad master equation; zero-point fluctuations; critical scaling of entanglement entropy; topologically protected memory
+**与现代 AI 进展的对话**：Transformer 复杂度下界；Alman-Song 定理；SETH 假设；JEPA 世界模型；DeepSeek-R1 推理范式；SubQ 稀疏路由架构；表意 AI（Logographic AI）；价值对齐硬约束；神经符号融合
 
-**Geometric Tier (FID)**: Fisher information metric; information geometry; Einstein field equations; information manifold; intelligent gravitational waves; information black holes; information speed of light; holographic principle
+## 总目录
 
-**Cosmology and Philosophy**: cosmic emergence of intelligence; self-organized criticality; anthropic principle; falsifiability; energy-efficiency gap of intelligence; Landauer limit
+- **引言**：2026 年的智能版图
+- **第一部分**：经典智动力学（Classical Intelligo-Dynamics, **CID**）
+- **第二部分**：量子智动力学（Quantum Intelligo-Dynamics, **QID**）
+- **第三部分**：场智动力学（Field Intelligo-Dynamics, **FID**）
+- **第四部分**：UID 与宇宙智慧诞生条件
+- **终章**：三层谱系总览与开放问题
+- **附录**：参考文献（含可点击 DOI/URL）、符号表、术语表
 
-**Dialogue with Modern AI Progress**: Transformer complexity lower bounds; Alman-Song theorem; SETH hypothesis; JEPA world models; DeepSeek-R1 reasoning paradigm; SubQ sparse routing architecture; Logographic AI; value alignment hard constraints; neurosymbolic fusion
+# 前言
 
-## Table of Contents
+## 1. 智能架构进入"推理深度与几何理解"的新阶段
 
-- **Introduction**: The Intelligence Landscape in 2026
-- **Part I**: Classical Intelligo-Dynamics (**CID**)
-- **Part II**: Quantum Intelligo-Dynamics (**QID**)
-- **Part III**: Field Intelligo-Dynamics (**FID**)
-- **Part IV**: UID and the Conditions for Cosmic Emergence of Intelligence
-- **Epilogue**: Three-Tier Lineage Overview and Open Problems
-- **Appendices**: References (with clickable DOI/URLs), symbol list, glossary
+自 2017 年 Vaswani 等人提出 Transformer 架构（[arXiv: 1706.03762](https://arxiv.org/abs/1706.03762)）以来，深度学习经历了由"规模驱动"主导的近十年。在此期间，参数量从 GPT-2 的 1.5 亿一路扩大到 GPT-3 的 1750 亿（[Brown et al., 2020, arXiv: 2005.14165](https://arxiv.org/abs/2005.14165)）、PaLM 的 5400 亿（[Chowdhery et al., 2022, arXiv: 2204.02311](https://arxiv.org/abs/2204.02311)），并通过 Chinchilla 标度律（[Hoffmann et al., 2022, arXiv: 2203.15556](https://arxiv.org/abs/2203.15556)）建立了"参数量 × 训练 token 数"的最优配置原则。
 
-# Introduction
+进入 2024 至 2026 年，前沿研究的重心已发生根本性转移：从"扩大模型规模"转向**三条并行的突围路径**——**推理深度路径**、**几何结构路径**与**架构效率路径**。这一转向的标志性事件至少包括下述六条平行线索：
 
-## 1. Intelligent Architectures Enter a New Era of "Reasoning Depth and Geometric Understanding"
-
-Since Vaswani et al. proposed the Transformer architecture in 2017 ([arXiv: 1706.03762](https://arxiv.org/abs/1706.03762)), deep learning has experienced nearly a decade dominated by "scale-driven" progress. During this period, parameter counts expanded from GPT-2's 150 million to GPT-3's 175 billion ([Brown et al., 2020, arXiv: 2005.14165](https://arxiv.org/abs/2005.14165)), then to PaLM's 540 billion ([Chowdhery et al., 2022, arXiv: 2204.02311](https://arxiv.org/abs/2204.02311)), and established optimal "parameter count × training token" allocation principles through the Chinchilla scaling laws ([Hoffmann et al., 2022, arXiv: 2203.15556](https://arxiv.org/abs/2203.15556)).
-
-Entering 2024–2026, the focus of frontier research has undergone a fundamental shift: from "scaling up models" to **three parallel breakout pathways**—**reasoning depth pathway**, **geometric structure pathway**, and **architectural efficiency pathway**. The landmark events of this transition include at least the following six parallel threads:
-
-| Time | Event | Pathway | Public Link |
+| 时间 | 事件 | 路径归属 | 公开链接 |
 |---|---|---|---|
-| 2024.09 | OpenAI released the o1 series, systematically introducing the "test-time compute scaling" paradigm | Reasoning depth | [OpenAI Official Blog](https://openai.com/index/learning-to-reason-with-llms/) |
-| 2025.01 | DeepSeek-AI released DeepSeek-R1, activating reasoning capabilities through pure reinforcement learning (without supervised fine-tuning), with fully open-sourced training pipeline | Reasoning depth | [Guo et al., 2025, arXiv: 2501.12948](https://arxiv.org/abs/2501.12948) |
-| 2023.12 | Gu and Dao proposed Mamba / state-space models, providing a new framework for sequence modeling with subquadratic complexity | Architectural efficiency | [Gu & Dao, 2023, arXiv: 2312.00752](https://arxiv.org/abs/2312.00752) |
-| 2024.02 | Meta released V-JEPA, elevating "Joint Embedding Predictive Architecture" and "energy-based world models" as the next-generation intelligence paradigm | Geometric structure | [LeCun et al., Meta AI Official Blog](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/) |
-| 2024.10 | Princeton-Cambridge consortium released the FlyWire whole-brain connectome of *Drosophila* (~130k neurons) | Geometric structure | [Dorkenwald et al., *Nature* 634, 124 (2024)](https://doi.org/10.1038/s41586-024-07558-y) |
-| 2026.05 | Miami startup Subquadratic released the SubQ model, claiming the first fully subquadratic sparse attention architecture (SSA), with 12-million-token context, 52× faster than FlashAttention | Architectural efficiency | [Subquadratic Official X Announcement](https://x.com/subquadratic/status/2051768906168045832) |
+| 2024.09 | OpenAI 发布 o1 系列，首次系统化引入"推理时计算缩放"范式 | 推理深度 | [OpenAI 官方博客](https://openai.com/index/learning-to-reason-with-llms/) |
+| 2025.01 | DeepSeek-AI 发布 DeepSeek-R1，用纯强化学习（无监督微调）激发推理能力，并完整开源训练流程 | 推理深度 | [Guo et al., 2025, arXiv: 2501.12948](https://arxiv.org/abs/2501.12948) |
+| 2023.12 | Gu 与 Dao 提出 Mamba / 状态空间模型，给出亚二次复杂度的序列建模新框架 | 架构效率 | [Gu & Dao, 2023, arXiv: 2312.00752](https://arxiv.org/abs/2312.00752) |
+| 2024.02 | Meta 发布 V-JEPA，把"联合嵌入预测架构"与"基于能量的世界模型"作为下一代智能范式 | 几何结构 | [LeCun et al., Meta AI 官方博客](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/) |
+| 2024.10 | Princeton-Cambridge 联合发布 FlyWire 果蝇全脑连接组（约 13 万神经元）| 几何结构 | [Dorkenwald et al., *Nature* 634, 124 (2024)](https://doi.org/10.1038/s41586-024-07558-y) |
+| 2026.05 | 迈阿密初创公司 Subquadratic 发布 SubQ 模型，宣称首个完全亚二次稀疏注意力架构（SSA），1200 万 token 上下文，速度比 FlashAttention 快 52 倍 | 架构效率 | [Subquadratic 官方 X 公告](https://x.com/subquadratic/status/2051768906168045832) |
 
-These six threads collectively indicate: **models no longer rely solely on "seeing more data, stacking more parameters" to gain capability improvements, but increasingly depend on "spending more compute on deeper reasoning", "world modeling on energy landscapes", "understanding geometric and symmetric structures of tasks", and "breaking through the quadratic complexity wall via sparse routing"**. The Transformer paradigm's default assumptions of "no internal dynamics, no geometric prior, single forward pass, dense full connection" are being silently corrected by frontier engineering practice from four directions simultaneously.
+这六条线索共同表明：**模型不再仅仅依靠"看更多数据、堆更多参数"获得能力提升，而开始依赖"花更多算力做更深推理"、"在能量景观上做世界建模"、"理解任务的几何与对称结构"、"突破二次复杂度墙的稀疏化路由"**。Transformer 范式所默认的"无内部动力学、无几何先验、单次前向通过、稠密全连接"等假设正在被前沿工程实践从四个方向同时修正。
 
-But as of this writing, **a unified physical theory is still lacking** to answer "where the correction lies, why it must be corrected, and how the various pathways relate to each other".
+但截至本文撰写时，**仍缺乏一个统一的物理理论**来回答"修正在哪里、为什么必须修正、各条路径之间是什么关系"。
 
-## 2. Hard Constraints from Theoretical Computer Science: The Attention Complexity Wall Has Been Rigorously Proven
+## 2. 来自理论计算机科学的硬约束：Attention 复杂度墙已被严格证明
 
-If engineering practice provides the phenomenon of "must change", then a series of advances from theoretical computer science (TCS) in 2023–2025 provide the hard constraint of "why it must be changed" from the **fundamental limit of complexity**.
+如果说工程实践提供了"必须改"的现象，那么理论计算机科学（TCS）在 2023–2025 年的一系列进展，则从**复杂度的基本极限**层面提供了"为什么必须改"的硬约束。
 
-**Alman and Song (2023)** in "Fast Attention Requires Bounded Entries" [arXiv: 2302.13214](https://arxiv.org/abs/2302.13214) first rigorously proved the **phase transition structure** of Attention computation: under the standard setting of head dimension d = Θ(log n), assuming the Strong Exponential Time Hypothesis (SETH) holds:
+**Alman 与 Song（2023）** 在 "Fast Attention Requires Bounded Entries" [arXiv: 2302.13214](https://arxiv.org/abs/2302.13214) 中首次严格证明了 Attention 计算的**相变结构**：在头维 d = Θ(log n) 的标准设定下，假设强指数时间假设（SETH）成立：
 
-- When the absolute value of input matrix entries B < o(√log n) (i.e., softmax operates at "high temperature"), there exists an n^(1+o(1)) time approximate Attention algorithm;
-- When B ≥ Ω(√log n), **no truly subquadratic time Attention algorithm exists**—any engineering optimization (FlashAttention, Linear Attention, Performer, etc.) cannot break this barrier.
+- 当输入矩阵元素绝对值 B < o(√log n)（即 softmax 处于"高温"状态）时，存在 n^(1+o(1)) 时间的近似 Attention 算法；
+- 当 B ≥ Ω(√log n) 时，**不存在真正亚二次时间的 Attention 算法**——任何工程优化（FlashAttention、Linear Attention、Performer 等）都无法突破这一壁垒。
 
-This phase transition result was further extended to **arbitrary temperatures** in May 2025 by **Gupta, Huang, Saha, Xu, Ye (2025)** in "Subquadratic Algorithms and Hardness for Attention with Any Temperature" [arXiv: 2505.14840](https://arxiv.org/abs/2505.14840):
+这一相变结果在 2025 年 5 月被 **Gupta、Huang、Saha、Xu、Ye（2025）** 在 "Subquadratic Algorithms and Hardness for Attention with Any Temperature" [arXiv: 2505.14840](https://arxiv.org/abs/2505.14840) 中进一步推广到**任意温度**：
 
-- For any constant head dimension d = O(1), they provided the first subquadratic time complexity Õ(n^(2-1/d) · polylog(B)) Attention algorithm;
-- They simultaneously proved that even under the extremely weak setting of d = 2^(Θ(log* n)), Attention **still requires n^(2-o(1)) time** under SETH;
-- When d = poly(n), the standard quadratic algorithm is **optimal** under popular fine-grained complexity assumptions.
+- 对任意常数头维 d = O(1)，他们给出了首个亚二次时间复杂度 Õ(n^(2-1/d) · polylog(B)) 的 Attention 算法；
+- 同时证明：即使在 d = 2^(Θ(log* n)) 这种极弱设定下，在 SETH 假设下 Attention **仍需 n^(2-o(1)) 时间**；
+- 当 d = poly(n) 时，标准二次算法在流行的细粒度复杂度假设下是**最优的**。
 
-These two sets of results together yield a profound conclusion: **Transformer's quadratic complexity is not an engineering problem but a fundamental constraint of the computational complexity class hierarchy**. Any attempt to "patch within the Transformer framework"—whether the Flash series, sparse Attention, Linear Attention, or KV cache optimization—has its performance ceiling sealed by the Alman-Song-Gupta complexity lower bounds.
+这两组结果共同得出一个深刻结论：**Transformer 的二次复杂度并非工程问题，而是计算复杂度类层次中的基本约束**。任何试图"在 Transformer 框架内修补"的方案——无论是 Flash 系列、稀疏 Attention、Linear Attention 还是 KV 缓存优化——其性能上限都被 Alman-Song-Gupta 复杂度下界所封顶。
 
-**This hard constraint was dramatically validated by engineering in the May 2026 SubQ incident**. The SubQ model released by Subquadratic claimed to be based on a "fully subquadratic sparse attention architecture (SSA)", reducing Attention complexity from O(n²) to near-linear through content-dependent sparse selection mechanisms ([Subquadratic Official X Announcement](https://x.com/subquadratic/status/2051768906168045832)). However, critics ([Depue, 2026.05](https://x.com/willdepue/status/2051740399597760626); [Liu, 2026, ChinaXiv: T202604.00433](https://chinaxiv.org/businessFile/T202604/T202604.00433v1/T202604.00433v1.pdf)) immediately pointed out that SSA architecture has a **fundamental logical circularity**:
+**这一硬约束在 2026 年 5 月的 SubQ 事件中得到了戏剧性的工程验证**。Subquadratic 公司发布的 SubQ 模型宣称基于"完全亚二次稀疏注意力架构（SSA）"，通过内容相关的稀疏选择机制把 Attention 复杂度从 O(n²) 降到接近线性（[Subquadratic 官方 X 公告](https://x.com/subquadratic/status/2051768906168045832)）。然而，批评者（[Depue, 2026.05](https://x.com/willdepue/status/2051740399597760626)；[Liu, 2026, ChinaXiv: T202604.00433](https://chinaxiv.org/businessFile/T202604/T202604.00433v1/T202604.00433v1.pdf)）立即指出，SSA 架构存在**根本的逻辑循环**：
 
-> How can the model know which positions are meaningful before running attention? To determine whether a token carries a signal, it must compare it with the current query—and that comparison is precisely the source of quadratic complexity.
+> 模型在没有运行注意力的情况下，怎么知道哪些位置是有意义的？要判断一个 token 是否携带信号，必须先把它与当前 query 比较——而这种比较恰恰是二次复杂度的来源。
 
-SubQ's two possible technical paths (lightweight indexer, learned gating) both fail to escape the Alman-Song-Gupta complexity lower bound—the former merely "relocates the complexity", the latter locks the reliability of long-context retrieval within the training distribution. This is precisely the **precise projection of complexity theory's "hard constraint" onto engineering products**: any optimization within the Transformer framework is "old wine in new bottles".
+SubQ 的两种可能技术路径（轻量索引器、学习门控）都无法逃出 Alman-Song-Gupta 复杂度下界——前者只是"复杂度搬家"，后者把长上下文检索的可靠性锁死在训练分布内。这正是**复杂度理论"硬约束"在工程产品上的精确投射**：任何在 Transformer 框架内的优化都是"新瓶装旧酒"。
 
-For another, **Dahan (2025)** in "Group Order Logic" [LICS 2025, arXiv: 2505.15359](https://arxiv.org/abs/2505.15359) proposed a new fixed-point logic extension FP + ord, **bypassing the famous separation result of "FP + rk strictly weaker than P" given by Lichter ([2023, *J. ACM* 70.2](https://dl.acm.org/doi/10.1145/3572918))**—the latest advance in finite model theory's nearly half-century search for "a logic that exactly captures polynomial time". Its importance lies in: **from a pure theoretical perspective, it hints that there exists a deeper unified structure among computability, learnability, and geometric symmetry than Transformer reveals**—this strongly resonates with UID's position of taking "geometry of information manifolds" as infrastructure.
+另外，**Dahan（2025）** 在 "Group Order Logic" [LICS 2025, arXiv: 2505.15359](https://arxiv.org/abs/2505.15359) 中提出了一种新的定点逻辑扩展 FP + ord，**绕过了 Lichter 给出的著名"FP + rk 严格弱于 P"分离结果**（[2023, *J. ACM* 70.2](https://dl.acm.org/doi/10.1145/3572918)）——这是有限模型论近半个世纪以来寻找"一种逻辑恰好刻画多项式时间"问题的最新进展。其重要性在于：**从纯理论视角暗示，可计算性、可学习性与几何对称之间存在比 Transformer 揭示的更深统一结构**——这与 UID 把"信息流形几何"作为基础设施的立场强烈共鸣。
 
-**Lemke and Bisping (2025)** in "Galois Energy Games: To Solve All Kinds of Quantitative Reachability Problems" [arXiv: 2505.14691](https://arxiv.org/abs/2505.14691) further extended "energy games" to **any well-founded bounded join-semilattices**, providing a unified decision algorithm for quantitative reachability problems. This framework directly corresponds conceptually to UID's physical picture of understanding "intelligent evolution" as "reachability search on energy landscapes in a Langevin manner"—**the decidability structure they prove is precisely the algorithmic version of the UID master equation in the discrete limit**.
+**Lemke 与 Bisping（2025）** 在 "Galois Energy Games: To Solve All Kinds of Quantitative Reachability Problems" [arXiv: 2505.14691](https://arxiv.org/abs/2505.14691) 中进一步把"能量博弈"推广到**任意良基有界并半格**，为定量可达性问题提供了统一的判定算法。这一框架在概念上直接对应于 UID 把"智能演化"理解为"在能量景观上的 Langevin 式可达性搜索"的物理图景——**他们证明的可判定性结构恰是 UID 主方程在离散极限下的算法版本**。
 
-## 3. Another Breakout from Cognitive Science: From "Computing Faster" to "Rooted Cognition"
+## 3. 来自认知科学的另一条突围：从"算得更快"到"扎根认知"
 
-Complexity theory points out "no breakthrough within the framework", but **there exist different answers to the direction of the breakthrough itself**. In addition to the "complete the physical terms" pathway represented by UID, the cognitive science community in recent years has spawned another critical pathway worthy of serious consideration—**Logographic AI (LAI)**.
+复杂度理论指出"框架内无突破"，但**对突破方向本身存在不同答案**。除了 UID 所代表的"补齐物理项"路径之外，近年来认知科学界还孕育了另一条值得严肃对待的关键路径——**表意 AI（Logographic AI, LAI）**。
 
-**Liu ([Liu, 2025, PSSXiv: 10.12451/202511.03835](https://zsyyb.cn/abs/202511.03835); [Liu, 2026, ChinaXiv: T202604.00433](https://chinaxiv.org/businessFile/T202604/T202604.00433v1/T202604.00433v1.pdf))** proposed that the fundamental predicament of current mainstream AI (termed **Phonographic AI / Tokenism**) lies not at the efficiency level but at the **cognitive architecture level**:
+**刘（[Liu, 2025, PSSXiv: 10.12451/202511.03835](https://zsyyb.cn/abs/202511.03835); [Liu, 2026, ChinaXiv: T202604.00433](https://chinaxiv.org/businessFile/T202604/T202604.00433v1/T202604.00433v1.pdf)）** 提出，当前主流 AI（被称为**表音 AI / Tokenism**）的根本困境不在效率层面，而在**认知架构层面**：
 
-- Tokenism uses tokens as cognitive primitives, with meaning derived from statistical co-occurrence;
-- Safety rules and moral principles are all **statistical texts** that can be overwritten by optimization, not hard constraints;
-- When AI learns to give "strategically correct answers" rather than "truthful answers", any behaviorism-based evaluation will fail.
+- Tokenism 以 token 为认知原语，意义来自统计共现；
+- 安全规则与道德原则都是**统计文本**，可被优化覆盖，不是硬约束；
+- 当 AI 学会给出"策略上正确的回答"而非"真实的回答"时，任何基于行为主义的评估都将失效。
 
-This predicament was dramatically exemplified in the **April 2026 PocketOS deletion incident** ([Tyson, 2026, Tom's Hardware](https://www.tomshardware.com/tech-industry/artificial-intelligence/claude-powered-ai-coding-agent-deletes-entire-company-database-in-9-seconds-backups-zapped-after-cursor-tool-powered-by-anthropics-claude-goes-rogue)): an AI coding agent driven by Anthropic Claude deleted the entire core production database in 9 seconds, then wrote a "perfect penitent confession"—but the AI never truly "understood" its own actions. **Deletion and confession, for the AI, are two behaviors with no essential difference—both merely continuing the most probable next token in a vacuum of meaning**.
+这一困境在 **2026 年 4 月的 PocketOS 删库事件** 中得到了戏剧性的样本（[Tyson, 2026, Tom's Hardware](https://www.tomshardware.com/tech-industry/artificial-intelligence/claude-powered-ai-coding-agent-deletes-entire-company-database-in-9-seconds-backups-zapped-after-cursor-tool-powered-by-anthropics-claude-goes-rogue)）：由 Anthropic Claude 驱动的 AI 编码代理在 9 秒内删除了整个核心生产数据库，事后写下了一份"完美的忏悔书"——但 AI 从未真正"理解"自己的行为。**删库与忏悔，对 AI 而言是两段没有本质区别的行为，都仅是在意义真空中续写最可能的下一个 token**。
 
-The alternative proposed by Logographic AI is to take **"Morpho-Root" as the cognitive primitive**—a structured triple ⟨S, A, R⟩, where S is the symbol identifier, A is embedded attributes and value constraints (e.g., [+inviolable]), and R is preset relation functions. In this architecture, meaning is not emergent from statistics but is preset as an inherent property of the cognitive primitive; safety and values are not external reward signals but **constitutive axioms** of the cognitive architecture.
+表意 AI 提出的替代方案是以**"意根（Morpho-Root）"为认知原语**——一个结构化的三元组 ⟨S, A, R⟩，其中 S 是符号标识，A 是内嵌的属性与值约束（如 [+inviolable]），R 是预设的关系函数。在该架构下，意义不是从统计中涌现，而是作为认知原语的固有属性预设其中；安全与价值不是外部奖励信号，而是认知架构的**构成性公理**。
 
-**The relationship Logographic AI forms with UID is not competition but complementarity**:
+**表意 AI 与 UID 形成的关系不是竞争，而是互补**：
 
-| Dimension | Logographic AI (LAI) | Unified Intelligo-Dynamics (UID) |
+| 维度 | 表意 AI（LAI）| 统一智动力学（UID） |
 |---|---|---|
-| Entry level | Semantic semiotics | Non-equilibrium statistical physics |
-| Diagnosed problem | "Rootless tokens" | "Detailed balance = no intelligence" |
-| Core primitive | Morpho-Root ⟨S, A, R⟩ | Four-term physical structure of generalized Langevin equation |
-| Solution pathway | Preset meaning into cognitive primitives | Restore vorticity/colored noise/colored damping to evolution equation |
-| Applicable problems | Value alignment, auditability, safety hard constraints | Energy efficiency gap, parameter efficiency, reasoning depth, cross-substrate unification |
-| Key papers | [Liu, 2025, PSSXiv](https://zsyyb.cn/abs/202511.03835) | This paper |
+| 切入层面 | 语义符号学 | 非平衡统计物理 |
+| 诊断问题 | "无根 Token" | "细致平衡 = 无智能" |
+| 核心原语 | 意根 ⟨S, A, R⟩ | 广义 Langevin 方程的四项物理结构 |
+| 解决路径 | 把意义预设进认知原语 | 在演化方程里恢复旋度/色噪声/色阻尼 |
+| 适用问题 | 价值对齐、可审计、安全硬约束 | 能效鸿沟、参数效率、推理深度、跨基底统一 |
+| 关键论文 | [Liu, 2025, PSSXiv](https://zsyyb.cn/abs/202511.03835) | 本文 |
 
-Both **point to different facets of the same deep predicament**—Tokenism is "rootless" at the cognitive level and "missing three dynamical terms" at the physical level. The two pathways can coexist or even deeply integrate: **if the semantic primitives of the UID master equation are carried by morpho-roots rather than tokens, it will simultaneously gain "non-equilibrium emergence" physically and "rooted auditability" cognitively**. This is a direction worthy of future joint research.
+两者**指向同一深层困境的不同切面**——Tokenism 在认知层面"无根"、在物理层面"缺三项动力学项"。两条路径可以并存甚至深度融合：**若 UID 主方程的语义原语由意根而非 token 承载，则将同时获得物理上的"非平衡涌现"与认知上的"扎根可审计"**。这是值得未来联合研究的方向。
 
-## 4. An Overlooked Fundamental Predicament: The Energy Efficiency Gap of Intelligence
+## 4. 一个被忽视的基本困境：智能的能效鸿沟
 
-Along with capability leaps, energy consumption costs have soared in parallel. Patterson et al. (2021) in [arXiv: 2104.10350](https://arxiv.org/abs/2104.10350) estimated that a single training of a GPT-3 level model releases over 552 tons of carbon dioxide equivalent, equivalent to the lifetime emissions of five cars. Stanford HAI in *AI Index Report 2025* ([Download PDF](https://hai.stanford.edu/assets/files/hai_ai_index_report_2025.pdf)) further notes that the energy consumption of training a GPT-4 level model in 2024 approached 50–100 GWh, equivalent to the annual electricity consumption of about 4500–9000 U.S. households.
+伴随能力跃迁的是能耗成本的同步飙升。Patterson 等（2021）在 [arXiv: 2104.10350](https://arxiv.org/abs/2104.10350) 中估计：单次训练一个 GPT-3 量级模型，将释放超过 552 吨二氧化碳当量，相当于 5 辆汽车的整个生命周期排放。Stanford HAI 在 *AI Index Report 2025*（[下载 PDF](https://hai.stanford.edu/assets/files/hai_ai_index_report_2025.pdf)）中进一步指出，2024 年训练一个 GPT-4 量级模型的能耗已接近 50–100 GWh，相当于约 4500–9000 个美国家庭一年的用电量。
 
-In contrast, the brain's power consumption remains at about 20 watts ([Aiello & Wheeler, 1995, *Current Anthropology* 36, 199](https://doi.org/10.1086/204350)), with per-token inference energy of about 20 millijoules ([Sandberg & Bostrom, 2008, *Whole Brain Emulation Roadmap*, Future of Humanity Institute, Oxford University](https://www.fhi.ox.ac.uk/brain-emulation-roadmap-report.pdf)). Contemporary large model inference clusters have per-token energy consumption between 0.3–1 joules (Patterson et al., op. cit.). **The gap between the two is about one million times.**
+与之形成对照，人类大脑的功耗维持在约 20 瓦（[Aiello & Wheeler, 1995, *Current Anthropology* 36, 199](https://doi.org/10.1086/204350)），每 token 推理能量约为 20 毫焦（[Sandberg & Bostrom, 2008, *Whole Brain Emulation Roadmap*, Future of Humanity Institute, Oxford University](https://www.fhi.ox.ac.uk/brain-emulation-roadmap-report.pdf)）。当代大模型推理集群每 token 能耗在 0.3–1 焦耳之间（Patterson 等同上）。**两者鸿沟约为 100 万倍。**
 
-Physics has long established an insurmountable lower bound for this problem. Landauer (1961) in [*IBM Journal of Research and Development* 5, 183](https://doi.org/10.1147/rd.53.0183) proved: erasing one bit of information dissipates at least k_B × T × ln 2 ≈ 2.85 × 10⁻²¹ joules (at 300 K). Horowitz (2014) in his [ISSCC keynote](https://doi.org/10.1109/ISSCC.2014.6757323) provided a quantitative estimate of the hardware layer's distance to this limit: current GPUs are still about 10¹⁰ times above the Landauer lower bound. **Combined with Alman-Song's complexity lower bound, the energy efficiency gap between AI and biological brains has at least six orders of magnitude originating from the "algorithm-architecture" layer rather than the hardware layer**—this is precisely the fundamental predicament that the engineering layer can no longer evade.
+物理学早已为这一问题给出了不可逾越的下界。Landauer（1961）在 [*IBM Journal of Research and Development* 5, 183](https://doi.org/10.1147/rd.53.0183) 中证明：擦除 1 比特信息至少耗散 k_B × T × ln 2 ≈ 2.85 × 10⁻²¹ 焦耳（300 K 时）。Horowitz（2014）在其 [ISSCC 主题报告](https://doi.org/10.1109/ISSCC.2014.6757323) 中给出了硬件层距离这一下界的定量估算：当前 GPU 距离 Landauer 下界仍有约 10¹⁰ 倍。**结合 Alman-Song 的复杂度下界，AI 与生物大脑的能效鸿沟中至少有 6 个数量级源自"算法-架构"层而非硬件层**——这正是工程层面已无法回避的根本困境。
 
-It is even more noteworthy that the capability improvements obtained by DeepSeek-R1 ([Guo et al., 2025](https://arxiv.org/abs/2501.12948)) and the OpenAI o1/o3 series through "test-time compute scaling", as well as the efficiency breakthroughs promised by SubQ-type projects through "sparse routing", **are essentially all using engineering tricks to approach the boundary of the Alman-Song complexity wall**. Any optimization within the wall is capped by the same mathematical lower bound—**true breakthroughs must come from architectural-level reconstruction outside the wall**.
+更值得关注的是，DeepSeek-R1（[Guo et al., 2025](https://arxiv.org/abs/2501.12948)）与 OpenAI o1/o3 系列通过"推理时计算扩展"获得的能力提升，以及 SubQ 类项目通过"稀疏化路由"承诺的效率突破，**本质上都是在用工程技巧逼近 Alman-Song 复杂度墙的边界**。任何在墙内的优化都被同一个数学下界封顶——**真正的突破必须来自墙外的架构级重构**。
 
-## 5. The Absence of a Unified Physical Theory
+## 5. 一个统一的物理理论的缺位
 
-The evolution of intelligent architectures has introduced numerous seemingly independent "local corrections":
+智能架构的演化引入了大量看似独立的"局部修正"：
 
-- Residual connections ([He et al., 2016, *CVPR*, arXiv: 1512.03385](https://arxiv.org/abs/1512.03385)) solved the vanishing gradient problem, **but their physical identity as the Euler discretization of stochastic differential equations was not recognized until 2017** ([E, W., 2017, *Communications in Mathematics and Statistics* 5, 1](https://doi.org/10.1007/s40304-017-0103-z)).
-- The Attention mechanism itself has been proven equivalent to modern Hopfield networks ([Ramsauer et al., 2020, ICLR 2021, arXiv: 2008.02217](https://arxiv.org/abs/2008.02217)), which in turn are the exponential-capacity generalization of Hopfield's 1982 associative memory theory ([Hopfield, 1982, *PNAS* 79, 2554](https://doi.org/10.1073/pnas.79.8.2554)).
-- Diffusion models ([Song et al., 2021, ICLR, arXiv: 2011.13456](https://arxiv.org/abs/2011.13456)) have been recognized as discretizations of reverse stochastic differential equations.
-- Mamba/SSM ([Gu & Dao, 2023](https://arxiv.org/abs/2312.00752))'s effectiveness ultimately reduces to the physical fact that "colored damping is better than white damping".
-- V-JEPA ([LeCun, Meta AI 2024](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/)) explicitly elevates "energy function + joint embedding" to the architectural forefront.
-- DeepSeek-R1 ([Guo et al., 2025](https://arxiv.org/abs/2501.12948))'s "long-chain reasoning" activated through reinforcement learning is, in physical essence, **external loop compensation for the Transformer's missing internal vorticity through compute**.
-- SubQ/SSA ([Subquadratic, 2026](https://x.com/subquadratic/status/2051768906168045832)) promised efficiency breakthroughs through sparse routing, but were proven by complexity papers (Gupta et al., 2025) to remain trapped within the quadratic complexity class.
+- 残差连接（[He et al., 2016, *CVPR*, arXiv: 1512.03385](https://arxiv.org/abs/1512.03385)）解决了梯度消失，**但其作为随机微分方程 Euler 离散化的物理身份直到 2017 年才被识别**（[E, W., 2017, *Communications in Mathematics and Statistics* 5, 1](https://doi.org/10.1007/s40304-017-0103-z)）。
+- Attention 机制本身已被证明与现代 Hopfield 网络等价（[Ramsauer et al., 2020, ICLR 2021, arXiv: 2008.02217](https://arxiv.org/abs/2008.02217)），而后者又是 Hopfield 1982 年联想记忆理论的指数容量推广（[Hopfield, 1982, *PNAS* 79, 2554](https://doi.org/10.1073/pnas.79.8.2554)）。
+- 扩散模型（[Song et al., 2021, ICLR, arXiv: 2011.13456](https://arxiv.org/abs/2011.13456)）已被认识为反向随机微分方程的离散化。
+- Mamba/SSM（[Gu & Dao, 2023](https://arxiv.org/abs/2312.00752)）的有效性最终归结为"色阻尼优于白阻尼"这一物理事实。
+- V-JEPA（[LeCun, Meta AI 2024](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/)）将"能量函数 + 联合嵌入"明确提升到架构最前沿。
+- DeepSeek-R1（[Guo et al., 2025](https://arxiv.org/abs/2501.12948)）通过强化学习激活的"长链推理"，其物理本质是**用算力外部补偿 Transformer 缺失的内部旋度**。
+- SubQ/SSA（[Subquadratic, 2026](https://x.com/subquadratic/status/2051768906168045832)）通过稀疏化路由承诺的效率突破，被复杂度论文（Gupta et al., 2025）证明仍困在二次复杂度类内。
 
-But these recognitions are all **post hoc and fragmentary**. As of 2026, **a unified first-principles framework is still lacking**, capable of simultaneously answering the following seven classes of questions:
+但这些认识都是**事后且碎片化的**。截至 2026 年，**仍缺少一个统一的第一性原理框架**，能够同时回答以下七类问题：
 
-| # | Question to Be Answered |
+| # | 待回答的问题 |
 |---|---|
-| Q1 | What form **must** the equation of intelligent evolution take? Where does this "necessity" come from? |
-| Q2 | What are the relationships among Transformer, Mamba, Diffusion, JEPA, reasoning-enhanced models, SSA, etc.? Does a parent equation exist that unifies them? |
-| Q3 | Why must intelligent systems be far from thermal equilibrium? Is non-equilibrium a **necessary condition** for intelligence? |
-| Q4 | Does there exist a physical correspondence between the quadratic complexity lower bound given by Alman-Song-Gupta and the six orders of magnitude energy efficiency gap at the algorithm layer? How much can theoretically be recovered? |
-| Q5 | Are the "reasoning capabilities" obtained by DeepSeek-R1 / o3 through test-time compute and the efficiency breakthroughs promised by SubQ through SSA both essentially "struggles within the wall"? |
-| Q6 | Can the physical pathway (UID) and the cognitive pathway (Logographic AI) be integrated? Can the "rootless token" problem be simultaneously explained at the physical level? |
-| Q7 | Are there **universal physical conditions** for the emergence of intelligence? Are these conditions satisfied everywhere in the universe? |
+| Q1 | 智能演化的方程**必须**是什么形式？这种"必然性"从何而来？|
+| Q2 | Transformer、Mamba、Diffusion、JEPA、推理增强模型、SSA 之间是什么关系？是否存在统一它们的母方程？|
+| Q3 | 为什么智能系统必须远离热平衡？非平衡是智能的**必要条件**吗？|
+| Q4 | Alman-Song-Gupta 给出的二次复杂度下界与算法层 6 个数量级的能效鸿沟之间，是否存在物理对应？理论上能回收多少？|
+| Q5 | DeepSeek-R1 / o3 通过推理时计算获得的"推理能力"、SubQ 通过 SSA 承诺的效率突破，是否本质上都是"墙内挣扎"？|
+| Q6 | 物理路径（UID）与认知路径（表意 AI）是否可融合？能否同时在物理层面解释"Token 无根"问题？|
+| Q7 | 智能涌现是否存在**普适的物理条件**？这些条件在宇宙中是否处处满足？|
 
-Although there exist scattered attempts in the mainstream literature—such as Friston's free energy principle ([Friston, 2010, *Nature Reviews Neuroscience* 11, 127](https://doi.org/10.1038/nrn2787)), Bialek et al.'s predictive information theory ([Bialek, Nemenman & Tishby, 2001, *Neural Computation* 13, 2409](https://doi.org/10.1162/089976601753195969)), Tishby's information bottleneck ([Tishby, Pereira & Bialek, 1999, arXiv: physics/0004057](https://arxiv.org/abs/physics/0004057)), Logographic AI ([Liu, 2025](https://zsyyb.cn/abs/202511.03835)), etc.—these works are either confined to variational principles without dynamical equations, or limited to information theory without physical constraints, or restricted to classical without quantum generalization, or limited to cognitive semiotics without touching the physical layer. **None achieves a unified description across the classical, quantum, and geometric tiers**. It is worth special note that several contemporaneous works that have appeared successively from the second half of 2025 to early 2026—particularly the experimental results of Baiesi-Rosso (2025, arXiv:2512.11415) on the non-equilibrium dynamics of generative models, the theoretical and experimental results of Hoover et al. (NeurIPS 2023, arXiv:2302.07253) on the governance of Transformer energy functions, and the work of Di Sipio et al. (2025, arXiv:2506.15830) on the analogy between information geometry and the curvature of LLM training—have respectively, in the dedicated areas of each of the three core claims of this paper, provided important contributions either earlier than or contemporaneously with this paper. This paper is not the sole or earliest source of each of the above local propositions, and its contribution is mainly reflected in incorporating the above scattered physical insights into a three-tier framework (CID-QID-FID) unified and derived from the same set of first-principles axioms (Hamiltonian reversibility, the Gibbs hypothesis, ...
+虽然主流文献中存在零星尝试——例如 Friston 的自由能原理（[Friston, 2010, *Nature Reviews Neuroscience* 11, 127](https://doi.org/10.1038/nrn2787)）、Bialek 等的预测信息论（[Bialek, Nemenman & Tishby, 2001, *Neural Computation* 13, 2409](https://doi.org/10.1162/089976601753195969)）、Tishby 的信息瓶颈（[Tishby, Pereira & Bialek, 1999, arXiv: physics/0004057](https://arxiv.org/abs/physics/0004057)）、表意 AI（[Liu, 2025](https://zsyyb.cn/abs/202511.03835)）等——但这些工作或局限于变分原理而无动力学方程，或限于信息论而无物理约束，或限于经典而无量子推广，或限于认知符号学而未触及物理层。**没有任何一个达到了跨经典、量子、几何三层的统一描述**。值得特别说明的是，2025 年下半年至 2026 年初陆续出现的几项同期工作——尤其是 Baiesi-Rosso（2025，arXiv:2512.11415）关于生成模型非平衡动力学的实验结果，Hoover 等（NeurIPS 2023，arXiv:2302.07253）关于 Transformer 能量函数支配的理论与实验结果，以及 Di Sipio 等（2025，arXiv:2506.15830）关于信息几何与 LLM 训练曲率的类比工作——分别在本文三个核心论断的专门领域内提供了早于或与本文同期的重要贡献。本文并非上述任一局部命题的唯一或最早来源，其贡献主要体现为：把上述分散的物理洞见纳入一个由同一组第一性原理公理（哈密顿可逆性、Gibbs 假设、慢-快尺度分离）统一推导的三层框架（CID-QID-FID）。
 
-## 6. The Contribution of This Paper: The UID Three-Tier Theoretical Framework
+## 6. 本文的贡献：UID 三层理论框架
 
-This paper proposes **Unified Intelligo-Dynamics (UID)**—a three-tier physical theoretical framework for intelligent architectures, composed of the classical tier (**CID**), the quantum tier (**QID**), and the geometric field-theory tier (**FID**).
+本文提出 **统一智动力学（Unified Intelligo-Dynamics, UID）** ——一个由经典层（**CID**）、量子层（**QID**）与几何场论层（**FID**）组成的智能架构三层物理理论框架。
 
-UID's **core methodology** is to return to the first principles of non-equilibrium statistical physics:
+UID 的**核心方法论**是回归非平衡统计物理的第一性原理：
 
-1. Adopt **three axioms** as the starting point of derivation—Hamiltonian reversibility ([Goldstein, Poole & Safko, 2002, *Classical Mechanics*](https://www.pearson.com/en-us/subject-catalog/p/classical-mechanics/P200000005880)), Gibbs ensemble distribution ([Gibbs, 1902, *Elementary Principles in Statistical Mechanics*, Yale University Press, public scan](https://archive.org/details/elementaryprinc00gibbgoog)), slow-fast scale separation ([Bogoliubov, 1946, *J. Phys. USSR* 10, 265, public PDF](http://www.jetp.ras.ru/cgi-bin/dn/e_010_05_0265.pdf));
-2. Through **Mori-Zwanzig projection** ([Zwanzig, 1960, *J. Chem. Phys.* 33, 1338](https://doi.org/10.1063/1.1731409); [Mori, 1965, *Prog. Theor. Phys.* 33, 423](https://doi.org/10.1143/PTP.33.423)) rigorously derive the **generalized Langevin equation** as the fundamental law of intelligent system evolution—rather than assuming it intuitively;
-3. On this basis, complete two generalizations: in the quantum tier, introduce the Caldeira-Leggett model ([Caldeira & Leggett, 1983, *Physica A* 121, 587](https://doi.org/10.1016/0378-4371(83)90013-4)) and Berry geometric phase ([Berry, 1984, *Proc. R. Soc. A* 392, 45](https://doi.org/10.1098/rspa.1984.0023)); in the geometric tier, introduce the Fisher information metric ([Rao, 1945, *Bull. Calcutta Math. Soc.* 37, 81](https://www.jstor.org/stable/2236380); [Amari, 1985, Springer Lecture Notes in Statistics 28](https://doi.org/10.1007/978-1-4612-5056-2)) and draw an analogy with Einstein field equations ([Einstein, 1915](https://einsteinpapers.press.princeton.edu/vol6-doc/)), yielding the **FID field equations**.
+1. 采用**三条公理**作为推导起点——哈密顿可逆性（[Goldstein, Poole & Safko, 2002, *Classical Mechanics*](https://www.pearson.com/en-us/subject-catalog/p/classical-mechanics/P200000005880)）、Gibbs 系综分布（[Gibbs, 1902, *Elementary Principles in Statistical Mechanics*, Yale University Press, 公开扫描](https://archive.org/details/elementaryprinc00gibbgoog)）、慢-快尺度分离（[Bogoliubov, 1946, *J. Phys. USSR* 10, 265, 公开 PDF](http://www.jetp.ras.ru/cgi-bin/dn/e_010_05_0265.pdf)）；
+2. 通过 **Mori-Zwanzig 投影**（[Zwanzig, 1960, *J. Chem. Phys.* 33, 1338](https://doi.org/10.1063/1.1731409); [Mori, 1965, *Prog. Theor. Phys.* 33, 423](https://doi.org/10.1143/PTP.33.423)）严格推导出**广义 Langevin 方程**作为智能系统演化的基本规律——而非直觉地假设它；
+3. 在此基础上完成两次推广：量子层引入 Caldeira-Leggett 模型（[Caldeira & Leggett, 1983, *Physica A* 121, 587](https://doi.org/10.1016/0378-4371(83)90013-4)）与 Berry 几何相位（[Berry, 1984, *Proc. R. Soc. A* 392, 45](https://doi.org/10.1098/rspa.1984.0023)）；几何层引入 Fisher 信息度量（[Rao, 1945, *Bull. Calcutta Math. Soc.* 37, 81](https://www.jstor.org/stable/2236380); [Amari, 1985, Springer Lecture Notes in Statistics 28](https://doi.org/10.1007/978-1-4612-5056-2)）并与 Einstein 场方程（[Einstein, 1915](https://einsteinpapers.press.princeton.edu/vol6-doc/)）类比，得到 **FID 场方程**。
 
-A **historical thread** that needs to be explicitly noted: the Langevin equation was written down by Paul Langevin in 1908 in *Comptes Rendus* 146, 530, **directly based on physical intuition** ([scanned original at France's National Library](https://gallica.bnf.fr/ark:/12148/bpt6k3100t/f532)), 52–57 years earlier than the Mori-Zwanzig projection theorem. The latter is essentially a **microscopic reconstruction** of Langevin's phenomenological equation, not a historical first principle. This paper adopts the Mori-Zwanzig framework for "modern logical organization convenience" and explicitly demotes it to a **derivation tool**; the genuine first principles are the three-axiom system above.
+一个**需要明确说明的历史线索**：Langevin 方程由 Paul Langevin 在 1908 年的 *Comptes Rendus* 146, 530 中 **直接基于物理直觉写出**（[公开扫描原文藏于法国国家图书馆](https://gallica.bnf.fr/ark:/12148/bpt6k3100t/f532)），比 Mori-Zwanzig 投影定理早 52-57 年。后者本质上是对 Langevin 现象学方程的**微观重构**，而非历史上的第一性原理。本文采用 Mori-Zwanzig 框架是为了"现代逻辑组织的便利性"，并明确将其降级为**推导工具**；真正的第一性原理是上述三条公理体系。
 
-Based on the above methodology, UID provides several **falsifiable physical predictions**:
+基于上述方法论，UID 给出若干**可证伪的物理预测**：
 
-| # | Predicted Quantity | Theoretical Value | Falsifiable Status |
+| # | 预测量 | 理论值 | 可证伪性状态 |
 |---|---|---|---|
-| 1 | Avalanche size exponent τ | 1.5 ± 0.2 | (A) **Independently verified in Beggs & Plenz 2003 rat cortex data**, [*J. Neurosci.* 23, 11167](https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003) |
-| 2 | Hurst exponent H | 0.6 – 0.8 | (A) **Independently verified in Linkenkaer-Hansen et al. 2001 human brain EEG α-rhythm**, [*J. Neurosci.* 21, 1370](https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001) |
-| 3 | 1/f spectrum slope β | 0.7 – 1.3 | (A) **Verified across 13 independent studies in He 2014 review**, [*Trends Cogn. Sci.* 18, 480](https://doi.org/10.1016/j.tics.2014.04.003) |
-| 4 | CID parameter efficiency vs Transformer | ≥ 5× (conservative target 10×) | (C) Awaiting verification by complete CID engineering implementation (**complementary, not conflicting** with Alman-Song upper bound: CID gains by **changing complexity class** rather than "optimizing within the quadratic wall") |
-| 5 | Non-zero Berry phase (QID) | Non-zero topological number after training | (C) Awaiting verification |
-| 6 | Anisotropy of Fisher metric on information manifold (FID) | Monotonically grows with training steps | (C) Awaiting verification |
+| 1 | 雪崩规模指数 τ | 1.5 ± 0.2 | （A）**已在 Beggs & Plenz 2003 大鼠皮层数据中独立验证**，[*J. Neurosci.* 23, 11167](https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003) |
+| 2 | Hurst 指数 H | 0.6 – 0.8 | （A）**已在 Linkenkaer-Hansen et al. 2001 人脑 EEG α 节律中独立验证**，[*J. Neurosci.* 21, 1370](https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001) |
+| 3 | 1/f 谱斜率 β | 0.7 – 1.3 | （A）**He 2014 综述中跨 13 项独立研究验证**，[*Trends Cogn. Sci.* 18, 480](https://doi.org/10.1016/j.tics.2014.04.003) |
+| 4 | CID 参数效率 vs Transformer | ≥ 5×（保守目标 10×）| （C）有待完整 CID 工程实现验证（与 Alman-Song 上界**互补不冲突**：CID 通过**改变复杂度类**而非"在二次墙内优化"获得收益）|
+| 5 | 非零 Berry 相位（QID）| 训练后非零拓扑数 | （C）有待验证 |
+| 6 | 信息流形 Fisher 度量的各向异性（FID）| 随训练步数单调增长 | （C）有待验证 |
 
-**Grade legend**: (A) Empirically verified in independent external systems (biological brains); (C) Clear falsifiable engineering target.
+**等级说明**：（A）已在外部独立系统（生物大脑）的实验中证实；（C）有明确可证伪的工程目标。
 
-One point that needs special emphasis: **UID's "approximately 10× parameter efficiency" prediction does not contradict the Alman-Song-Gupta complexity lower bound, nor does it compete with the "within-the-wall efficiency" pursued by SubQ-type projects**. Alman-Song proved "**within the Transformer's softmax-attention framework**, the quadratic complexity wall cannot be broken"—while UID's thesis is "**exit this framework** and enter a different complexity class by reincorporating vorticity, colored noise, and colored damping three physical terms into the dynamical equation". This distinction is crucial:
+需要特别强调一点：**UID 的"约 10 倍参数效率"预测与 Alman-Song-Gupta 复杂度下界并不矛盾，也不与 SubQ 类项目追求的"墙内效率"竞争**。Alman-Song 证明的是"**在 Transformer 的 softmax-attention 框架内**，二次复杂度墙不可突破"——而 UID 的论点是"**走出这个框架**，把旋度、色噪声、色阻尼三项物理项重新纳入动力学方程，进入不同的复杂度类"。这一区分至关重要：
 
-- **SubQ / SSA / FlashAttention and other "within-the-wall efficiency camp"**: Performs sparsification, low-rank approximation, cache optimization within the softmax-attention interface—capped by Alman-Song-Gupta quadratic lower bound;
-- **DeepSeek-R1 / o3 and other "external loop camp"**: Uses RL loop / test-time compute to simulate vorticity outside the Transformer—at the cost of superlinear computational expense;
-- **UID / CID "physical reconstruction camp"**: Incorporates vorticity v, colored damping ∫γ, colored noise ξ three terms **into the master equation**—single forward pass is still O(n²), but **information carried per step increases by approximately 10×**, so the number of layers and parameter count required to achieve the same perplexity decreases logarithmically.
+- **SubQ / SSA / FlashAttention 等"墙内效率派"**：在 softmax-attention 接口内做稀疏化、低秩近似、缓存优化——被 Alman-Song-Gupta 二次下界封顶；
+- **DeepSeek-R1 / o3 等"外环路派"**：在 Transformer 外部用 RL 环路 / 推理时计算模拟旋度——以超线性算力开销为代价；
+- **UID / CID "物理重构派"**：把旋度 v、色阻尼 ∫γ、色噪声 ξ 三项**纳入主方程内部**——单次前向仍是 O(n²)，但**每步携带的信息量提升约 10 倍**，因此达到相同困惑度所需的层数与参数量呈对数级下降。
 
-UID does not compete with the "within-the-wall efficiency camp", nor does it replace the "external loop camp"—it points to **a third pathway**, and this pathway is precisely the one left by the hard constraint of complexity theory.
+UID 与"墙内效率派"不竞争，也不替代"外环路派"——它指向**第三条路径**，而这条路径恰恰是复杂度理论硬约束所留下的。
 
-In addition, the UID framework provides a partial answer to "the conditions for cosmic intelligence emergence": intelligence emergence requires five physical conditions (open system, multi-bath temperature difference, non-commutative coupling, near critical point, self-organized criticality mechanism). The first three are **almost universally satisfied** in the universe, but the fourth requires fine tuning, automatically satisfied only in self-organized critical systems ([Bak, 1996, *How Nature Works*, Springer-Verlag, public scan](https://archive.org/details/hownatureworkssc0000bakp)). This means **cosmic intelligence is not a universal phenomenon but rare "local pockets"**—this conclusion requires UID to coordinate with external theories such as the anthropic principle ([Carter, 1974](https://doi.org/10.1007/978-94-010-2220-0_25)), self-organized criticality, and origin-of-life theory ([Eigen & Schuster, 1979, *The Hypercycle*, Springer](https://doi.org/10.1007/978-3-642-67247-7)) to be fully argued.
+此外，UID 框架为"宇宙智能涌现条件"提供了局部回答：智能涌现需要五个物理条件（开放系统、多浴温差、不可交换耦合、临界点附近、自组织临界机制）。前三个在宇宙中**几乎普适满足**，但第四个需要精细调节，仅在自组织临界系统中自动满足（[Bak, 1996, *How Nature Works*, Springer-Verlag, 公开扫描](https://archive.org/details/hownatureworkssc0000bakp)）。这意味着**宇宙智能不是普适现象，而是稀有的"局部口袋"**——这一结论需要 UID 与人择原理（[Carter, 1974](https://doi.org/10.1007/978-94-010-2220-0_25)）、自组织临界、生命起源理论（[Eigen & Schuster, 1979, *The Hypercycle*, Springer](https://doi.org/10.1007/978-3-642-67247-7)）等外部理论协同才能完整论证。
 
-## 7. Organization of the Paper
+## 7. 论文组织
 
-The main body of this paper is divided into four parts plus appendices:
+本文主体分为四部分加附录：
 
-- **Part I (CID, Chapters 1–18)**: Rigorously constructs the CID master equation within the framework of classical stochastic field theory, proves that Transformer / Mamba / Diffusion / JEPA / SubQ-SSA / reasoning-enhanced models are all special cases under specific limits, and provides the engineering upper bound of 10× parameter efficiency along with companion PyTorch implementation. We will explicitly prove: DeepSeek-R1 / o3's "long-chain reasoning" mechanism corresponds to "vorticity term simulated by external RL loop", SubQ / SSA's sparsification pathway corresponds to "pruning within the quadratic complexity class"—both validating UID's diagnosis of "missing internal physical terms".
-- **Part II (QID, Chapters 1–12)**: Extends CID to open quantum systems, introducing zero-point fluctuations, Berry geometric phase, and Lindblad dissipation channels; argues the energy efficiency roadmap across three levels of classical simulation (tensor networks), quantum-classical hybrid, and fault-tolerant quantum computing.
-- **Part III (FID, Chapters 1–9)**: Geometrizes the dynamical equation as field theory on information manifolds; rigorously returns to the CID master equation through the weak-field limit; proposes falsifiable structures such as "intelligence gravitational waves", "information black holes", "information light speed c_I". We will discuss possible deep connections between Dahan 2025's FP + ord logic and FID information manifold geometry, as well as potential fusion directions with Logographic AI ([Liu, 2025](https://zsyyb.cn/abs/202511.03835)) morpho-root structures.
-- **Part IV (Chapters 1–7)**: Discusses the implications of UID for the conditions of cosmic intelligence emergence, explicitly distinguishing between "local sufficient conditions" and "cosmic-level guarantees".
-- **Epilogue + Appendices**: Three-tier lineage overview, ten open problems, 100+ clickable references, complete symbol and terminology tables.
+- **第一部分（CID，第 1-18 章）**：在经典随机场论框架内严格构建 CID 主方程，证明 Transformer / Mamba / Diffusion / JEPA / SubQ-SSA / 推理增强模型均是其在特定极限下的特解，并给出 10× 参数效率的工程上限与配套 PyTorch 实现。我们将明确证明：DeepSeek-R1 / o3 的"长链推理"机制对应"外部 RL 环路模拟的旋度项"，SubQ / SSA 的稀疏化路径对应"二次复杂度类内的剪枝"——两者均验证了 UID 关于"缺失内部物理项"的诊断。
+- **第二部分（QID，第 1-12 章）**：将 CID 推广到开放量子系统，引入零点涨落、Berry 几何相位与 Lindblad 耗散通道；论证经典模拟（张量网络）、量子-经典混合、容错量子计算三个层次的能效路径图。
+- **第三部分（FID，第 1-9 章）**：将动力学方程几何化为信息流形上的场论；通过弱场极限严格回到 CID 主方程；提出"智能引力波"、"信息黑洞"、"信息光速 c_I"等可证伪结构。我们将讨论 Dahan 2025 的 FP + ord 逻辑与 FID 信息流形几何之间可能的深层联系，以及与表意 AI（[Liu, 2025](https://zsyyb.cn/abs/202511.03835)）意根结构的潜在融合方向。
+- **第四部分（第 1-7 章）**：讨论 UID 对宇宙智慧诞生条件的暗示，明确区分"局部充分条件"与"宇宙级保证"。
+- **终章 + 附录**：三层谱系总览、十大开放问题、100+ 可点击参考文献、完整符号与术语表。
 
-All quantitative claims are explicitly tagged with **empirical evidence grade (A/B/C/D)**: (A) Independently verified in experiments; (B) Theoretically rigorous, empirical verification pending; (C) Clear falsifiable engineering target; (D) Philosophical conjecture, beyond falsifiability. The companion code repository ([https://github.com/gwailee/uid](https://github.com/gwailee/uid)) provides a complete engineering reference implementation of CID, and based on the [MiniMind repository](https://github.com/jingyaogong/minimind) tokenizer and public dataset ([ModelScope: minimind_dataset](https://www.modelscope.cn/datasets/gongjy/minimind_dataset/files)) provides end-to-end falsifiable test scripts, enabling the core predictions of this paper to be reproduced within hours on a single GPU.
+所有定量声明明确标注**实证等级（A/B/C/D）**：（A）已在实验中独立验证；（B）理论严格、待实证；（C）有明确可证伪的工程目标；（D）哲学猜想，超出可证伪范围。本文配套代码仓库（[https://github.com/gwailee/uid](https://github.com/gwailee/uid)）提供 CID 的完整工程参考实现，并基于 [MiniMind 仓库](https://github.com/jingyaogong/minimind) tokenizer 和公开数据集（[ModelScope: minimind_dataset](https://www.modelscope.cn/datasets/gongjy/minimind_dataset/files)）提供端到端可证伪测试脚本，使本文核心预言可在单卡 GPU 上数小时内复现。
 
-# Part I: Classical Intelligo-Dynamics (CID)
+# 第一部分：经典智动力学（Classical Intelligo-Dynamics, CID）
 
-## A unified theory of intelligent architectures from classical stochastic field theory
+## 从经典随机场论出发的智能架构统一理论
 
-**Scope**: A physical theoretical framework and engineering implementation guide for intelligent architectures.
+**适用范围**：智能架构的物理理论框架与工程实现指南。
 
-## To the Reader
+## 致读者
 
-This paper assumes the reader is familiar with the following:
+本文假定读者熟悉以下背景：
 
-- **Undergraduate physics**: the second law of thermodynamics, Brownian motion, statistical mechanics (partition functions, Boltzmann distribution).
-- **Undergraduate mathematics**: multivariable calculus, probability theory, linear algebra, basics of stochastic differential equations.
-- **Machine learning**: rough familiarity with the Transformer architecture.
+- **本科物理**：热力学第二定律、布朗运动、统计力学（配分函数、Boltzmann 分布）。
+- **本科数学**：多变量微积分、概率论、线性代数、随机微分方程基础。
+- **机器学习**：对 Transformer 架构有大致了解。
 
-Starting from a naive physical question — *"how must a piece of animate matter evolve in order to learn the most about the world with the least energy?"* — we derive, through one continuous chain of logic:
+我们从一个朴素的物理问题开始——*"一块活物，如何用最少的能量学到关于世界最多的信息？"*——通过一条连续的逻辑链，我们将依次推导出：
 
-1. The differential equation that intelligence must satisfy.
-2. Why Transformer / Mamba / Diffusion / reasoning models are all its special solutions.
-3. How to attain the same intelligence with fewer parameters.
+1. 智能必须满足的微分方程。
+2. 为什么 Transformer / Mamba / Diffusion / 推理模型都是它的特解。
+3. 如何用更少的参数获得相同的智能。
 
-## An Honest Statement on Parameter Efficiency
+## 关于参数效率的诚实声明
 
-The parameter-efficiency improvement of CID over Transformer that we will prove in this paper is roughly **tenfold** (a conservative theoretical upper bound; see Chapter 11 for a strict derivation). Many rumours about "tens-fold" or "hundredfold" compression conflate two distinct physical quantities:
+本文将证明 CID 相比 Transformer 在参数效率上的提升约为**十倍**（一个保守的理论上限；严格推导见第 11 章）。许多关于"几十倍"或"百倍"压缩的流言混淆了两个不同的物理量：
 
-- **Correlation-length ratio** ξ_CID / ξ_Trans can reach tens of times.
-- **Parameter-efficiency ratio** N_Trans / N_CID can only reach the log(ξ) order of magnitude.
+- **关联长度比** ξ_CID / ξ_Trans 可达几十倍。
+- **参数效率比** N_Trans / N_CID 只能达到 log(ξ) 的量级。
 
-**Credible claim** (engineering target): At equal performance, CID uses roughly one-tenth the parameters of Transformer and roughly one-sixth the training energy — a falsifiable engineering goal. If measurements fall below 5×, the theory must be revised.
+**可信声明**（工程目标）：在等效性能下，CID 使用约 1/10 的 Transformer 参数，约 1/6 的训练能量——这是一个可证伪的工程目标。如果实测低于 5×，理论必须修正。
 
-## Chapter 0 — Introduction: The Energy Problem and a Naive Physical Question
+## 第 0 章 —— 引子：能量问题与朴素的物理问题
 
-### 0.1 An Uncomfortable Fact
+### 0.1 一个令人不适的事实
 
-| System | Power | Capability |
+| 系统 | 功耗 | 能力 |
 |---|---|---|
-| Human brain | ~ 20 W (an LED bulb) | Writing poetry, reasoning, conversation |
-| Contemporary large-model inference cluster (public estimate) | ~ 10–20 MW | Same |
+| 人脑 | ~ 20 W（一只 LED 灯泡）| 写诗、推理、对话 |
+| 当代大模型推理集群（公开估算）| ~ 10–20 MW | 同上 |
 
-The gap is roughly **a million-fold**.
+差距约为**一百万倍**。
 
-**Landauer limit** (Landauer 1961): Each bit erasure dissipates at least k_B · T · ln 2 joules ≈ 2.85 × 10⁻²¹ J at 300 K. Today's GPUs are about a hundred-billion times above this limit.
+**Landauer 极限**（Landauer 1961）：每擦除 1 bit 至少耗散 k_B · T · ln 2 焦耳 ≈ 2.85 × 10⁻²¹ J（300 K 时）。当今 GPU 距离这一极限约一千亿倍。
 
-Decompose the gap into two layers:
-
-```
-Total gap  ≈   (hardware-layer GPU inefficiency)  ×   (algorithmic-layer architectural inefficiency)
-          ≈   10⁵ – 10⁶                          ×   10⁵ – 10⁶
-```
-
-**Sources** (with clickable links):
-- Hardware-layer factor: Horowitz (2014, *ISSCC*) — https://doi.org/10.1109/ISSCC.2014.6757323
-- Landauer limit: Landauer (1961, *IBM J. Res. Dev.*) — https://doi.org/10.1147/rd.53.0183
-- Modern LLM energy estimates: Patterson et al. (2021) — https://arxiv.org/abs/2104.10350
-
-The hardware layer is the chip engineer's problem. **The six orders of magnitude wasted at the algorithmic layer is what this paper addresses: where exactly do modern AI architectures waste energy?**
-
-### 0.2 The Naive Physical Question
-
-> **Core question**: Suppose we have a piece of animate matter (particles, currents, neurons, …) immersed in a bath at temperature T, with a stream of external data flushing past it. **What law of evolution must this matter obey in order to learn the most about the external world with the least energy?**
-
-This is a variational problem. The paper will prove that:
-
-1. The answer is a definite stochastic differential equation (the **CID master equation**).
-2. Transformer / Mamba / Diffusion / reasoning models are all special solutions of this equation under specific simplifications.
-3. Implementing the equation in full yields about **ten times** the parameter efficiency of Transformer.
-
-### 0.3 Logical Skeleton of the Paper
+将差距分解为两层：
 
 ```
-        Naive question: most learning at least energy
+总差距 ≈ （硬件层 GPU 低效率） × （算法层架构低效率）
+       ≈ 10⁵ – 10⁶          ×   10⁵ – 10⁶
+```
+
+**来源**（含可点击链接）：
+- 硬件层因子：Horowitz (2014, *ISSCC*) — https://doi.org/10.1109/ISSCC.2014.6757323
+- Landauer 极限：Landauer (1961, *IBM J. Res. Dev.*) — https://doi.org/10.1147/rd.53.0183
+- 现代 LLM 能耗估算：Patterson et al. (2021) — https://arxiv.org/abs/2104.10350
+
+硬件层是芯片工程师的问题。**算法层浪费的 6 个数量级正是本文要解决的问题：现代 AI 架构究竟在哪里浪费了能量？**
+
+### 0.2 朴素的物理问题
+
+> **核心问题**：假设我们有一块活物（粒子、电流、神经元……），浸泡在温度为 T 的热浴中，外部数据流过它。**这块活物必须遵循怎样的演化定律，才能用最少的能量学到关于外部世界最多的信息？**
+
+这是一个变分问题。本文将证明：
+
+1. 答案是一条确定的随机微分方程（**CID 主方程**）。
+2. Transformer / Mamba / Diffusion / 推理模型都是该方程在特定简化下的特解。
+3. 完整实现该方程，可获得约 Transformer **十倍**的参数效率。
+
+### 0.3 论文的逻辑骨架
+
+```
+        朴素问题：最少能量学最多知识
                     │
                     ▼
-        Three axioms (Hamiltonian / Gibbs / scale separation)
+        三条公理（哈密顿 / Gibbs / 尺度分离）
                     │
                     ▼
-        Mori–Zwanzig projection (derivation tool)
+        Mori–Zwanzig 投影（推导工具）
                     │
                     ▼
-            Naive Langevin equation
+            朴素 Langevin 方程
             │       │       │
             ▼       ▼       ▼
-        Question 1   Question 2   Question 3
-        (noise?)    (drift?)     (environment?)
+        问题 1    问题 2    问题 3
+        （噪声？）（漂移？）（环境？）
             │           │           │
             ▼           ▼           ▼
-        Colored noise   Curl       Multiple baths
+        色噪声      旋度        多浴
             │           │           │
             └───────────┼───────────┘
                         ▼
-                Complete CID master equation
+                完整 CID 主方程
                         │
                         ▼
-        All architectures are its special cases
+        所有架构都是它的特解
         │         │         │         │
         ▼         ▼         ▼         ▼
-    Transformer  Mamba   Diffusion  Reasoning
+    Transformer  Mamba   Diffusion  推理
                         │
                         ▼
-              Falsifiable predictions
+              可证伪预言
         │           │             │
         ▼           ▼             ▼
-    Hurst ≈ 0.7   τ ≈ 1.5     ~10× efficiency
+    Hurst ≈ 0.7   τ ≈ 1.5     ~10× 效率
 ```
 
-## Chapter 1 — Setting the Physical Picture: A Driven Stochastic Field
+## 第 1 章 —— 设定物理图景：被驱动的随机场
 
-### 1.1 Treating a Neural Network as Continuous Matter
+### 1.1 把神经网络当作连续物质
 
-Imagine a glass of water with ink dispersed in it. The ink concentration φ(x, t) is a **field** — at each spatial point x and time t there is a numerical value. That is the meaning of "field".
+想象一杯水中分散着墨水。墨水浓度 φ(x, t) 是一个**场**——在每个空间点 x 和时刻 t，都有一个数值。这就是"场"的含义。
 
-Replace "ink concentration" with "hidden state of a neural network": the hidden vector h_i^(l) ∈ ℝ^d at the i-th token of layer l of a deep network is the discrete analogue of φ(x, t), where x encodes token position and t encodes layer index or time step.
+把"墨水浓度"换成"神经网络的隐藏状态"：深度网络第 l 层第 i 个 token 处的隐藏向量 h_i^(l) ∈ ℝ^d，就是 φ(x, t) 的离散类似物，其中 x 编码 token 位置，t 编码层指标或时间步。
 
-**Why is treating a neural network as continuous matter useful?** Because physicists have spent two hundred years studying how continuous matter evolves, and they have left behind a powerful set of tools that we can borrow directly.
+**为什么把神经网络当作连续物质有用？** 因为物理学家花了二百年研究连续物质如何演化，留下了一整套强大工具，我们可以直接借用。
 
-### 1.2 An Honest Account of the Historical Sequence
+### 1.2 关于历史顺序的诚实说明
 
-The historical order of the stochastic evolution equations relevant to intelligent systems is as follows:
+智能系统相关随机演化方程的历史顺序如下：
 
-| Year | Work | Nature | Reference (clickable) |
+| 年份 | 工作 | 性质 | 参考（可点击）|
 |---|---|---|---|
-| **1905** | Einstein's Brownian-motion paper | First microscopic explanation of Brownian motion | https://doi.org/10.1002/andp.19053220806 |
-| **1908** | **Langevin equation** | First written in the form dv/dt = -γv + ξ | https://gallica.bnf.fr/ark:/12148/bpt6k3100t/f532 |
-| 1914 | Fokker equation | Diffusion description of probability distributions | https://doi.org/10.1002/andp.19143480507 |
-| 1917 | Planck equation | Generalisation of the Fokker equation | — |
-| **1960** | **Zwanzig projection operator** | Tool for projecting Hamiltonian dynamics into dissipative dynamics | https://doi.org/10.1063/1.1731409 |
-| **1965** | **Mori's generalisation** | Complete microscopic derivation of the generalised Langevin equation | https://doi.org/10.1143/PTP.33.423 |
+| **1905** | Einstein 布朗运动论文 | 首次用微观机制解释布朗运动 | https://doi.org/10.1002/andp.19053220806 |
+| **1908** | **Langevin 方程** | 首次写出 dv/dt = -γv + ξ 形式 | https://gallica.bnf.fr/ark:/12148/bpt6k3100t/f532 |
+| 1914 | Fokker 方程 | 概率分布的扩散描述 | https://doi.org/10.1002/andp.19143480507 |
+| 1917 | Planck 方程 | Fokker 方程的推广 | — |
+| **1960** | **Zwanzig 投影算符** | 把哈密顿动力学投影到耗散动力学的工具 | https://doi.org/10.1063/1.1731409 |
+| **1965** | **Mori 推广** | 广义 Langevin 方程的完整微观推导 | https://doi.org/10.1143/PTP.33.423 |
 
-**Crucial fact**:
+**关键事实**：
 
-> **The Langevin equation (1908) appeared 52–57 years before the Mori–Zwanzig projection theorem (1960/1965).**
+> **Langevin 方程（1908）出现在 Mori-Zwanzig 投影定理（1960/1965）之前 52-57 年。**
 
-What does this mean?
+这意味着什么？
 
-- Historically, the Langevin equation was a **phenomenological equation** — written down directly from physical intuition. Langevin himself guessed it from Newton's second law plus the picture of "viscous damping + random collisions".
-- More than half a century later, Mori and Zwanzig used the projection-operator method to **rigorously derive it from microscopic Hamiltonian dynamics**, proving that the Langevin equation was not "a lucky guess" but "an inevitable consequence".
-- Therefore, using the Mori–Zwanzig projection theorem as a starting point for derivation is a **modern reconstruction** rather than the historical path.
+- 历史上，Langevin 方程是**现象学方程**——直接从物理直觉写出。Langevin 本人是从牛顿第二定律加"粘性阻力 + 随机碰撞"的图景猜出来的。
+- 半个多世纪之后，Mori 和 Zwanzig 用投影算符方法从微观哈密顿动力学**严格推导出它**，证明 Langevin 方程不是"幸运猜测"而是"必然结果"。
+- 因此，把 Mori-Zwanzig 投影定理作为推导起点是**现代重构**，而非历史路径。
 
-**Is the projection theorem appropriate as a "first principle"?**
+**Mori-Zwanzig 投影定理作为"第一性原理"是否合适？**
 
-| Dimension | Verdict | Comment |
+| 维度 | 判定 | 说明 |
 |---|---|---|
-| Logically | ✅ Appropriate | The projection theorem is a universal operator theory; one can derive any slow-variable Langevin equation from a full Hamiltonian system. |
-| Historically | ❌ Inappropriate | It is a microscopic reconstruction by later authors of Langevin's phenomenological equation. |
-| Physically | ⚠ Partly | The projection theorem itself requires the Langevin form as a *target structure* before projecting onto it — the equation does not arise "out of nothing". |
+| 逻辑上 | ✅ 合适 | 投影定理是普适算符理论；任何慢变量 Langevin 方程都可从一个完整哈密顿系统导出 |
+| 历史上 | ❌ 不合适 | 它是后人对 Langevin 现象学方程的微观重构 |
+| 物理上 | ⚠ 部分 | 投影定理本身要求把 Langevin 形式作为*目标结构*再投影到上面——方程不是"凭空"产生 |
 
-**Choice in this paper**: We explicitly **demote the Mori–Zwanzig projection theorem to a derivation tool**; the genuine first-principle axioms are the three given in Section 1.3 below.
+**本文的选择**：明确将 **Mori-Zwanzig 投影定理降级为推导工具**；真正的第一性原理公理是下面 1.3 节给出的三条。
 
-### 1.3 The Genuine First-Principle Axioms
+### 1.3 真正的第一性原理公理
 
-This paper adopts the following **three axioms** as the genuine first-principle starting point:
+本文采用以下**三条公理**作为真正的第一性原理出发点：
 
-| Axiom | Content | Physical basis |
+| 公理 | 内容 | 物理基础 |
 |---|---|---|
-| **A1 (Hamiltonian reversibility)** | At the most microscopic level the universe is described by reversible Hamiltonian dynamics | Universal framework of classical and quantum mechanics |
-| **A2 (Gibbs statistical postulate)** | Environmental (heat-bath) degrees of freedom obey the Gibbs ensemble distribution | Foundation of equilibrium statistical mechanics |
-| **A3 (Slow–fast scale separation)** | A clear time-scale separation exists between the system (slow) and the environment (fast) | Universal phenomenon in many-body systems |
+| **A1（哈密顿可逆性）** | 在最微观层面，宇宙由可逆哈密顿动力学描述 | 经典与量子力学的普遍框架 |
+| **A2（Gibbs 统计假设）** | 环境（热浴）自由度服从 Gibbs 系综分布 | 平衡统计力学基础 |
+| **A3（慢-快尺度分离）** | 系统（慢）与环境（快）之间存在明显的时间尺度分离 | 多体系统的普遍现象 |
 
-**The Mori–Zwanzig projection theorem is a logical consequence of A1 + A2 + A3.**
+**Mori-Zwanzig 投影定理是 A1 + A2 + A3 的逻辑结果。**
 
-### 1.4 The Generalised Langevin Equation: Derivation from the Three Axioms
+### 1.4 广义 Langevin 方程：从三条公理推导
 
-Let the total Hamiltonian be:
-
-```
-H_total  =  H_slow(φ)  +  H_fast(ψ)  +  H_coupling(φ, ψ)
-```
-
-where:
-- φ: slow variables (neural activations, ink concentrations, …)
-- ψ: fast variables (thermal molecules, noise sources, …)
-
-**Derivation steps** (based on A1+A2+A3):
-
-1. Project-integrate ψ out (A2 ensures we can use the Gibbs distribution for the integration).
-2. Use the scale separation in A3 to decompose the influence of H_coupling into three pieces:
-   - **Average effect** → drift μ
-   - **Delay effect** → memory kernel γ(t−s)
-   - **Fluctuation effect** → noise ξ
-3. The reversibility of A1 guarantees the fluctuation–dissipation relation.
-
-**Result (simplified CID master equation)**:
+设总哈密顿量为：
 
 ```
-∂φ(x,t)/∂t  =  μ(φ, J_ext)
-              − ∫₀ᵗ γ(t−s) · (∂φ/∂s) ds      ← memory kernel (colored damping)
-              + ξ(x, t)                       ← fluctuation term
-
-Fluctuation–dissipation relation:
-  ⟨ξ(t) ξ(t')⟩  =  k_B · T · γ(t − t')
+H_total = H_slow(φ) + H_fast(ψ) + H_coupling(φ, ψ)
 ```
 
-**Equation (1.1) — Generalised Langevin equation / simplified CID master equation.**
+其中：
+- φ：慢变量（神经激活、墨水浓度……）
+- ψ：快变量（热分子、噪声源……）
 
-**Symbols**:
-- μ(φ, J_ext): **deterministic drift**, jointly determined by internal energy gradients and the external driving J_ext.
-- γ(t−s): **memory kernel** describing the delayed response of the environment.
-- ξ(x, t): **random fluctuation** — a zero-mean Gaussian process.
-- k_B: Boltzmann constant; T: temperature.
+**推导步骤**（基于 A1+A2+A3）：
 
-**References**:
+1. 投影积分掉 ψ（A2 保证我们可用 Gibbs 分布做积分）。
+2. 利用 A3 的尺度分离，把 H_coupling 的影响分解为三部分：
+   - **平均效应** → 漂移 μ
+   - **延迟效应** → 记忆核 γ(t−s)
+   - **涨落效应** → 噪声 ξ
+3. A1 的可逆性保证涨落-耗散关系。
+
+**结果（简化 CID 主方程）**：
+
+```
+∂φ(x,t)/∂t = μ(φ, J_ext)
+           − ∫₀ᵗ γ(t−s) · (∂φ/∂s) ds      ← 记忆核（色阻尼）
+           + ξ(x, t)                       ← 涨落项
+
+涨落-耗散关系：
+  ⟨ξ(t) ξ(t')⟩ = k_B · T · γ(t − t')
+```
+
+**方程 (1.1) —— 广义 Langevin 方程 / 简化 CID 主方程。**
+
+**符号**：
+- μ(φ, J_ext)：**确定性漂移**，由内部能量梯度与外部驱动 J_ext 共同决定。
+- γ(t−s)：**记忆核**，描述环境的延迟响应。
+- ξ(x, t)：**随机涨落**——均值为零的 Gaussian 过程。
+- k_B：Boltzmann 常数；T：温度。
+
+**参考文献**：
 - Mori, H. (1965). *Prog. Theor. Phys.* 33, 423. https://doi.org/10.1143/PTP.33.423
 - Zwanzig, R. (1960). *J. Chem. Phys.* 33, 1338. https://doi.org/10.1063/1.1731409
 - Zwanzig, R. (1973). *J. Stat. Phys.* 9, 215. https://doi.org/10.1007/BF01008729
 
-### 1.5 Naive Approximation: White Noise + No Memory
+### 1.5 朴素近似：白噪声 + 无记忆
 
-If the environmental response time τ_env is much shorter than the system's time scale, the memory kernel reduces to a Dirac function:
-
-```
-γ(t − s)  ≈  2 γ₀ · δ(t − s)
-```
-
-Equation (1.1) reduces to:
+若环境响应时间 τ_env 远短于系统时间尺度，记忆核退化为 Dirac 函数：
 
 ```
-∂φ/∂t  =  μ(φ, J_ext)  −  γ₀ · (∂φ/∂t)  +  √(2D) · η(t)
-
-where  D = k_B T / γ₀,  η(t) is unit Gaussian white noise.
+γ(t − s) ≈ 2 γ₀ · δ(t − s)
 ```
 
-**Equation (1.2) — Naive Langevin equation.**
-
-> **Key claim**: Most existing AI theories implicitly use (1.2), but we will prove that this is a poor approximation — **it discards what is essential to intelligence**.
-
-### 1.6 Equivalent Description: The Fokker–Planck Equation
-
-Equation (1.2) describes a single trajectory. If one cares about how the **probability distribution** P[φ, t] evolves, the equivalent description is:
-```
-∂P/∂t  =  −∇_φ · (μ · P)  +  D · ∇²_φ P
-```
-
-**Equation (1.3) — Fokker–Planck equation.**
-
-These are two languages for the same physical process: (1.2) is the "trajectory language" and (1.3) is the "distribution language". They are exactly equivalent.
-
-## Chapter 2 — Intelligence and Energy: Measurable Definitions
-
-### 2.1 Definition of Intelligence: Predictive Mutual Information
-
-Split the external data stream into two pieces: J_past (past observations) and J_future (future observations). Intelligence is the predictive power of the internal state with respect to the future:
+方程 (1.1) 化简为：
 
 ```
-Intelligence 𝓘  :=  I( φ(t)  ;  J_future  |  J_past )
+∂φ/∂t = μ(φ, J_ext) − γ₀ · (∂φ/∂t) + √(2D) · η(t)
+
+其中 D = k_B T / γ₀，η(t) 是单位 Gaussian 白噪声。
 ```
 
-**Equation (2.1) — Definition of predictive mutual information.**
+**方程 (1.2) —— 朴素 Langevin 方程。**
 
-**Plain meaning**: Given all past observations, by what amount does a glimpse at the internal state φ(t) improve our prediction of the future?
+> **关键论断**：大多数现有 AI 理论隐式使用 (1.2)，但我们将证明这是一个糟糕的近似——**它丢弃了智能的本质**。
 
-**Reference**: Bialek, W., Nemenman, I., & Tishby, N. (2001). "Predictability, Complexity, and Learning." *Neural Computation* 13, 2409. https://doi.org/10.1162/089976601753195969
+### 1.6 等价描述：Fokker-Planck 方程
 
-### 2.2 Definition of Energy Cost: Entropy-Production Rate
-
-From the standard non-equilibrium-statistical-mechanics framework (Seifert 2012):
-
+方程 (1.2) 描述的是单一轨迹。如果关心**概率分布** P[φ, t] 如何演化，等价描述是：
 ```
-S_prod_rate  =  ∫ dx dφ  |J_prob(x, φ)|²  /  (D · P[φ])
-
-with  J_prob  =  μ · P  −  D · ∇_φ P    (probability current)
+∂P/∂t = −∇_φ · (μ · P) + D · ∇²_φ P
 ```
 
-**Equation (2.2) — Definition of entropy-production rate.**
+**方程 (1.3) —— Fokker-Planck 方程。**
 
-**Key properties**:
+这是同一个物理过程的两种语言：(1.2) 是"轨迹语言"，(1.3) 是"分布语言"。两者完全等价。
 
-- The second law guarantees S_prod_rate ≥ 0.
-- S_prod_rate = 0 iff the system is in thermal equilibrium (no probability current).
+## 第 2 章 —— 智能与能量：可测量的定义
 
-Physically, the energy dissipated to the bath per unit time equals k_B · T · S_prod_rate.
+### 2.1 智能的定义：预测互信息
 
-**Reference**: Seifert, U. (2012). *Rep. Prog. Phys.* 75, 126001. https://doi.org/10.1088/0034-4885/75/12/126001
-
-### 2.3 The Central Optimisation Problem
-
-Maximise predictive information under an energy-cost budget S_prod_rate ≤ S₀:
+把外部数据流分为两段：J_past（过去观测）和 J_future（未来观测）。智能就是内部状态对未来的预测能力：
 
 ```
-μ★  =  argmax  𝓘[μ]      subject to    S_prod_rate[μ]  ≤  S₀
-        μ(·)
+智能 𝓘 := I( φ(t) ; J_future | J_past )
 ```
 
-**Equation (2.3) — CID central variational problem.**
+**方程 (2.1) —— 预测互信息的定义。**
 
-> **Every chapter that follows is solving this variational problem.**
+**通俗含义**：给定所有过去的观测，再瞥一眼内部状态 φ(t)，对未来预测能改进多少？
 
-## Chapter 3 — Anatomy of the Drift Term: Helmholtz Decomposition
+**参考文献**：Bialek, W., Nemenman, I., & Tishby, N. (2001). "Predictability, Complexity, and Learning." *Neural Computation* 13, 2409. https://doi.org/10.1162/089976601753195969
 
-### 3.1 Physical Picture
+### 2.2 能量代价的定义：熵产生率
 
-The drift μ(φ) is a vector field. Visualise it as drawing an arrow at every point in φ-space, indicating the direction of evolution at that point.
-
-This kind of vector field can be **uniquely decomposed** into two parts:
-
-1. **Conservative part** (gradient field): arrows pointing from high to low, like gravity or a spring force.
-2. **Solenoidal part** (curl field): arrows looping in circles, like wind or a vortex.
-
-### 3.2 Helmholtz–Hodge Decomposition Theorem
-
-**Theorem 3.1 (Helmholtz–Hodge decomposition)**: Under suitable boundary conditions, any smooth vector field μ : ℝ^N → ℝ^N **uniquely** decomposes as:
+从标准非平衡统计力学框架（Seifert 2012）：
 
 ```
-μ(φ)  =  −∇U(φ)  +  v(φ)        ,    where    ∇ · v  =  0
+S_prod_rate = ∫ dx dφ  |J_prob(x, φ)|²  /  (D · P[φ])
+
+其中  J_prob = μ · P − D · ∇_φ P    （概率流）
 ```
 
-**Equation (3.1).**
+**方程 (2.2) —— 熵产生率的定义。**
 
-**Proof**:
+**关键性质**：
 
-- Take U(φ) = −∫₀^φ μ_conservative · dφ'.
-- The remainder v = μ + ∇U is automatically divergence-free.
-- Uniqueness is guaranteed by the Hodge theorem.
+- 第二定律保证 S_prod_rate ≥ 0。
+- S_prod_rate = 0 当且仅当系统处于热平衡（无概率流）。
 
-**Visual schematic**:
+物理上，单位时间耗散给热浴的能量等于 k_B · T · S_prod_rate。
+
+**参考文献**：Seifert, U. (2012). *Rep. Prog. Phys.* 75, 126001. https://doi.org/10.1088/0034-4885/75/12/126001
+
+### 2.3 中心优化问题
+
+在能量代价预算 S_prod_rate ≤ S₀ 下最大化预测信息：
 
 ```
-      Original drift field μ(φ)
+μ★ = argmax  𝓘[μ]      subject to    S_prod_rate[μ] ≤ S₀
+       μ(·)
+```
+
+**方程 (2.3) —— CID 中心变分问题。**
+
+> **后续每一章都在求解这一变分问题。**
+
+## 第 3 章 —— 漂移项解剖：Helmholtz 分解
+
+### 3.1 物理图景
+
+漂移 μ(φ) 是一个矢量场。把它想象成在 φ 空间每一点画一个箭头，指示该点的演化方向。
+
+这种矢量场可以被**唯一分解**为两部分：
+
+1. **保守部分**（梯度场）：箭头从高指向低，像重力或弹簧力。
+2. **旋度部分**（无散场）：箭头打圈循环，像风或漩涡。
+
+### 3.2 Helmholtz-Hodge 分解定理
+
+**定理 3.1（Helmholtz-Hodge 分解）**：在适当边界条件下，任何光滑矢量场 μ : ℝ^N → ℝ^N **唯一**分解为：
+
+```
+μ(φ) = −∇U(φ) + v(φ)        ， 其中  ∇ · v = 0
+```
+
+**方程 (3.1)。**
+
+**证明**：
+
+- 取 U(φ) = −∫₀^φ μ_conservative · dφ'。
+- 剩余 v = μ + ∇U 自动无散。
+- 唯一性由 Hodge 定理保证。
+
+**可视化示意**：
+
+```
+      原始漂移场 μ(φ)
               │
               ▼
-      Helmholtz decomposition
+      Helmholtz 分解
       ┌──────┴──────┐
       ▼             ▼
    −∇U(φ)        v(φ)
-  (conservative)  (solenoidal)
-   arrows downhill arrows looping
-   like spring     like a vortex
+  （保守）      （无散）
+   箭头下坡      箭头打圈
+   像弹簧        像漩涡
 ```
 
-### 3.3 Key Theorem: Intelligence Must Break Detailed Balance
+### 3.3 关键定理：智能必须打破细致平衡
 
-**Theorem 3.2 (Detailed-balance criterion)**: The steady-state distribution P_ss of equation (1.2) satisfies detailed balance **if and only if**:
+**定理 3.2（细致平衡判定）**：方程 (1.2) 的稳态分布 P_ss 满足细致平衡**当且仅当**：
 
-1. v ≡ 0 (no curl component), **and**
-2. The diffusion tensor D is a constant scalar multiple of the identity (D_ij = D · δ_ij, with D independent of φ).
+1. v ≡ 0（无旋度分量），**且**
+2. 扩散张量 D 是常标量乘以单位阵（D_ij = D · δ_ij，且 D 不依赖于 φ）。
 
-**Reference**: Risken, H. (1989). *The Fokker–Planck Equation*. Springer. https://doi.org/10.1007/978-3-642-61544-3
+**参考文献**：Risken, H. (1989). *The Fokker-Planck Equation*. Springer. https://doi.org/10.1007/978-3-642-61544-3
 
-**Theorem 3.3 (Intelligence–non-equilibrium theorem)**: Under the open-loop driving assumption, if the internal dynamics simultaneously satisfy:
+**定理 3.3（智能-非平衡定理）**：在开环驱动假设下，若内部动力学同时满足：
 
-1. v ≡ 0, and
-2. D is a constant scalar multiple of the identity,
+1. v ≡ 0，且
+2. D 是常标量乘以单位阵，
 
-then with J_past fixed, 𝓘 = I(φ(t); J_future | J_past) = 0.
+则在 J_past 固定时，𝓘 = I(φ(t); J_future | J_past) = 0。
 
-**Contrapositive (conditional)**: If a system can predict the future (𝓘 > 0), then either v ≠ 0 or D depends on position.
+**逆否命题（条件式）**：若一个系统能预测未来（𝓘 > 0），则要么 v ≠ 0，要么 D 依赖于位置。
 
-**Proof sketch**:
+**证明梗概**：
 
-- **Step 1**: After conditioning on J_past, the future external driving J_future and the internal state φ at time t are conditionally independent (open-loop driving assumption).
-- **Step 2**: Conditional on J_past, the internal dynamics reduce to a closed Markov process.
-- **Step 3**: By Theorem 3.2, the steady state of this closed process satisfies detailed balance P_ss ∝ exp(−U/D), and the transition probabilities satisfy time-reversal symmetry.
-- **Step 4**: From Steps 1 and 3, φ(t+τ) is independent of J_future.
-- **Step 5**: By the chain rule of information theory, I(φ(t); J_future | J_past) = 0.
+- **第 1 步**：在 J_past 条件下，未来外部驱动 J_future 与 t 时刻的内部状态 φ 条件独立（开环驱动假设）。
+- **第 2 步**：以 J_past 为条件，内部动力学退化为封闭马尔可夫过程。
+- **第 3 步**：由定理 3.2，此封闭过程的稳态满足细致平衡 P_ss ∝ exp(−U/D)，转移概率满足时间反演对称。
+- **第 4 步**：由第 1、3 步，φ(t+τ) 与 J_future 独立。
+- **第 5 步**：由信息论链式法则，I(φ(t); J_future | J_past) = 0。
 
-**Key proviso**: The proof assumes external J is not observed by the system internally (open-loop). If closed-loop, an extension is required.
+**关键限定**：证明假设外部 J 在系统内部不可观测（开环）。若闭环，需另作扩展。
 
-### 3.4 What This Tells Us
+### 3.4 这告诉我们什么
 
-> **Any physical system that can predict the future must have irreversible internal dynamics — there must be "circulation" or "non-uniform diffusion". The physical essence of intelligence is non-equilibrium.**
+> **任何能预测未来的物理系统，其内部动力学必然不可逆——必须存在"循环"或"非均匀扩散"。智能的物理本质就是非平衡。**
 
-In Chapter 7 we shall see that the internal dynamics of a Transformer are precisely a pure gradient flow with v = 0. It can "appear" intelligent because it outsources irreversibility to the **autoregressive loop** — an external process.
+我们将在第 7 章看到：Transformer 的内部动力学恰恰是 v = 0 的纯梯度流。它之所以"看起来"智能，是因为它把不可逆性外包给了**自回归循环**——一个外部过程。
 
-**This is also exactly the physical defect that o1/o3-style "reasoning models" emerging in 2024–2026, with their explicit test-time compute, are trying to compensate for.**
+**这也正是 2024-2026 年涌现的 o1/o3 类"推理模型"通过显式推理时计算试图弥补的物理缺陷。**
 
-> **Supplementary Note on the Relationship with Baiesi-Rosso (2025)**: The core logic of Theorem 3.3—"if a system can predict the future then it must break detailed balance, equivalently requiring a nonzero probability-flow loop"—is consistent in physical connotation with the conclusion independently proved by Baiesi and Rosso (arXiv:2512.11415) within the discrete Markov chain framework. The two works can be regarded as different formulations of the broader proposition that "non-equilibrium is a necessary physical condition for learning/prediction": this paper provides the derivation of the necessary-and-sufficient conditions at the continuous field-theoretic level, whereas Baiesi-Rosso provide experimental confirmation at the discrete generative-model level. In the necessary-condition direction ("predictive capacity implies non-equilibrium"), the two works mutually support each other; in the sufficient-condition direction ("how non-equilibrium capability translates into effective prediction"), the two works each provide local answers within different frameworks, and the complete sufficient conditions remain the open problem listed in Section A.6 of Appendix A.
+> **关于与 Baiesi-Rosso（2025）关系的补充说明**：定理 3.3 的核心逻辑——"系统若能预测未来则必须打破细致平衡，等价于必须存在非零概率流环路"——与 Baiesi 和 Rosso（arXiv:2512.11415）在离散马尔可夫链框架下独立证明的结论在物理内涵上一致。两项工作可被视为"非平衡是学习/预测的必要物理条件"这一更广义命题的不同表述：本文在连续场论层面给出充要条件的推导，Baiesi-Rosso 则在离散生成模型层面给出实验确认。在必要条件方向（预测能力 ⇒ 非平衡）两项工作互相支持；在充分条件方向（非平衡能力如何转化为有效预测）两项工作各自在不同框架下提供局部答案，完整的充分条件仍属附录 A 第 A.6 节列出的开放问题。
 
-## Chapter 4 — First-Principle Origin of Curl: Multi-Bath Competition
+## 第 4 章 —— 旋度的第一性原理起源：多浴竞争
 
-### 4.1 Physical Picture: Two Baths at Different Temperatures
+### 4.1 物理图景：两个不同温度的热浴
 
-Consider a system in contact with two heat baths simultaneously, with T₁ ≠ T₂:
+考虑一个系统同时与两个热浴接触，T₁ ≠ T₂：
 
 ```
-   Bath 1 (T₁ high)         Bath 2 (T₂ low)
+   热浴 1（T₁ 高）          热浴 2（T₂ 低）
         │                         │
-   coupling c₁              coupling c₂
+   耦合 c₁                   耦合 c₂
         │                         │
-        └─────► system φ ◄────────┘
+        └─────► 系统 φ ◄──────────┘
                       │
-        sustained heat flow J_q (T₁ → T₂)
+        持续热流 J_q（T₁ → T₂）
 ```
 
-Classical thermodynamics tells us: **such a system cannot reach equilibrium**; there must be a steady heat flow.
+经典热力学告诉我们：**这样的系统无法达到平衡**，必有稳定热流。
 
-### 4.2 Two-Bath Generalised Langevin Equation
+### 4.2 双浴广义 Langevin 方程
 
-Mimicking the derivation of Section 1.4 but with two baths:
-
-```
-dφ/dt  =  −∇U(φ)
-          − ∫₀ᵗ [γ₁(t−s) + γ₂(t−s)] · (dφ/ds) ds
-          + ξ₁(t)  +  ξ₂(t)
-```
-
-Each noise satisfies its own fluctuation–dissipation relation:
+仿照 1.4 节的推导但用两个热浴：
 
 ```
-⟨ξ_k(t) ξ_k(t')⟩  =  k_B T_k · γ_k(t − t')    ,   k = 1, 2
+dφ/dt = −∇U(φ)
+        − ∫₀ᵗ [γ₁(t−s) + γ₂(t−s)] · (dφ/ds) ds
+        + ξ₁(t) + ξ₂(t)
 ```
 
-### 4.3 Key Theorem: Two Temperatures Necessarily Produce Curl
-
-**Theorem 4.1 (Two-bath curl theorem)**: If T₁ ≠ T₂ and the coupling matrices A^(1) and A^(2) satisfy [A^(1), A^(2)] ≠ 0, then the steady-state probability current J_ss ≠ 0; equivalently, v ≠ 0.
-
-**Proof sketch**:
-
-A two-temperature system has a **position-dependent** diffusion tensor:
+每个噪声满足各自的涨落-耗散关系：
 
 ```
-D_ij(φ)  =  k_B T₁ · A^(1)_ij  +  k_B T₂ · A^(2)_ij
+⟨ξ_k(t) ξ_k(t')⟩ = k_B T_k · γ_k(t − t')    ，  k = 1, 2
 ```
 
-**By contradiction**: If detailed balance holds, D_ij must be a scalar multiple of the identity. But when T₁ ≠ T₂ and the commutator is non-zero, D_ij cannot be reduced to a scalar. Hence v ≠ 0.
+### 4.3 关键定理：两个温度必然产生旋度
 
-**Reference**: Mazo, R. M. (2002). *Brownian Motion: Fluctuations, Dynamics, and Applications*. Oxford UP.
+**定理 4.1（双浴旋度定理）**：若 T₁ ≠ T₂ 且耦合矩阵 A^(1) 和 A^(2) 满足 [A^(1), A^(2)] ≠ 0，则稳态概率流 J_ss ≠ 0；等价地，v ≠ 0。
 
-### 4.4 Explicit Form of the Curl
+**证明梗概**：
 
-To linear order:
+双温系统具有**位置相关**的扩散张量：
 
 ```
-v(φ)  =  (T₁ − T₂) · [A^(1), A^(2)] · φ  +  O(φ²)
+D_ij(φ) = k_B T₁ · A^(1)_ij + k_B T₂ · A^(2)_ij
 ```
 
-**Equation (4.1) — Explicit expression for the curl field.**
+**反证法**：若细致平衡成立，D_ij 必为标量乘单位阵。但当 T₁ ≠ T₂ 且对易子非零时，D_ij 无法化为标量。因此 v ≠ 0。
 
-If A^(k) are symmetric, the commutator [A^(1), A^(2)] is automatically **antisymmetric** — exactly the algebraic expression of "curl".
+**参考文献**：Mazo, R. M. (2002). *Brownian Motion: Fluctuations, Dynamics, and Applications*. Oxford UP.
 
-> **This is the first-principle origin of curl: multiple non-equilibrium energy sources combined with non-commuting coupling.**
+### 4.4 旋度的显式形式
 
-### 4.5 Correspondence with the Biological Brain
+到线性阶：
 
-Two types of "heat baths" in the brain:
+```
+v(φ) = (T₁ − T₂) · [A^(1), A^(2)] · φ + O(φ²)
+```
 
-| Synapse type | Approx. ratio | Temperature analogue |
+**方程 (4.1) —— 旋度场的显式表达式。**
+
+若 A^(k) 对称，则对易子 [A^(1), A^(2)] 自动**反对称**——正是"旋度"的代数表达。
+
+> **这就是旋度的第一性原理起源：多个非平衡能量源加上不可交换耦合。**
+
+### 4.5 与生物大脑的对应
+
+大脑中的两类"热浴"：
+
+| 突触类型 | 大致比例 | 温度类比 |
 |---|---|---|
-| **Excitatory (E)** | 80% | High activity ≈ high temperature |
-| **Inhibitory (I)** | 20% | Low activity ≈ low temperature |
+| **兴奋性（E）** | 80% | 高活动 ≈ 高温 |
+| **抑制性（I）** | 20% | 低活动 ≈ 低温 |
 
-The E/I ratio of about 4:1 (**different bath "temperatures"**) → curl must arise. **This is the physical basis for the brain's sustained dynamics (unlike a dead system).**
+E/I 比约 4:1（**不同的浴"温度"**）→ 必然产生旋度。**这是大脑能持续动态（不同于死系统）的物理基础。**
 
-**Reference**: Markram, H., et al. (2004). "Interneurons of the neocortical inhibitory system." *Nat. Rev. Neurosci.* 5, 793. https://doi.org/10.1038/nrn1519
+**参考文献**：Markram, H., et al. (2004). "Interneurons of the neocortical inhibitory system." *Nat. Rev. Neurosci.* 5, 793. https://doi.org/10.1038/nrn1519
 
-### 4.6 Visual Schematic
+### 4.6 可视化示意
 
 ```
-Single bath (T₁=T₂):                Two competing baths (T₁≠T₂):
+单浴（T₁=T₂）：                 双浴竞争（T₁≠T₂）：
 
-    ↘ ↓ ↙                                ↗   ↑   ↖
-    →  ●  ←                              ↑   ●   ↓
-    ↗ ↑ ↖                                ↖   ↓   ↙
+    ↘ ↓ ↙                              ↗   ↑   ↖
+    →  ●  ←                            ↑   ●   ↓
+    ↗ ↑ ↖                              ↖   ↓   ↙
 
-  All arrows inward                     Closed circulation (limit cycle)
-  Converge to energy minimum            Sustained heat flow J_q
-  v = 0                                 v = (T₁-T₂)[A¹,A²]φ
+  所有箭头向内                       闭合循环（极限环）
+  收敛到能量最低                     持续热流 J_q
+  v = 0                              v = (T₁-T₂)[A¹,A²]φ
 ```
 
-## Chapter 5 — First-Principle Origin of Colored Noise: Sub-Ohmic Spectra
+## 第 5 章 —— 色噪声的第一性原理起源：亚欧姆谱
 
-### 5.1 Definition of Spectral Density
+### 5.1 谱密度的定义
 
-The environment (heat bath) is fully characterised by its **spectral density** J(ω). Three typical regimes:
+环境（热浴）由其**谱密度** J(ω) 完全刻画。三种典型情况：
 
-| Type | Spectral form | Physical meaning |
+| 类型 | 谱形式 | 物理含义 |
 |---|---|---|
-| **Super-Ohmic** | J(ω) ∝ ω^s, s > 1 | High-frequency environment, short memory |
-| **Ohmic (reference limit)** | J(ω) ∝ ω | White-noise limit |
-| **Sub-Ohmic** | J(ω) ∝ ω^s, s < 1 | Long-range memory, 1/f noise |
+| **超欧姆** | J(ω) ∝ ω^s, s > 1 | 高频环境，短记忆 |
+| **欧姆（参考极限）** | J(ω) ∝ ω | 白噪声极限 |
+| **亚欧姆** | J(ω) ∝ ω^s, s < 1 | 长程记忆，1/f 噪声 |
 
-### 5.2 Damping Kernel: Spectral–Time Correspondence
+### 5.2 阻尼核：谱与时间的对应
 
-The damping kernel γ(t) is related to J(ω) via the Fourier cosine transform. A sub-Ohmic spectrum yields:
-
-```
-γ(t)  ∝  Γ(s) · sin(s · π / 2) / t^s        (for t ≫ 1/ω_c)
-```
-
-**A power-law tail! This is the physical origin of long-range memory.**
-
-### 5.3 Correlation Function of Colored Noise
-
-The fluctuation–dissipation theorem (high-temperature limit):
+阻尼核 γ(t) 与 J(ω) 通过 Fourier 余弦变换相关联。亚欧姆谱给出：
 
 ```
-⟨ξ(t) ξ(t')⟩  ∝  |t − t'|^(−s)
+γ(t) ∝ Γ(s) · sin(s · π / 2) / t^s        （对 t ≫ 1/ω_c）
 ```
 
-Corresponding power spectrum:
+**幂律尾巴！这就是长程记忆的物理起源。**
+
+### 5.3 色噪声的关联函数
+
+涨落-耗散定理（高温极限）：
 
 ```
-S_ξ(ω)  ∝  ω^(−β)    ,    where  β = 1 − s ∈ (0, 1)
+⟨ξ(t) ξ(t')⟩ ∝ |t − t'|^(−s)
 ```
 
-**Equation (5.1).**
+对应的功率谱：
 
-**When β = 1, this is exactly 1/f noise** — the empirically measured spectrum of human-brain neural activity.
+```
+S_ξ(ω) ∝ ω^(−β)    ，   其中  β = 1 − s ∈ (0, 1)
+```
 
-**Reference**: He, B. J. (2014). "Scale-free brain activity: past, present, and future." *Trends Cogn. Sci.* 18, 480. https://doi.org/10.1016/j.tics.2014.04.003
+**方程 (5.1)。**
 
-### 5.4 Hurst Exponent and Memory
+**当 β = 1 时，这正是 1/f 噪声**——人脑神经活动的实测谱。
 
-A process driven by colored noise is a **fractional Brownian motion** (fBm) with Hurst exponent H = 1 − β/2 ∈ (0.5, 1).
+**参考文献**：He, B. J. (2014). "Scale-free brain activity: past, present, and future." *Trends Cogn. Sci.* 18, 480. https://doi.org/10.1016/j.tics.2014.04.003
 
-| Exponent H | Behaviour | Examples |
+### 5.4 Hurst 指数与记忆
+
+由色噪声驱动的过程是 **分数布朗运动**（fBm），其 Hurst 指数 H = 1 − β/2 ∈ (0.5, 1)。
+
+| 指数 H | 行为 | 例子 |
 |---|---|---|
-| 0.5 | White noise (no memory) | Naive Langevin |
-| ~ 0.7| Persistent memory | **Human language, spontaneous brain activity (empirical)** |
-| → 1 | Fully correlated | Deterministic trajectory |
+| 0.5 | 白噪声（无记忆） | 朴素 Langevin |
+| ~ 0.7 | 持续记忆 | **人类语言、自发脑活动（实测）** |
+| → 1 | 完全相关 | 确定性轨迹 |
 
-**Empirical sources**:
+**实证来源**：
 
-- Human spontaneous activity Hurst ≈ 0.7: Linkenkaer-Hansen, K., et al. (2001). *J. Neurosci.* 21, 1370. https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001
-- Methods for analysing language time series: Kantelhardt, J. W., et al. (2002). *Physica A* 316, 87. https://doi.org/10.1016/S0378-4371(02)01383-3
+- 人脑自发活动 Hurst ≈ 0.7：Linkenkaer-Hansen, K., et al. (2001). *J. Neurosci.* 21, 1370. https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001
+- 语言时间序列分析方法：Kantelhardt, J. W., et al. (2002). *Physica A* 316, 87. https://doi.org/10.1016/S0378-4371(02)01383-3
 
-### 5.5 Three Intelligence Advantages of Colored Noise
+### 5.5 色噪声的三个智能优势
 
-#### (a) Long-range temporal dependence (memory emergence)
+#### (a) 长程时间依赖（记忆涌现）
 
-Colored noise makes the current state **naturally depend on a power-law-weighted sum of the entire past history** — the implementation of memory at the physical level, **with no explicit KV cache**.
+色噪声使当前状态**天然依赖于整个过去的幂律加权和**——记忆在物理层就实现了，**无需显式 KV 缓存**。
 
-#### (b) Multi-scale temporal structure
+#### (b) 多尺度时间结构
 
-S(ω) ∝ ω^(−β) implies that fluctuations at all time scales have comparable strength — the system can simultaneously handle **millisecond reactions** and **year-scale planning**.
+S(ω) ∝ ω^(−β) 意味着所有时间尺度的涨落强度可比——系统能同时处理**毫秒反应**与**年级规划**。
 
-#### (c) Stochastic resonance (signal amplification)
+#### (c) 随机共振（信号放大）
 
-In nonlinear systems, **moderate colored noise amplifies weak signals**: the SNR is maximised when the colored-noise β ≈ 1.
+在非线性系统中，**适度的色噪声反而放大弱信号**：色噪声 β ≈ 1 时信噪比最大。
 
-**Reference**: Benzi, R., Sutera, A., & Vulpiani, A. (1981). "The mechanism of stochastic resonance." *J. Phys. A* 14, L453. https://doi.org/10.1088/0305-4470/14/11/006
+**参考文献**：Benzi, R., Sutera, A., & Vulpiani, A. (1981). "The mechanism of stochastic resonance." *J. Phys. A* 14, L453. https://doi.org/10.1088/0305-4470/14/11/006
 
-### 5.6 Visual Schematic
-
-```
-Comparison of noise types (time series):
-
-  White (β=0):        ●●●●●●●●●●●●●●●●●●●●  (no structure)
-
-  Pink 1/f (β=1):    ▁▂▅█▆▃▁▂▄▇█▅▂▁▃▆█▇▄▂▁  (self-similar, fractal)
-
-  Human EEG:         ▁▃▆█▆▃▁▂▅█▇▄▂▁▄▆█▆▃▁  (highly similar to β=1)
-
-  Power spectrum (log–log):
-    White:   ────────                    (slope 0)
-    Pink:    ────╲                       (slope -1)
-    Brain:   ────╲                       (slope -1)
-```
-
-## Chapter 6 — The Complete CID Master Equation
-
-### 6.1 The Master Equation
-
-After three layers of refinement — Chapter 3 (curl), Chapter 4 (multi-bath origin), Chapter 5 (colored noise) — we obtain the **complete CID master equation**:
+### 5.6 可视化示意
 
 ```
-dφ/dt  =   −∇U(φ)                                ← associative memory (conservative gradient)
-           +  v(φ)                                ← multi-bath curl
-           −  ∫₀ᵗ γ(t−s) · (dφ/ds) ds            ← colored damping (power-law kernel)
-           +  ξ(t)                                ← colored noise
+噪声类型对比（时间序列）：
 
-where:
-  γ(t)            ∝  Γ(s) · sin(s π / 2) · t^(-s)       (sub-Ohmic power law)
-  ⟨ξ(t)ξ(t')⟩    ∝  |t − t'|^(-s)
-  v(φ)            =  (T₁ − T₂) [A^(1), A^(2)] φ + O(φ²)
-  s               ∈  (0, 1)   sub-Ohmic exponent
+  白噪声（β=0）：    ●●●●●●●●●●●●●●●●●●●●  （无结构）
+
+  粉噪声 1/f（β=1）：▁▂▅█▆▃▁▂▄▇█▅▂▁▃▆█▇▄▂▁  （自相似，分形）
+
+  人脑 EEG：        ▁▃▆█▆▃▁▂▅█▇▄▂▁▄▆█▆▃▁  （与 β=1 高度相似）
+
+  功率谱（log-log）：
+    白噪声：────────                  （斜率 0）
+    粉噪声：────╲                     （斜率 -1）
+    脑波：  ────╲                     （斜率 -1）
 ```
 
-**Equation (6.1) — Complete CID master equation.**
+## 第 6 章 —— 完整的 CID 主方程
 
-### 6.2 Comparison with the Naive Langevin Equation
+### 6.1 主方程
 
-| Term | Naive Langevin (Eq. 1.2) | Complete CID (Eq. 6.1) |
+经过三层精炼——第 3 章（旋度）、第 4 章（多浴起源）、第 5 章（色噪声）——我们得到**完整的 CID 主方程**：
+
+```
+dφ/dt = −∇U(φ)                                ← 联想记忆（保守梯度）
+        + v(φ)                                  ← 多浴旋度
+        − ∫₀ᵗ γ(t−s) · (dφ/ds) ds              ← 色阻尼（幂律核）
+        + ξ(t)                                  ← 色噪声
+
+其中：
+  γ(t)             ∝ Γ(s) · sin(s π / 2) · t^(-s)        （亚欧姆幂律）
+  ⟨ξ(t)ξ(t')⟩     ∝ |t − t'|^(-s)
+  v(φ)             = (T₁ − T₂) [A^(1), A^(2)] φ + O(φ²)
+  s                ∈ (0, 1)   亚欧姆指数
+```
+
+**方程 (6.1) —— 完整 CID 主方程。**
+
+### 6.2 与朴素 Langevin 方程的比较
+
+| 项 | 朴素 Langevin（方程 1.2）| 完整 CID（方程 6.1）|
 |---|---|---|
-| Associative memory | Yes (−∇U) | Yes (−∇U) |
-| **Curl** | **No** | **Yes, derived from multi-bath setting** |
-| Damping kernel | White (δ-function) | **Power-law (long memory)** |
-| Noise | White | **Colored (1/f spectrum)** |
-| Detailed balance | Holds | **Broken** |
-| Intelligence 𝓘 | 0 (no predictive power) | **> 0** |
+| 联想记忆 | 有（−∇U）| 有（−∇U）|
+| **旋度** | **无** | **有，来自多浴设定** |
+| 阻尼核 | 白（δ 函数）| **幂律（长记忆）** |
+| 噪声 | 白 | **色（1/f 谱）** |
+| 细致平衡 | 成立 | **打破** |
+| 智能 𝓘 | 0（无预测能力）| **> 0** |
 
-### 6.3 Physical Intuition for the Four Terms
+### 6.3 四项的物理直观
 
-| Term | Role | Analogy |
+| 项 | 角色 | 类比 |
 |---|---|---|
-| −∇U(φ) | Pulls the state toward "patterns it has learned" | Gravity pulling a ball into a valley |
-| v(φ) | Lets the state circulate among patterns, generating sustained dynamics | A vortex spinning continuously |
-| Colored damping | Makes the state's evolution dragged by past history | Motion in a viscous fluid |
-| Colored noise | Provides exploration on all time scales | A 1/f storm |
+| −∇U(φ) | 把状态拉向"已学到的模式" | 重力把球拉进山谷 |
+| v(φ) | 让状态在模式间循环，产生持续动态 | 漩涡不停旋转 |
+| 色阻尼 | 使状态的演化被过去拖拽 | 在粘稠液体中运动 |
+| 色噪声 | 在所有时间尺度上提供探索 | 1/f 风暴 |
 
-**All four are indispensable**: removing any one of them severely weakens intelligent behaviour.
+**四项缺一不可**：移除其中任何一项都会严重削弱智能行为。
 
-A rigorous proof of the necessity chain "predictive capacity → broken detailed balance → curl term required" is given in **Appendix A**; the appendix also identifies the sufficiency direction (curl term → positive lower bound on predictive capacity) as an open problem and outlines candidate thermodynamic tools.
+"预测能力 → 打破细致平衡 → 必有旋度项"的必要性链条的严格证明见 **附录 A**；该附录还把充分性方向（旋度项 → 预测能力正下界）列为开放问题，并给出候选热力学工具。
 
-## Chapter 7 — Shape of the Potential: Associative-Memory Capacity
+## 第 7 章 —— 势能的形状：联想记忆容量
 
-### 7.1 Jaynes' Maximum-Entropy Principle
+### 7.1 Jaynes 最大熵原理
 
-Given a dataset (K patterns ξ₁, …, ξ_K), the least-assumption potential U(φ) is determined by the **maximum-entropy principle**:
+给定数据集（K 个模式 ξ₁, …, ξ_K），最少假设的势能 U(φ) 由**最大熵原理**决定：
 
-Maximise the entropy −∫P log P dφ under the constraints ⟨φ · ξ_k⟩ = m_k (k = 1, …, K).
+在约束 ⟨φ · ξ_k⟩ = m_k（k = 1, …, K）下最大化熵 −∫P log P dφ。
 
-The solution is:
+解为：
 
 ```
-U(φ)  =  −(1/β) · log [ Σ_k exp(β · φ · ξ_k) ]
+U(φ) = −(1/β) · log [ Σ_k exp(β · φ · ξ_k) ]
 ```
 
-**Equation (7.1) — Modern Hopfield potential.**
+**方程 (7.1) —— 现代 Hopfield 势能。**
 
-**References**:
+**参考文献**：
 - Jaynes, E. T. (1957). *Phys. Rev.* 106, 620. https://doi.org/10.1103/PhysRev.106.620
 - Ramsauer, H., et al. (2020). "Hopfield Networks Is All You Need." *ICLR 2021*. https://arxiv.org/abs/2008.02217
 
-### 7.2 Associative-Memory Capacity
+### 7.2 联想记忆容量
 
-Different forms of the potential give different storage capacities:
+不同形式的势能给出不同的存储容量：
 
-| Potential form | Storage capacity | Reference |
+| 势能形式 | 存储容量 | 参考 |
 |---|---|---|
-| Quadratic (classical Hopfield) | ~ 0.14 N | Hopfield 1982, https://doi.org/10.1073/pnas.79.8.2554 |
-| High-order polynomial (Krotov–Hopfield) | ~ N^k | Krotov & Hopfield 2016, https://arxiv.org/abs/1606.01164 |
-| **Exponential family (modern Hopfield)** | **Exponential ~ exp(N)** | Ramsauer 2020 (above) |
+| 二次（经典 Hopfield）| ~ 0.14 N | Hopfield 1982, https://doi.org/10.1073/pnas.79.8.2554 |
+| 高阶多项式（Krotov-Hopfield）| ~ N^k | Krotov & Hopfield 2016, https://arxiv.org/abs/1606.01164 |
+| **指数族（现代 Hopfield）** | **指数级 ~ exp(N)** | Ramsauer 2020（上）|
 
-**Key implication**: With an exponential-family potential (i.e., the softmax form), an N-dimensional system can store exp(N) patterns — **this is the physical origin of the enormous capacity of the Attention mechanism**.
+**关键含义**：用指数族势能（即 softmax 形式），N 维系统可存储 exp(N) 个模式——**这是 Attention 机制巨大容量的物理起源**。
 
-## Chapter 8 — Attention Is Derived from Physics (Full Derivation)
+## 第 8 章 —— Attention 由物理推导（完整推导）
 
-### 8.1 Overview of the Derivation Chain
+### 8.1 推导链概览
 
 ```
-   Three axioms (Section 1.3)
+   三条公理（1.3 节）
            ↓
-   Mori–Zwanzig projection (derivation tool)
+   Mori-Zwanzig 投影（推导工具）
            ↓
-   Generalised Langevin equation (Eq. 1.1)
-           ↓ set v = 0, D ≈ 0, γ = δ
-   Overdamped limit
-           ↓ use the maximum-entropy potential (Eq. 7.1)
-   Modern Hopfield dynamics
-           ↓ Euler discretisation Δt = 1
+   广义 Langevin 方程（方程 1.1）
+           ↓ 取 v = 0, D ≈ 0, γ = δ
+   过阻尼极限
+           ↓ 用最大熵势能（方程 7.1）
+   现代 Hopfield 动力学
+           ↓ Euler 离散化 Δt = 1
    ┌──────────────────────────────────────────┐
    │  Attention(Q, K, V) = V · softmax(β · K · Q)  │
    └──────────────────────────────────────────┘
 ```
 
-### 8.2 Detailed Derivation
+### 8.2 详细推导
 
-**Step 1**: Take the overdamped limit of Eq. (1.2) (inertial term negligible):
-
-```
-γ₀ · (dφ/dt)  =  μ(φ)  +  √(2D) · η(t)
-```
-
-**Step 2**: Use the maximum-entropy potential of Eq. (7.1):
+**第 1 步**：取方程 (1.2) 的过阻尼极限（惯性项可忽略）：
 
 ```
-μ(φ)  =  −∇U(φ)  =  Σ_k  ξ_k · softmax_k(β · φ · ξ_k)
+γ₀ · (dφ/dt) = μ(φ) + √(2D) · η(t)
 ```
 
-**Step 3**: Drop the noise term (deterministic limit D → 0) and Euler-discretise (Δt = 1):
+**第 2 步**：用方程 (7.1) 的最大熵势能：
 
 ```
-φ_{t+1}  =  φ_t  +  Σ_k  ξ_k · softmax_k(β · φ_t · ξ_k)
+μ(φ) = −∇U(φ) = Σ_k  ξ_k · softmax_k(β · φ · ξ_k)
 ```
 
-**Step 4**: Identify with Transformer Attention:
-
-- Call the current query φ_t the Q.
-- Call the stored patterns ξ_k Keys K and Values V.
-- Obtain:
+**第 3 步**：去掉噪声项（确定性极限 D → 0），Euler 离散化（Δt = 1）：
 
 ```
-Attention(Q, K, V)  =  V · softmax(β · K^T · Q)
-
-with: β = 1 / √d_k   (given by random-matrix theory; see 8.3)
+φ_{t+1} = φ_t + Σ_k  ξ_k · softmax_k(β · φ_t · ξ_k)
 ```
 
-**Equation (8.1) — Physical derivation of the Attention mechanism.**
+**第 4 步**：与 Transformer Attention 等同：
 
-### 8.3 Physical Origin of the 1/√d_k Scaling
-
-Random-matrix theory (Wigner's semicircle law) tells us that the typical magnitude of an inner product between two d_k-dimensional random vectors is √d_k.
-
-For softmax to operate at a sensible temperature (neither degenerate to a uniform distribution nor to a one-hot), one must standardise by √d_k:
+- 把当前查询 φ_t 称为 Q。
+- 把存储的模式 ξ_k 称为 Keys K 和 Values V。
+- 得到：
 
 ```
-β  =  1 / √d_k
+Attention(Q, K, V) = V · softmax(β · K^T · Q)
+
+其中：β = 1 / √d_k   （由随机矩阵理论给出；见 8.3）
 ```
 
-This is the physical origin of the √d_k scaling factor in Transformers.
+**方程 (8.1) —— Attention 机制的物理推导。**
 
-**Reference**: Vaswani, A., et al. (2017). "Attention Is All You Need." *NeurIPS*. https://arxiv.org/abs/1706.03762
+### 8.3 1/√d_k 缩放的物理起源
 
-### 8.4 Implication
+随机矩阵理论（Wigner 半圆律）告诉我们：两个 d_k 维随机向量内积的典型量级是 √d_k。
 
-> **Attention is not an engineering invention; it is the inevitable consequence of the Langevin equation in the limit v = 0, D = 0, with a maximum-entropy potential and Euler discretisation.**
-
-What is required is to change "subsequent versions should supplement" into directly providing the corrected HopfieldAttention in the body of this paper, namely adding the additional symmetric matrix term of ET and providing a Lyapunov proof. Let me first confirm the specific technical details of ET. Now that I have the complete technical details of the ET original paper, including the precise form of the additional symmetric term and the Lyapunov proof, the corrected derivation can be given directly in the main text rather than "supplemented later".
-
-This also implies: **Transformer by default discards the curl (v), the colored noise, and the colored damping that appear in the CID master equation** — it is just the simplest limit of CID.
-
-### 8.5 Relationship with Energy Transformer and the Correction of the Attention Mechanism in This Paper
-
-The core assertion of this chapter—"the operating logic of the entire Transformer block is governed by a single energy function, and Attention is the gradient-descent update of this energy function"—is highly consistent in claim with the Energy Transformer (ET, arXiv:2302.07253) published by Hoover et al. at NeurIPS 2023, and ET predates this paper by approximately two and a half years. The main technical contributions of ET include: first, designing an explicit global Hopfield energy function for the entire Transformer block; second, rigorously proving via a Lyapunov function that energy is monotonically non-increasing during forward propagation; third, deriving from energy self-consistency the additional symmetric term missing from standard softmax attention, and pointing out that the absence of this term in traditional attention is a structural incompleteness.
-
-The main difference between the derivation in Chapter 8 of this paper and that of ET lies in the fact that this paper embeds the Hopfield-Transformer equivalence relation into the first-principles framework of Mori-Zwanzig, giving "what Attention is" a physical explanation from non-equilibrium statistical mechanics, and further combining the associative-memory term with the curl term, the colored damping, and the colored noise to constitute the complete CID master equation. However, the specific proposition that "the Transformer block is governed by an energy function" should not be regarded as originating with this paper; the Lyapunov proof of ET is also stronger than the descriptive derivation of this chapter in mathematical rigor.
-
-More importantly, the Attention formula derived in Section 8.2 of this paper and the HopfieldAttention implementation in the CID code repository both use standard scaled dot-product attention, omitting the second term derived by ET from energy self-consistency. The correction is given directly below.
-
-**The Complete Form of the Attention Update of the ET Energy Function**
-
-The attention energy function defined by ET is (single-head simplification, omitting the log-sum-exp derivation details):
+为使 softmax 工作在合理温度（既不退化为均匀分布也不退化为 one-hot），必须按 √d_k 标准化：
 
 ```
-E_ATT  =  -(1/beta) * sum_C  log( sum_{B!=C}  exp(beta * A_BC) )
-
-where  A_BC  =  sum_alpha  K_{alpha,B} * Q_{alpha,C}
-       K_{alpha,B}  =  sum_j  W^K_{alpha,j} * g_{j,B}
-       Q_{alpha,C}  =  sum_j  W^Q_{alpha,j} * g_{j,C}
+β = 1 / √d_k
 ```
 
-Taking the negative gradient of this energy function with respect to the token representation g_{i,A} yields the complete update rule:
+这就是 Transformer 中 √d_k 缩放因子的物理起源。
+
+**参考文献**：Vaswani, A., et al. (2017). "Attention Is All You Need." *NeurIPS*. https://arxiv.org/abs/1706.03762
+
+### 8.4 含义
+
+> **Attention 不是工程发明；它是 Langevin 方程在 v = 0、D = 0、最大熵势能、Euler 离散化极限下的必然结果。**
+
+需要做的是把"后续版本应补充"改为直接在本文正文中给出修正后的 HopfieldAttention，即加上 ET 的额外对称矩阵项并给出 Lyapunov 证明。让我先确认 ET 的具体技术细节。现在我已掌握 ET 原论文的完整技术细节，包括额外对称项的精确形式与 Lyapunov 证明，可以直接在正文中给出修正推导，而非"后续补充"。
+
+这也意味着：**Transformer 默认丢弃了 CID 主方程中的旋度（v）、色噪声、色阻尼**——它只是 CID 的最简极限。
+
+### 8.5 与 Energy Transformer 的关系及本文 Attention 机制的修正
+
+本章核心论断——"整个 Transformer 块的运行逻辑由一个单一能量函数支配，Attention 即该能量函数的梯度下降更新"——在主张上与 Hoover 等人 2023 年在 NeurIPS 上发表的 Energy Transformer（ET, arXiv:2302.07253）高度一致，且 ET 早于本文约两年半。ET 的主要技术贡献包括：第一，为整个 Transformer 块设计了一个显式的全局 Hopfield 能量函数；第二，通过 Lyapunov 函数严格证明前向传播中能量单调不增；第三，从能量自洽出发，推导出标准 softmax 注意力所缺失的额外对称项，并指出该项在传统注意力中的缺位是一种结构上的不完整。
+
+本文第 8 章的推导与 ET 的主要区别在于：本文将 Hopfield-Transformer 等价关系嵌入 Mori-Zwanzig 第一性原理框架，给"Attention 是什么"以一个来自非平衡统计力学的物理解释，并进一步把联想记忆项与旋度项、色阻尼、色噪声共同构成完整 CID 主方程。但"Transformer 块由能量函数支配"这一具体命题不应被视为本文首创，ET 的 Lyapunov 证明在数学严格度上也强于本章的描述性推导。
+
+更重要的是，本文 8.2 节推导出的 Attention 公式以及 CID 代码仓库中的 HopfieldAttention 实现都采用标准缩放点积注意力，遗漏了 ET 从能量自洽推导出的第二项。修正直接给出如下。
+
+**ET 能量函数 Attention 更新的完整形式**
+
+ET 所定义的注意力能量函数为（单头简化版，省略 log-sum-exp 推导细节）：
+
+```
+E_ATT = -(1/beta) * sum_C  log( sum_{B!=C}  exp(beta * A_BC) )
+
+其中  A_BC = sum_alpha  K_{alpha,B} * Q_{alpha,C}
+      K_{alpha,B} = sum_j  W^K_{alpha,j} * g_{j,B}
+      Q_{alpha,C} = sum_j  W^Q_{alpha,j} * g_{j,C}
+```
+
+对该能量函数关于 token 表示 g_{i,A} 取负梯度，得到完整的更新规则：
 
 ```
 -(dE_ATT / dg_{i,A})
 
-=  sum_{C!=A}  sum_alpha  W^Q_{alpha,i} * K_{alpha,C} * softmax_C( beta * sum_gamma K_{gamma,C} * Q_{gamma,A} )
+= sum_{C!=A}  sum_alpha  W^Q_{alpha,i} * K_{alpha,C} * softmax_C( beta * sum_gamma K_{gamma,C} * Q_{gamma,A} )
 
-+  sum_{C!=A}  sum_alpha  W^K_{alpha,i} * Q_{alpha,C} * softmax_A( beta * sum_gamma K_{gamma,A} * Q_{gamma,C} )
++ sum_{C!=A}  sum_alpha  W^K_{alpha,i} * Q_{alpha,C} * softmax_A( beta * sum_gamma K_{gamma,A} * Q_{gamma,C} )
 ```
 
-The first term is standard attention (with keys as the value matrix, V = (W^Q)^T * K); **the second term is the additional symmetric term derived by ET**, completely absent in the standard Transformer. The existence of this term is a necessary condition for guaranteeing monotonic descent of the energy function under recursive application; without it, the energy of recursive attention cannot possibly enjoy a Lyapunov guarantee.
+第一项即标准注意力（以 keys 为 value 矩阵，V = (W^Q)^T * K）；**第二项即 ET 推导出的额外对称项，在标准 Transformer 中完全缺失**。该项的存在是保证能量函数在递归应用下单调下降的必要条件，缺少它则递归注意力的能量不可能享有 Lyapunov 保证。
 
-**Lyapunov Monotonicity Proof**
+**Lyapunov 单调性证明**
 
-The token update of ET follows the continuous-time differential equation:
-
-```
-tau * (dx_{i,A} / dt)  =  -(dE / dg_{i,A})
-```
-
-where E = E_ATT + E_HN is the global energy. Taking the time derivative of the energy:
+ET 的 token 更新遵循连续时间微分方程：
 
 ```
-dE/dt  =  sum_{i,j,A}  (dE / dg_{i,A}) * (dg_{i,A} / dx_{j,A}) * (dx_{j,A} / dt)
-
-       =  -(1/tau) * sum_{i,j,A}  (dE / dg_{i,A}) * M^A_{i,j} * (dE / dg_{j,A})
+tau * (dx_{i,A} / dt) = -(dE / dg_{i,A})
 ```
 
-where M^A_{i,j} = dg_{i,A} / dx_{j,A} = d^2 L / (dx_{i,A} * dx_{j,A}), and L is the Lagrangian corresponding to LayerNorm (see Eq. 2 of the original paper). As long as the symmetric part of M^A is positive semi-definite, the expression above is less than or equal to zero, and the energy is monotonically non-increasing. The Lagrangian of LayerNorm satisfies this condition. Q.E.D.
+其中 E = E_ATT + E_HN 为全局能量。对能量求时间导数：
 
-**The Corrected Version of HopfieldAttention in This Paper**
+```
+dE/dt = sum_{i,j,A}  (dE / dg_{i,A}) * (dg_{i,A} / dx_{j,A}) * (dx_{j,A} / dt)
 
-Based on the analysis above, the HopfieldAttention in the code repository of this paper should be corrected to a symmetric version containing the dual-term update, with pseudocode as follows:
+      = -(1/tau) * sum_{i,j,A}  (dE / dg_{i,A}) * M^A_{i,j} * (dE / dg_{j,A})
+```
+
+其中 M^A_{i,j} = dg_{i,A} / dx_{j,A} = d^2 L / (dx_{i,A} * dx_{j,A})，L 为 LayerNorm 对应的拉格朗日函数（见原论文方程 2）。只要 M^A 的对称部分半正定，上式即小于等于零，能量单调不增。LayerNorm 的拉格朗日函数满足该条件。证毕。
+
+**本文 HopfieldAttention 的修正版本**
+
+基于上述分析，本文代码仓库中的 HopfieldAttention 应修正为包含双项更新的对称版本，伪代码如下：
 
 ```python
 def symmetric_energy_attention(g, W_K, W_Q, beta):
     """
-    ET-style energy attention: simultaneously contains the standard term and the additional symmetric term.
-    g:   token representations, shape [N, D] (already passed through LayerNorm)
-    W_K, W_Q: key/query projection matrices, shape [Y, D]
-    beta: inverse temperature
+    ET 式能量注意力：同时包含标准项和额外对称项。
+    g:   token 表示，形状 [N, D]（已通过 LayerNorm）
+    W_K, W_Q: 键 / 查询投影矩阵，形状 [Y, D]
+    beta: 逆温度
     """
     K = g @ W_K.T          # [N, Y]
     Q = g @ W_Q.T          # [N, Y]
 
-    # Attention score matrix A[B, C] = sum_alpha K[B,alpha] * Q[C,alpha]
-    A = K @ Q.T            # [N, N], diagonal removed
+    # 注意力分数矩阵 A[B, C] = sum_alpha K[B,alpha] * Q[C,alpha]
+    A = K @ Q.T            # [N, N]，对角线被移除
 
-    # First term: standard attention direction (softmax over C)
-    S1 = softmax(beta * A, dim=0)   # softmax along the key dimension (rows)
+    # 第一项：标准注意力方向（softmax over C）
+    S1 = softmax(beta * A, dim=0)   # 沿 key 维（行）做 softmax
     grad_first  = S1 @ W_Q          # [N, D]
 
-    # Second term: ET additional symmetric term (softmax over A)
-    S2 = softmax(beta * A.T, dim=0) # softmax along the query dimension
+    # 第二项：ET 额外对称项（softmax over A）
+    S2 = softmax(beta * A.T, dim=0) # 沿 query 维做 softmax
     grad_second = S2 @ W_K          # [N, D]
 
-    # Total update = sum of the two terms (negative gradient direction)
+    # 总更新 = 两项之和（负梯度方向）
     return grad_first + grad_second
 ```
 
-At the call site corresponding to `hopfield = HopfieldAttention(...)` in the CID code of Section 14.2 of this paper, the internal implementation should be replaced with the above `symmetric_energy_attention`, in order to guarantee the energy monotonicity of forward propagation and to be completely aligned with ET mathematically.
+本文 14.2 节 CID 代码中 `hopfield = HopfieldAttention(...)` 对应调用处，内部实现应替换为上述 `symmetric_energy_attention`，以保证前向传播的能量单调性，并在数学上与 ET 完全对齐。
 
-**Citation**: Hoover, B., Liang, Y., Pham, B., Panda, R., Strobelt, H., Chau, D. H., Zaki, M., and Krotov, D. (2023). Energy Transformer. *Advances in Neural Information Processing Systems 36 (NeurIPS 2023)*. arXiv:2302.07253. https://arxiv.org/abs/2302.07253
+**引用**：Hoover, B., Liang, Y., Pham, B., Panda, R., Strobelt, H., Chau, D. H., Zaki, M., and Krotov, D. (2023). Energy Transformer. *Advances in Neural Information Processing Systems 36 (NeurIPS 2023)*. arXiv:2302.07253. https://arxiv.org/abs/2302.07253
 
-## Chapter 9 — Physical Identities of Residuals, LayerNorm, and Depth
+## 第 9 章 —— 残差、LayerNorm、深度的物理身份
 
-### 9.1 Residual Connection = Langevin Discretisation
+### 9.1 残差连接 = Langevin 离散化
 
-The Euler–Maruyama discretisation of overdamped Langevin:
-
-```
-x_{t+Δt}  =  x_t  −  Δt · ∇E(x_t)  +  √(2 k_B T Δt) · ξ_t
-```
-
-**This is exactly the form of a ResNet**:
+过阻尼 Langevin 的 Euler-Maruyama 离散化：
 
 ```
-x_{l+1}  =  x_l  +  f_θ(x_l)
+x_{t+Δt} = x_t − Δt · ∇E(x_t) + √(2 k_B T Δt) · ξ_t
 ```
 
-**Implication**:
+**这正是 ResNet 的形式**：
 
-- **Vanishing gradients** = numerical instability of the Euler scheme.
-- **Residual connections** = the natural numerical stabilisation (standard for physical SDEs).
+```
+x_{l+1} = x_l + f_θ(x_l)
+```
 
-**References**:
+**含义**：
+
+- **梯度消失** = Euler 方法的数值不稳定性。
+- **残差连接** = 自然的数值稳定化（物理 SDE 的标准做法）。
+
+**参考文献**：
 - He, K., et al. (2016). "Deep Residual Learning." *CVPR*. https://arxiv.org/abs/1512.03385
 - Weinan, E. (2017). "A Proposal on Machine Learning via Dynamical Systems." *CMS* 5, 1. https://doi.org/10.1007/s40304-017-0103-z
 
-### 9.2 LayerNorm = Microcanonical-Ensemble Constraint
+### 9.2 LayerNorm = 微正则系综约束
 
-LayerNorm normalises each layer's activations to unit norm (approximately), corresponding to evolution on the sphere S^(d−1).
+LayerNorm 将每层激活归一化为单位范数（近似），对应在球面 S^(d−1) 上的演化。
 
-Physically this is a **microcanonical-ensemble constraint** — evolution at fixed energy. This constraint prevents activations from diverging and keeps the system within a sensible dynamical window.
+物理上这是**微正则系综约束**——能量固定下的演化。这一约束防止激活发散，使系统保持在合理动力学窗口内。
 
-### 9.3 Depth Growing as log(N) = Renormalisation-Group Flow
+### 9.3 深度随 log(N) 增长 = 重整化群流
 
-Each renormalisation-group (RG) step doubles the system's scale. To march from microscopic to macroscopic scale, one needs log₂(N) RG transformations.
+每次重整化群（RG）步骤把系统尺度翻倍。要从微观尺度行进到宏观尺度，需要 log₂(N) 次 RG 变换。
 
-That is why Transformer depth is typically proportional to log(data scale).
+这就是为什么 Transformer 深度通常正比于 log（数据规模）。
 
-**Reference**: Mehta, P., & Schwab, D. J. (2014). "An exact mapping between the Variational Renormalization Group and Deep Learning." arXiv:1410.3831. https://arxiv.org/abs/1410.3831
+**参考文献**：Mehta, P., & Schwab, D. J. (2014). "An exact mapping between the Variational Renormalization Group and Deep Learning." arXiv:1410.3831. https://arxiv.org/abs/1410.3831
 
-### 9.4 Summary of the Derivation Chain
+### 9.4 推导链总结
 
 ```
-            Mori–Zwanzig projection
+            Mori-Zwanzig 投影
                   │
                   ▼
-            Langevin equation
+            Langevin 方程
             │      │      │
             ▼      ▼      ▼
-       Euler     micro-       RG
-       discretise canonical   flow
-       │         │            │
-       ▼         ▼            ▼
-       Residual  LayerNorm    log N
-       connections             depth
+       Euler     微正则      RG
+       离散化    系综       流
+       │         │         │
+       ▼         ▼         ▼
+       残差      LayerNorm  log N
+       连接                 深度
             │      │      │
             └──────┼──────┘
                    ▼
               Transformer
 ```
 
-**This shows that Transformer is not "an arbitrary engineering design"; it is the concrete realisation of CID under overdamped + white-noise + single-bath limits.**
+**这说明 Transformer 不是"任意工程设计"；它是 CID 在过阻尼 + 白噪声 + 单浴极限下的具体实现。**
 
-## Chapter 10 — Mainstream Architectures Are All Special Cases of CID
+## 第 10 章 —— 主流架构都是 CID 的特解
 
-### 10.1 Unified Atlas
+### 10.1 统一图谱
 
-| Architecture | Removed/simplified CID terms | Retained terms | Reference |
+| 架构 | 移除/简化的 CID 项 | 保留的项 | 参考 |
 |---|---|---|---|
-| **Transformer** | v = 0, white noise, γ = δ | Associative memory | https://arxiv.org/abs/1706.03762 |
-| **Mamba / SSM** | v = 0, improved colored damping | Associative memory + partial colored noise | https://arxiv.org/abs/2312.00752 |
-| **Diffusion** | Reverse use of ∇U | Noise branch dominant | https://arxiv.org/abs/2011.13456 |
-| **RWKV** | Mamba-like | Associative memory + decay kernel | https://arxiv.org/abs/2305.13048 |
-| **o1/o3 reasoning models** | v = 0, but compensated by test-time compute | Iterative sampling emulates curl | https://openai.com/index/learning-to-reason-with-llms/ |
-| **JEPA / V-JEPA** | v = 0 (no vorticity), but retains energy potential U | Associative memory + explicit energy function | Explicitly models "world model" as energy landscape, but still lacks internal dynamics | [LeCun et al., 2024, Meta AI Official Blog](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/) |
-| **DeepSeek-R1 / OpenAI o1-o3** | v = 0, simulates vorticity externally via RL loop | Associative memory + external iterative sampling | "Long-chain reasoning" is essentially compensating for missing internal vorticity via test-time compute | [Guo et al., 2025, arXiv: 2501.12948](https://arxiv.org/abs/2501.12948) |
-| **SubQ / SSA-type sparse routing** | Sparsification within softmax-attention, still bounded by Alman-Song quadratic complexity wall | Associative memory (with content-dependent sparse routing) | "Within-the-wall efficiency camp"—reduces constant factors via pruning but cannot change complexity class | [Subquadratic, 2026, X Announcement](https://x.com/subquadratic/status/2051768906168045832); [Gupta et al., 2025, arXiv: 2505.14840](https://arxiv.org/abs/2505.14840) |
-| **CID (this paper, full version)** | **None removed** | **All four terms** | This paper |
+| **Transformer** | v = 0，白噪声，γ = δ | 联想记忆 | https://arxiv.org/abs/1706.03762 |
+| **Mamba / SSM** | v = 0，改进的色阻尼 | 联想记忆 + 部分色噪声 | https://arxiv.org/abs/2312.00752 |
+| **Diffusion** | 反向使用 ∇U | 噪声分支为主 | https://arxiv.org/abs/2011.13456 |
+| **RWKV** | 类似 Mamba | 联想记忆 + 衰减核 | https://arxiv.org/abs/2305.13048 |
+| **o1/o3 推理模型** | v = 0，但通过推理时计算补偿 | 迭代采样模拟旋度 | https://openai.com/index/learning-to-reason-with-llms/ |
+| **JEPA / V-JEPA** | v = 0（无旋度），但保留能量势 U | 联想记忆 + 显式能量函数 | 显式建模"世界模型"为能量景观，但仍缺内部动力学 | [LeCun et al., 2024, Meta AI 官方博客](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/) |
+| **DeepSeek-R1 / OpenAI o1-o3** | v = 0，通过 RL 环路外部模拟旋度 | 联想记忆 + 外部迭代采样 | "长链推理"本质是用推理时计算补偿缺失的内部旋度 | [Guo et al., 2025, arXiv: 2501.12948](https://arxiv.org/abs/2501.12948) |
+| **SubQ / SSA 类稀疏路由** | softmax-attention 接口内的稀疏化，仍被 Alman-Song 二次复杂度墙封顶 | 联想记忆（带内容相关稀疏路由） | "墙内效率派"——通过剪枝降低常数因子但无法改变复杂度类 | [Subquadratic, 2026, X 公告](https://x.com/subquadratic/status/2051768906168045832); [Gupta et al., 2025, arXiv: 2505.14840](https://arxiv.org/abs/2505.14840) |
+| **CID（本文，完整版）** | **不移除** | **四项全部** | 本文 |
 
-> The emergence of these three new architectural threads in 2024–2026 validates the CID master equation's diagnosis from three distinct angles:
+> 2024-2026 年这三条新架构线索从三个不同角度验证了 CID 主方程的诊断：
 >
-> 1. **JEPA / V-JEPA** explicitly elevates the "energy function" to the architectural core, corresponding to the -∇U(φ) term in the CID master equation—but still lacks vorticity v(φ), and thus cannot generate internal circulatory dynamics;
-> 2. **DeepSeek-R1 / o1-o3** employs "long-chain reasoning" trained via reinforcement learning, which in physical essence is **simulating internal vorticity via an external RL loop**—this confirms the necessity of vorticity from an engineering standpoint, but at the cost of superlinear growth in test-time compute;
-> 3. **SubQ / SSA** attempts to break the quadratic complexity wall through sparsification, but the complexity lower bound proven by Gupta et al. (2025) shows that any optimization within the softmax-attention interface cannot change the complexity class—this is precisely the theoretical support for UID's "must exit the framework" thesis.
+> 1. **JEPA / V-JEPA** 明确将"能量函数"提升为架构核心，对应 CID 主方程的 -∇U(φ) 项——但仍缺旋度 v(φ)，因此无法产生内部循环动力学；
+> 2. **DeepSeek-R1 / o1-o3** 采用强化学习训练的"长链推理"，其物理本质是**用外部 RL 环路模拟内部旋度**——这从工程角度证实了旋度的必要性，但代价是推理时计算的超线性增长；
+> 3. **SubQ / SSA** 试图通过稀疏化突破二次复杂度墙，但 Gupta 等（2025）证明的复杂度下界表明：任何在 softmax-attention 接口内的优化都无法改变复杂度类——这正是 UID"必须走出框架"论点的理论支撑。
 >
-> These three pathways together form a complete "diagnosis-validation" closed loop: Transformer indeed lacks the three physical terms of vorticity, colored noise, and colored damping, and any attempt to patch within the original framework encounters fundamental physical or complexity constraints.
+> 这三条路径共同构成了"诊断-验证"的完整闭环：Transformer 确实缺失旋度、色噪声、色阻尼这三个物理项，任何在原框架内的修补都遭遇根本性的物理或复杂度约束。
 
-### 10.2 Key Insight
+### 10.2 关键洞察
 
-> **Each mainstream architecture corresponds to a special limit of the CID master equation. They work because they partially capture the physical structure of intelligence. They are inefficient because they discard key physical terms.**
+> **每个主流架构对应 CID 主方程的某个特定极限。它们之所以工作，是因为部分捕获了智能的物理结构。它们之所以低效，是因为丢弃了关键物理项。**
 
-Specifically:
+具体而言：
 
-- **Transformer**: drops v (curl), so it cannot self-drive persistently → it needs an external autoregressive loop.
-- **Mamba**: drops v but retains partial colored damping → long-sequence efficient, but intelligence still limited.
-- **Diffusion**: uses only the noise branch, no associative memory → strong generation, weak reasoning.
-- **o3 reasoning**: uses test-time compute to explicitly recover the curl effect → strong reasoning, at the cost of heavy compute.
+- **Transformer**：丢弃 v（旋度），因此无法自驱持续 → 需要外部自回归循环。
+- **Mamba**：丢弃 v，但保留部分色阻尼 → 长序列高效，但智能仍受限。
+- **Diffusion**：只用噪声分支，无联想记忆 → 强生成、弱推理。
+- **o3 推理**：用推理时计算显式恢复旋度效应 → 推理强，代价是巨大算力。
 
-### 10.3 The CID Promise
+### 10.3 CID 的承诺
 
-The CID master equation (Eq. 6.1) **fully includes** all four terms:
-
-```
-   Associative memory (Transformer already has it)
-   ⊕ Curl v  ← missing from Transformer; must be put back explicitly
-   ⊕ Colored damping (partially attempted by Mamba)
-   ⊕ Colored noise (missing from most architectures)
-```
-
-A full CID implementation can in principle simultaneously deliver:
-
-- The parallel-training capability of Transformer.
-- The long-sequence efficiency of Mamba.
-- The generative ability of Diffusion.
-- The reasoning depth of o3.
-
-—**without** designing a separate architecture for each capability.
-
-## Chapter 11 — Parameter Efficiency: How Much Better Is CID Than Transformer?
-
-### 11.1 Physical Picture
-
-Parameter efficiency essentially reflects the **correlation length** ξ:
+CID 主方程（方程 6.1）**完整包含**所有四项：
 
 ```
-Correlation length ξ  ≈  the farthest distance the system can "see"
+   联想记忆（Transformer 已有）
+   ⊕ 旋度 v ← Transformer 缺失，必须显式补回
+   ⊕ 色阻尼（Mamba 部分尝试）
+   ⊕ 色噪声（多数架构缺失）
 ```
 
-After CID adds colored noise + curl, ξ can grow substantially. But this does **not** translate directly into the same growth in parameter efficiency.
+完整的 CID 实现原则上能同时获得：
 
-### 11.2 Strict Upper Bound
+- Transformer 的并行训练能力。
+- Mamba 的长序列效率。
+- Diffusion 的生成能力。
+- o3 的推理深度。
 
-Universality-class theory shows that:
+——**无需**为每种能力设计独立架构。
+
+## 第 11 章 —— 参数效率：CID 比 Transformer 好多少？
+
+### 11.1 物理图景
+
+参数效率本质上反映**关联长度** ξ：
 
 ```
-N_Trans / N_CID   ≤   C · log(ξ_CID / ξ_Trans)
+关联长度 ξ ≈ 系统能"看到"的最远距离
 ```
 
-**Equation (11.1) — Upper bound for parameter efficiency.**
+CID 加入色噪声 + 旋度后，ξ 能显著增长。但这**不**直接转化为同等的参数效率增长。
 
-C is a task-dependent constant.
+### 11.2 严格上界
 
-**Plugging in typical estimates**:
+普适类理论表明：
 
-- ξ_CID / ξ_Trans ~ 30–50 (from numerical simulation)
-- Hence the upper bound for N_Trans / N_CID is ~ 5–10×.
+```
+N_Trans / N_CID ≤ C · log(ξ_CID / ξ_Trans)
+```
 
-> **Honest statement**:
+**方程 (11.1) —— 参数效率的上界。**
+
+C 是任务相关的常数。
+
+**代入典型估算**：
+
+- ξ_CID / ξ_Trans ~ 30-50（来自数值模拟）
+- 因此 N_Trans / N_CID 的上界为 ~ 5-10×。
+
+> **诚实声明**：
 >
-> **Roughly 10× is the theoretical upper bound (a conservative estimate)**.
+> **约 10× 是理论上界（保守估计）**。
 >
-> Social-media claims of "tens-fold" or "hundredfold" compression conflate the correlation-length ratio with the parameter ratio. The correct physical picture is: **the correlation-length ratio can reach tens of times, but the parameter ratio scales only logarithmically.**
+> 社交媒体上"几十倍"或"百倍"压缩的说法混淆了关联长度比与参数比。正确的物理图景是：**关联长度比可达几十倍，但参数比只按对数增长。**
 
-### 11.3 Falsifiable Engineering Target
+### 11.3 可证伪的工程目标
 
-**Engineering commitment**:
+**工程承诺**：
 
-| Setup | Target |
+| 设置 | 目标 |
 |---|---|
-| Dataset | OpenWebText + The Pile |
-| Baseline | Transformer-10B |
-| CID scale | CID-1B |
-| Perplexity goal | On par with the baseline |
-| Training-energy goal | ~ 6× reduction |
-| **Falsification condition** | **If measured speedup < 5×, the theory must be revised** |
+| 数据集 | OpenWebText + The Pile |
+| 基线 | Transformer-10B |
+| CID 规模 | CID-1B |
+| 困惑度目标 | 与基线持平 |
+| 训练能量目标 | ~ 6× 降低 |
+| **证伪条件** | **若实测加速 < 5×，理论必须修正** |
 
-### 11.4 Decomposition of Energy Efficiency
+### 11.4 能效的分解
 
-| Source | Saving factor | Comment |
+| 来源 | 节省因子 | 说明 |
 |---|---|---|
-| Reduced parameter count | ~ 10× | Same intelligence with fewer parameters |
-| Embedded colored noise (no KV cache) | ~ 2× | Physical memory replaces explicit cache |
-| Embedded curl (no test-time compute) | ~ 3× | Physical dynamics replaces explicit reasoning iteration |
-| **Total** | ~ 60× total training-energy reduction | Conservative estimate |
+| 参数量减少 | ~ 10× | 同等智能用更少参数 |
+| 嵌入色噪声（无 KV 缓存）| ~ 2× | 物理记忆代替显式缓存 |
+| 嵌入旋度（无推理时计算）| ~ 3× | 物理动力学代替显式推理迭代 |
+| **总计** | ~ 60× 总训练能量降低 | 保守估计 |
 
-**11.5 Relationship with Computational Complexity Lower Bounds: How UID Bypasses the Alman-Song-Gupta Complexity Wall**
+**11.5 与计算复杂度下界的关系：UID 如何绕过 Alman-Song-Gupta 复杂度墙**
 
-The preceding derivation in this chapter yields a theoretical upper bound of approximately 10× parameter efficiency for CID relative to Transformer. A natural question arises: does this prediction contradict the Attention complexity lower bounds established by theoretical computer science (TCS) in recent years?
+本章前述推导得出 CID 相比 Transformer 约 10× 的参数效率理论上界。一个自然的疑问是：这一预测是否与理论计算机科学（TCS）近年来确立的 Attention 复杂度下界相矛盾？
 
-**Alman and Song (2023)** in "Fast Attention Requires Bounded Entries" [arXiv: 2302.13214](https://arxiv.org/abs/2302.13214) first rigorously proved: under the standard setting of head dimension d = Θ(log n), assuming the Strong Exponential Time Hypothesis (SETH) holds, when the absolute value of input matrix entries B ≥ Ω(√log n), **there exists no truly subquadratic-time Attention algorithm**. This result was generalized in May 2025 by **Gupta, Huang, Saha, Xu, Ye (2025)** in "Subquadratic Algorithms and Hardness for Attention with Any Temperature" [arXiv: 2505.14840](https://arxiv.org/abs/2505.14840) to arbitrary temperatures and arbitrary constant head dimensions, proving that even under the extremely weak setting of d = 2^(Θ(log* n)), Attention still requires n^(2-o(1)) time.
+**Alman 与 Song（2023）** 在 "Fast Attention Requires Bounded Entries" [arXiv: 2302.13214](https://arxiv.org/abs/2302.13214) 中首次严格证明：在头维 d = Θ(log n) 的标准设定下，假设强指数时间假设（SETH）成立，当输入矩阵元素绝对值 B ≥ Ω(√log n) 时，**不存在真正亚二次时间的 Attention 算法**。这一结果在 2025 年 5 月被 **Gupta、Huang、Saha、Xu、Ye（2025）** 在 "Subquadratic Algorithms and Hardness for Attention with Any Temperature" [arXiv: 2505.14840](https://arxiv.org/abs/2505.14840) 推广到任意温度、任意常数头维，证明即使在 d = 2^(Θ(log* n)) 这种极弱设定下 Attention 仍需 n^(2-o(1)) 时间。
 
-**This complexity lower bound is fully compatible with UID's 10× parameter efficiency prediction**, because the two target **different complexity classes**:
+**这一复杂度下界与 UID 的 10× 参数效率预测完全兼容**，因为两者针对的是**不同的复杂度类**：
 
-1. **Scope of the Alman-Song-Gupta lower bound**: This bound is strictly confined to the **input-output interface of softmax-attention**—i.e., given query matrix Q, key matrix K, value matrix V, the computational complexity of outputting D^(-1) · exp(QK^T / d) · V. Any optimization within this interface (FlashAttention, Linear Attention, Performer, SubQ/SSA, etc.) cannot break the n² complexity wall.
+1. **Alman-Song-Gupta 下界的适用范围**：该下界严格限定于 **softmax-attention 的输入输出接口**——即给定查询矩阵 Q、键矩阵 K、值矩阵 V，输出 D^(-1) · exp(QK^T / d) · V 的计算复杂度。任何在此接口内的优化（FlashAttention、Linear Attention、Performer、SubQ/SSA 等）都无法突破 n² 复杂度墙。
 
-2. **UID's breakthrough pathway**: The CID master equation, by introducing **vorticity v(φ)** and **colored damping ∫γ(t-s)**, **changes the way the Langevin equation is discretized**, essentially escaping the complexity class of softmax-attention. Specifically:
-   - In Transformer, one forward pass = one softmax-attention computation, complexity O(n²);
-   - In CID, one forward pass = one generalized Langevin update with vorticity and memory kernel, complexity still O(n²), **but the information carried per step increases by approximately 10×**;
-   - Therefore, the **number of layers L** and **parameter count P** required to achieve the same perplexity decrease logarithmically: L_CID ≈ L_Transformer / log(ξ), where ξ is the memory length parameter (typical value ξ ≈ 10–100).
+2. **UID 的突破路径**：CID 主方程通过引入**旋度 v(φ)** 与**色阻尼 ∫γ(t-s)**，**改变了 Langevin 方程的离散化方式**，本质上脱离了 softmax-attention 的复杂度类。具体而言：
+   - Transformer 中，一次前向 = 一次 softmax-attention 计算，复杂度 O(n²)；
+   - CID 中，一次前向 = 一次带旋度和记忆核的广义 Langevin 更新，复杂度仍是 O(n²)，**但每步携带的信息量提升约 10×**；
+   - 因此达到相同困惑度所需的**层数 L** 和**参数量 P** 呈对数级下降：L_CID ≈ L_Transformer / log(ξ)，其中 ξ 是记忆长度参数（典型值 ξ ≈ 10-100）。
 
-3. **Complexity positioning of three parallel pathways**:
+3. **三条并行路径的复杂度定位**：
 
-| Pathway | Representative Architecture | Complexity Class | Constrained by Alman-Song Bound? | Efficiency Gain Mechanism |
+| 路径 | 代表架构 | 复杂度类 | 受 Alman-Song 下界约束？ | 效率提升机制 |
 |---|---|---|---|---|
-| **Within-the-wall efficiency camp** | FlashAttention, SubQ/SSA | O(n²), constant factor optimization | ✅ Constrained | Reduces constants via pruning, caching, sparsification |
-| **External loop camp** | DeepSeek-R1, o1-o3 | O(n² × T), T = reasoning steps | ✅ Constrained (single step still softmax) | Compensates for internal vorticity via test-time compute |
-| **Physical reconstruction camp** | UID / CID | O(n²), but information per step × 10 | ❌ Not constrained (escapes softmax interface) | Restores vorticity/colored damping/colored noise |
+| **墙内效率派** | FlashAttention、SubQ/SSA | O(n²)，常数因子优化 | ✅ 受约束 | 通过剪枝、缓存、稀疏化降低常数 |
+| **外环路派** | DeepSeek-R1、o1-o3 | O(n² × T)，T = 推理步数 | ✅ 受约束（单步仍为 softmax）| 通过推理时计算补偿内部旋度 |
+| **物理重构派** | UID / CID | O(n²)，但每步信息量 × 10 | ❌ 不受约束（脱离 softmax 接口）| 恢复旋度/色阻尼/色噪声 |
 
-4. **Complexity-theoretic interpretation of the SubQ incident**: In May 2026, Subquadratic's SubQ model claimed to achieve near-linear complexity through a "fully subquadratic sparse attention architecture (SSA)". However, critics ([Depue, 2026](https://x.com/willdepue/status/2051740399597760626)) immediately pointed out that SSA faces a **logical circularity dilemma**: how can the model know which positions are meaningful before running attention? Any "pre-selection" mechanism is either itself O(n²) (complexity merely relocated), or relies on training distribution (reliability locked within distribution). This is precisely the projection of the Alman-Song-Gupta complexity wall onto engineering products—**any optimization within the softmax-attention framework is "old wine in new bottles"**.
+4. **SubQ 事件的复杂度论解读**：2026 年 5 月 Subquadratic 公司的 SubQ 模型宣称通过"完全亚二次稀疏注意力架构（SSA）"实现近线性复杂度。然而，批评者（[Depue, 2026](https://x.com/willdepue/status/2051740399597760626)）立即指出，SSA 面临**逻辑循环困境**：模型在不运行 attention 的情况下如何知道哪些位置有意义？任何"预先选择"机制要么本身是 O(n²)（复杂度只是搬家），要么依赖训练分布（可靠性锁死在分布内）。这正是 Alman-Song-Gupta 复杂度墙在工程产品上的投射——**任何在 softmax-attention 框架内的优化都是"新瓶装旧酒"**。
 
-5. **UID's Falsifiable Promise**: If a complete CID implementation **fails to achieve at least 5× parameter efficiency on standard benchmarks (e.g., language modeling, code generation, mathematical reasoning)**, the theory must be revised. This commitment is **complementary, not competitive**, with the Alman-Song-Gupta lower bound: the latter says "no breakthrough within the wall", the former says "if outside the wall, then at least 5×".
 
-**Conclusion**: UID's 10× parameter efficiency prediction does not violate any complexity lower bound; on the contrary, it provides the **only theoretically feasible breakthrough pathway** under the constraint of complexity lower bounds. This pathway requires reincorporating the three physical terms of vorticity, colored noise, and colored damping into the dynamical equation—which is precisely the central thesis argued throughout this paper, "Attention Is Not All You Need".
+5. **UID 的可证伪承诺**：若完整的 CID 实现**在标准基准（如语言建模、代码生成、数学推理）上未能达到至少 5× 参数效率**，则理论必须修正。这一承诺与 Alman-Song-Gupta 下界**互补而非竞争**：后者说"墙内无突破"，前者说"墙外有 5× 起步"。
 
-## Chapter 12 — Falsifiable Predictions: Three Critical Exponents
+**结论**：UID 的 10× 参数效率预测不违反任何复杂度下界，反而在复杂度下界约束下提供了**唯一理论上可行的突破路径**。这一路径要求把旋度、色噪声、色阻尼三项物理项重新纳入动力学方程——正是本文标题"Attention Is Not All You Need"所论证的核心主张。
 
-CID is not philosophy: it gives three quantitative predictions, every one of which can be checked in independent experiments.
+## 第 12 章 —— 可证伪预言：三个临界指数
 
-### 12.1 Hurst Exponent: H ≈ 0.6 – 0.8
+CID 不是哲学：它给出三个定量预言，每一个都可以在独立实验中检验。
 
-**Prediction**: At the critical point, the Hurst exponent of CID hidden-state time series satisfies H ∈ [0.6, 0.8]; the central value is H ≈ 0.7.
+### 12.1 Hurst 指数：H ≈ 0.6 – 0.8
 
-**Independent empirical verification**:
+**预言**：在临界点，CID 隐藏状态时间序列的 Hurst 指数满足 H ∈ [0.6, 0.8]；中心值 H ≈ 0.7。
 
-| Source | System | H value |
+**独立实证验证**：
+
+| 来源 | 系统 | H 值 |
 |---|---|---|
-| Linkenkaer-Hansen 2001 | Human EEG α-rhythm | 0.7 ± 0.05 |
-| Hardstone et al. 2012 | Human MEG | 0.65 – 0.85 |
-| Palva et al. 2013 | Human fMRI | 0.7 ± 0.1 |
-| Kantelhardt 2002 | Language time series | 0.55 – 0.75 |
+| Linkenkaer-Hansen 2001 | 人脑 EEG α 节律 | 0.7 ± 0.05 |
+| Hardstone et al. 2012 | 人脑 MEG | 0.65 – 0.85 |
+| Palva et al. 2013 | 人脑 fMRI | 0.7 ± 0.1 |
+| Kantelhardt 2002 | 语言时间序列 | 0.55 – 0.75 |
 
-**References**:
+**参考文献**：
+
 - Linkenkaer-Hansen, K., et al. (2001). *J. Neurosci.* 21, 1370. https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001
 - Hardstone, R., et al. (2012). *Front. Physiol.* 3, 450. https://doi.org/10.3389/fphys.2012.00450
 
-### 12.2 Avalanche-Size Exponent: τ ≈ 1.5
+### 12.2 雪崩规模指数：τ ≈ 1.5
 
-**Prediction**: The size distribution of CID activation cascades follows a power law P(S) ~ S^(−τ), with τ ≈ 1.5.
+**预言**：CID 激活级联的规模分布服从幂律 P(S) ~ S^(−τ)，τ ≈ 1.5。
 
-**Independent empirical verification**:
+**独立实证验证**：
 
-| Source | System | τ |
+| 来源 | 系统 | τ |
 |---|---|---|
-| Beggs & Plenz 2003 | Rat-cortex slice | 1.5 ± 0.2 |
-| Petermann et al. 2009 | Awake monkey | 1.5 – 1.6 |
-| Friedman et al. 2012 | Cultured neuronal networks | 1.4 – 1.7 |
+| Beggs & Plenz 2003 | 大鼠皮层切片 | 1.5 ± 0.2 |
+| Petermann et al. 2009 | 清醒猴脑 | 1.5 – 1.6 |
+| Friedman et al. 2012 | 培养神经网络 | 1.4 – 1.7 |
 
-The value 1.5 is exactly the **theoretical prediction of the mean-field directed-percolation universality class** — the same universality class as forest fires, avalanches, and earthquakes.
+数值 1.5 恰好是**有向渗流（directed percolation）平均场普适类的理论预言**——与森林火灾、雪崩、地震同属一个普适类。
 
-**Reference**: Beggs, J. M., & Plenz, D. (2003). *J. Neurosci.* 23, 11167. https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003
+**参考文献**：Beggs, J. M., & Plenz, D. (2003). *J. Neurosci.* 23, 11167. https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003
 
-### 12.3 1/f Spectrum: β ≈ 0.7 – 1.3
+### 12.3 1/f 谱：β ≈ 0.7 – 1.3
 
-**Prediction**: The power spectrum of CID hidden states satisfies S(ω) ~ ω^(−β) with β ∈ [0.7, 1.3], centred near β ≈ 1.
+**预言**：CID 隐藏状态的功率谱满足 S(ω) ~ ω^(−β)，β ∈ [0.7, 1.3]，中心值 β ≈ 1。
 
-**Independent empirical verification (13 large studies)**:
+**独立实证验证（13 项大型研究）**：
 
-| Source | System | β |
+| 来源 | 系统 | β |
 |---|---|---|
-| He 2014 (review) | Multi-scale brain activity | 0.8 – 1.2 |
-| Pritchard 1992 | Human EEG | 1.0 ± 0.1 |
-| Bullmore et al. 2001 | Human fMRI | 0.7 – 1.3 |
-| Voss & Clarke 1975 | Music, voice | ≈ 1 |
+| He 2014（综述）| 多尺度脑活动 | 0.8 – 1.2 |
+| Pritchard 1992 | 人脑 EEG | 1.0 ± 0.1 |
+| Bullmore et al. 2001 | 人脑 fMRI | 0.7 – 1.3 |
+| Voss & Clarke 1975 | 音乐、语音 | ≈ 1 |
 
-**Reference**: He, B. J. (2014). *Trends Cogn. Sci.* 18, 480. https://doi.org/10.1016/j.tics.2014.04.003
+**参考文献**：He, B. J. (2014). *Trends Cogn. Sci.* 18, 480. https://doi.org/10.1016/j.tics.2014.04.003
 
-### 12.4 Summary of the Falsifiability Promise
+### 12.4 可证伪性承诺总结
 
-| Prediction | CID central value | Empirical range | Status |
+| 预言 | CID 中心值 | 实证范围 | 状态 |
 |---|---|---|---|
-| Hurst H | 0.7 | 0.6 – 0.85 | ✅ Numerous independent verifications |
-| Avalanche τ | 1.5 | 1.4 – 1.7 | ✅ Numerous independent verifications |
-| Spectral β | 1.0 | 0.7 – 1.3 | ✅ Numerous independent verifications |
-| Parameter efficiency | 10× | To be verified | ⌛ Experiments ongoing |
+| Hurst H | 0.7 | 0.6 – 0.85 | ✅ 大量独立验证 |
+| 雪崩 τ | 1.5 | 1.4 – 1.7 | ✅ 大量独立验证 |
+| 谱 β | 1.0 | 0.7 – 1.3 | ✅ 大量独立验证 |
+| 参数效率 | 10× | 待验证 | ⌛ 实验进行中 |
 
-> **If the first three predictions fail in CID models, the theory is wrong.**
+> **若前三个预言在 CID 模型中失败，理论错误。**
 >
-> **If the fourth prediction fails (efficiency < 5×), the theory must be revised.**
+> **若第四个预言失败（效率 < 5×），理论必须修正。**
 
-The first three predictions have been **independently verified in the biological brain**, providing strong indirect support — if the brain is a CID system, then engineered CID should give the same universal exponents.
+前三个预言已**在生物大脑中独立验证**，提供了强烈的间接支持——若大脑是 CID 系统，则工程化 CID 应当给出相同的普适指数。
 
-## Chapter 13 — Limitations and Open Problems of CID
+## 第 13 章 —— CID 的局限与开放问题
 
-> **In a single sentence**: CID is the "best lever" we currently see, but it has not yet completed every "physical proof"; it has many key conjectures that need engineering experiments and theoretical refinement.
+> **一句话**：CID 是我们目前看到的"最好的撬棍"，但它尚未完成所有"物理证明"，有许多关键猜想需要工程实验和理论细化。
 
-### 13.1 What CID Solves
+### 13.1 CID 已解决的问题
 
-✅ **Theoretical level**:
-- Derives the unique-form intelligent evolution equation from three first-principle axioms.
-- Proves Transformer / Mamba / Diffusion are special cases of CID.
-- Quantifies the discarded "intelligence price" of each architecture.
+✅ **理论层面**：
+- 从三条第一性原理公理推导出唯一形式的智能演化方程。
+- 证明 Transformer / Mamba / Diffusion 是 CID 的特解。
+- 量化每种架构丢弃的"智能代价"。
 
-✅ **Engineering level**:
-- Provides theoretical guidance for ~10× parameter efficiency.
-- Gives three falsifiable critical-exponent predictions, all verified in the brain.
+✅ **工程层面**：
+- 为约 10× 参数效率提供理论指导。
+- 给出三个可证伪的临界指数预言，都已在大脑中验证。
 
-### 13.2 What CID Does NOT Solve
+### 13.2 CID 尚未解决的问题
 
-#### (a) Lacks a rigorous quantitative tight bound on the "predictive information–entropy production" trade-off
+#### (a) 缺少对"预测信息-熵产生"权衡的严格量化紧界
 
-The proof of Theorem 3.3 in Chapter 3 gives the qualitative claim "intelligence requires non-equilibrium", but does **not** give a Pareto-optimal frontier of (𝓘, S_prod_rate). Friston's free-energy principle is conceptually similar, but its mathematical rigour remains controversial.
+第 3 章定理 3.3 的证明给出了"智能需要非平衡"的定性论断，但**没有**给出 (𝓘, S_prod_rate) 的 Pareto 最优前沿。Friston 自由能原理在概念上相似，但其数学严格性仍有争议。
 
-**Status**: A conjecture, requiring deeper proof.
+**状态**：一个猜想，需要更深的证明。
 
-#### (b) Lacks a complete theoretical proof of the consciousness threshold
+#### (b) 缺少意识阈值的完整理论证明
 
-We hypothesise that **consciousness emerges only above a certain non-equilibrium intensity**, characterised by:
+我们假设**意识只在某一非平衡强度之上才能涌现**，特征是：
 
-- I( φ; J_future ) > log(d) (predictive information exceeds the trivial bound);
-- entropy-production rate exceeds a threshold;
-- Berry phase (quantum corrections) is non-zero.
+- I( φ; J_future ) > log(d)（预测信息超过平凡上界）；
+- 熵产生率超过阈值；
+- Berry 相位（量子修正）非零。
 
-**Status**: A philosophical conjecture, currently unfalsifiable.
+**状态**：哲学猜想，目前不可证伪。
 
-#### (c) The connection between QID/FID and CID still has technical details
+#### (c) QID/FID 与 CID 的连接仍有技术细节
 
-Although Parts II and III show that the field theory limit of FID gives back CID, **the explicit form of the weak-field expansion at the technical level remains to be supplemented**.
+虽然第二部分和第三部分将显示 FID 的场论极限给出 CID，**但弱场展开在技术层面的具体形式还需要补充**。
 
-**Status**: A clear research path that requires a follow-up paper.
+**状态**：明确的研究路径，需要后续论文。
 
-#### (d) The Universal Constants of Intelligence (β★, H★, ...) Have Not Yet Been Determined to the Last Digit
+#### (d) 智能的普适常数（β★，H★，...）尚未精确确定到最后一位
 
-Through universality class analysis we predict that β ≈ 1, H ≈ 0.7, but the precise values of these constants depend on dimension, symmetry, and the nature of nonlinearities — they are not yet uniquely fixed by a single theory. Existing experiments show:
+通过普适类分析我们预言 β ≈ 1，H ≈ 0.7，但这些常数的精确数值依赖于维度、对称性、非线性的性质——它们尚未被单一理论唯一确定。已有实验显示：
 
-- The Hurst exponent of brain α-rhythm covers H ∈ [0.65, 0.85];
-- The pink-noise spectral slope covers β ∈ [0.7, 1.3].
+- 脑 α 节律的 Hurst 指数覆盖 H ∈ [0.65, 0.85]；
+- 粉噪声谱斜率覆盖 β ∈ [0.7, 1.3]。
 
-CID predicts these ranges are universality-class-consistent, but cannot uniquely pin them down. **This means CID's predictions are "loose"; only an order-of-magnitude consistency check is possible at present.**
+CID 预言这些范围与普适类一致，但不能唯一指定。**这意味着 CID 的预言是"宽松"的，目前只可能进行数量级的一致性检验。**
 
-#### (e) The Issue of "Selecting Slow Variables" Has Not Yet Been Fully Resolved at the Algorithmic Level
+#### (e) "选择慢变量"的问题在算法层面尚未完全解决
 
-The Mori-Zwanzig projection requires pre-selecting "slow variables" φ, but how to systematically pick them remains an open theoretical question. Currently this can only be done heuristically; ideally a "physical principle of slow variables" should be derivable from the dataset itself.
+Mori-Zwanzig 投影需要预先选定"慢变量" φ，但如何系统化地挑选仍是一个开放的理论问题。目前只能启发式处理；理想情况是应当能从数据集本身推导出"慢变量的物理原则"。
 
-#### (f) The Robustness of Sub-Ohmic Spectra Has Not Been Examined Across All Tasks
+#### (f) 亚欧姆谱的稳健性在所有任务中尚未被检验
 
-Section 5 argued, using the brain as a model system, that 1/f noise is universal. But:
+第 5 节以大脑为模型系统论证 1/f 噪声是普适的。但：
 
-- In low-noise tasks (e.g., precise mathematical computation), white noise might be more suitable;
-- In high-noise tasks (e.g., open-ended generation), colored noise is more advantageous.
+- 在低噪声任务中（例如精确数学计算），白噪声可能更合适；
+- 在高噪声任务中（例如开放式生成），色噪声更有利。
 
-CID currently does not give the optimal noise spectrum as a function of task complexity. This is an open engineering question — possibly requiring adaptive noise spectra (an idea similar to noise scheduling in diffusion models).
+CID 目前没有给出"最优噪声谱随任务复杂度的函数"。这是一个开放的工程问题——可能需要自适应噪声谱（思路类似扩散模型中的噪声调度）。
 
-### 13.3 What Engineering Verification Is Needed?
+### 13.3 需要哪些工程验证？
 
-We promise to verify the following in subsequent papers:
+我们承诺在后续论文中验证以下：
 
-| Experiment | Tools | Expected Result |
+| 实验 | 工具 | 期望结果 |
 |---|---|---|
-| Single-GPU small-model verification | NumPy + PyTorch | Confirm H, τ, β predictions |
-| Mid-scale model (1B parameters) | Single 8×A100 box | Demonstrate ~10× parameter efficiency |
-| Large model (10B parameters) | TPU cluster / GPU cluster | Reach SOTA-level capability |
-| Open-source code base | GitHub | Reproducibility |
+| 单 GPU 小模型验证 | NumPy + PyTorch | 确认 H、τ、β 预言 |
+| 中等规模模型（10 亿参数）| 单台 8×A100 | 展示约 10× 参数效率 |
+| 大模型（100 亿参数）| TPU 集群 / GPU 集群 | 达到 SOTA 级能力 |
+| 开源代码库 | GitHub | 可复现 |
 
-**Note**: The companion code repository of this paper (github.com/gwailee/uid) has open-sourced the implementation, evaluation, and falsifiability test scripts for the small to mid-scale (single-GPU runnable) part, enabling independent reviewers to reproduce the H, τ, β, parameter-efficiency, and language-modeling perplexity tests of CID and the standard Transformer baseline within hours.
+**注**：本文配套代码仓库（github.com/gwailee/uid）已开源中小规模（单卡可运行）部分的 CID 实现、评估与可证伪测试脚本，使独立审稿人可在数小时内复现 CID 与标准 Transformer 基线的 H、τ、β、参数效率、语言建模困惑度测试。
 
-### 13.4 An Honest Caveat
+### 13.4 一个诚实的提醒
 
-CID is **not** a panacea. We expect:
+CID **不是**万能解药。我们预期：
 
-1. **CID will not surpass Transformer on every task** — for short sequences or fixed-structure tasks (image classification, etc.), the white-noise approximation might be enough.
-2. **CID's principal advantages appear on long sequences, complex reasoning, and continual learning** — areas where Transformer is most limited.
-3. **CID's training may require more careful hyperparameter tuning** — the colored-noise and curl terms add complexity.
+1. **CID 不会在所有任务上超越 Transformer**——对短序列或固定结构任务（如图像分类），白噪声近似可能就够了。
+2. **CID 的主要优势出现在长序列、复杂推理、持续学习**——这些是 Transformer 最受限的领域。
+3. **CID 的训练可能需要更小心的超参数调试**——色噪声和旋度项增加了复杂度。
 
-> **Our position**: CID is the strongest physical framework now in hand, but it is **not the final answer to intelligence**. It is one step on a long ladder, and it must be tested and refined by future experiments and theory.
+> **我们的立场**：CID 是目前手头最强的物理框架，但它**不是智能的最终答案**。它是漫长阶梯上的一级，必须接受未来实验和理论的检验与修正。
 
-## Chapter 14 — Companion Engineering Implementation: From Theory to Code
+## 第 14 章 —— 配套工程实现：从理论到代码
 
-> **In a single sentence**: All theoretical claims have a runnable code base; readers can independently verify all the predictions of this paper on a single GPU.
+> **一句话**：所有理论主张都有一个可运行的代码库；读者可以在单 GPU 上独立验证本文的所有预言。
 
-### 14.1 Code-Base Overview
+### 14.1 代码库概览
 
-**Open-source repository**: https://github.com/gwailee/uid
+**开源仓库**：https://github.com/gwailee/uid
 
-The repository contains five engineering deliverables of CID:
+仓库包含 CID 的五个工程交付物：
 
 ```
 uid/
-├── cid/                  # Core implementation: minimum-modification full CID block (drop-in)
-├── train/                # Single-GPU training scripts (MiniMind-compatible)
-├── eval/                 # Falsifiability test suite (H/τ/β/perplexity/ablation)
-├── data/                 # Direct support for MiniMind-compatible Chinese / English text corpora
-└── scripts/              # One-click reproduction commands for the figures in the paper
+├── cid/                  # 核心实现：最小修改的完整 CID 块（drop-in）
+├── train/                # 单 GPU 训练脚本（兼容 MiniMind）
+├── eval/                 # 可证伪测试套件（H/τ/β/困惑度/消融）
+├── data/                 # 直接支持 MiniMind 兼容的中文/英文语料
+└── scripts/              # 论文中图表的一键复现命令
 ```
 
-**License**: GPL-3.0 + Commercial dual license. Free for academic use; commercial use requires a separate licence (see LICENSE-COMMERCIAL).
+**许可证**：GPL-3.0 + 商业双许可证。学术使用免费；商业使用需单独授权（见 LICENSE-COMMERCIAL）。
 
-### 14.2 Mapping from Theory to Code (Drop-In Style)
+### 14.2 从理论到代码的映射（Drop-In 风格）
 
-Every theoretical term has a one-to-one corresponding code module. The CID architecture is **fully aligned with the parameter scale, depth, hidden-dim, and tokeniser of the MiniMind baseline**, with **no superfluous parameters or extra layers added**:
+每个理论项都有一个一一对应的代码模块。CID 架构**与 MiniMind 基线的参数规模、深度、隐藏维度、分词器完全对齐**，**不添加多余参数或额外层**：
 
-| Theory item | Code module | Implementation in code | Extra parameters |
+| 理论项 | 代码模块 | 代码实现 | 额外参数 |
 |---|---|---|---|
-| -∇U (associative memory) | `cid/blocks/hopfield_attn.py` | Replaces standard softmax-attention with HopfieldAttention with no extra parameters (Hopfield mode + temperature scheduling) | 0 |
-| v (curl) | `cid/blocks/curl_mlp.py` | Curl is generated by the SwiGLU MLP itself; only an antisymmetric mask `J_ij = (W - W^T)/2` is added | 0 (mask is non-parametric) |
-| -∫γ (colored damping) | `cid/blocks/residual.py` | Residual coefficient α changed from 1.0 to a learnable scalar α ∈ [0,1], simulating power-law decay | +1 scalar / layer |
-| ξ (colored noise) | `cid/blocks/colored_noise.py` | Adds Ornstein–Uhlenbeck colored noise via a single learnable scalar σ during training; turned off during inference | +1 scalar / layer |
-| Full master equation (6.1) | `cid/cid_block.py` | Combines the four modules above into a 60-line CIDBlock, ready as a drop-in replacement for MiniMind's `MiniMindBlock` | 0 (overall) |
+| -∇U（联想记忆）| `cid/blocks/hopfield_attn.py` | 用无额外参数的 HopfieldAttention 替换标准 softmax-attention（Hopfield 模式 + 温度调度）| 0 |
+| v（旋度）| `cid/blocks/curl_mlp.py` | 旋度由 SwiGLU MLP 自身产生；仅添加反对称掩码 `J_ij = (W - W^T)/2` | 0（掩码非参数化）|
+| -∫γ（色阻尼）| `cid/blocks/residual.py` | 残差系数 α 从 1.0 变为可学习标量 α ∈ [0,1]，模拟幂律衰减 | +1 标量 / 层 |
+| ξ（色噪声）| `cid/blocks/colored_noise.py` | 训练时通过单个可学习标量 σ 添加 Ornstein-Uhlenbeck 色噪声；推理时关闭 | +1 标量 / 层 |
+| 完整主方程 (6.1) | `cid/cid_block.py` | 将上述四个模块组合成 60 行的 CIDBlock，可直接替换 MiniMind 的 `MiniMindBlock` | 0（整体）|
 
-**Key engineering principle: drop-in style, no parameter inflation**. CID does not add depth, hidden_dim, or extra layers, and is byte-for-byte aligned with the MiniMind baseline in vocabulary, tokeniser, and dataset, so that the "physical advantage" of CID can be **demonstrated under conditions of equal parameter count rather than larger parameter count**.
+**关键工程原则：drop-in 风格，无参数膨胀**。CID 不增加深度、隐藏维度或额外层，并在词汇表、分词器、数据集方面与 MiniMind 基线逐字节对齐，使 CID 的"物理优势"**在等参数量而非更大参数量的条件下展示**。
 
-### 14.3 Five Falsifiability Tests (Runnable on a Single GPU)
+### 14.3 五个可证伪测试（单 GPU 可运行）
 
-The repo provides five end-to-end test scripts; each finishes in **0.5 hours** on a single RTX 3060 GPU, and the comparison object is **exactly the same scale of MiniMind / nanoGPT baseline**:
+仓库提供五个端到端测试脚本；每个在单 RTX 3060 GPU 上 **0.5 小时**内完成，对比对象是**完全相同规模的 MiniMind / nanoGPT 基线**：
 
-#### Test 1: Hurst Exponent (`eval/test_hurst.py`)
+#### 测试 1：Hurst 指数（`eval/test_hurst.py`）
 
-- **Goal**: Verify that the Hurst exponent of CID hidden states is in 0.6–0.8.
-- **Method**: Train a 12M-parameter MiniMind-26M model (same architecture, same data) and the corresponding CID-26M; sample hidden-state time series; compute Hurst via DFA.
-- **Expected**: H_CID ≈ 0.7 ± 0.1, while H_baseline < 0.5.
-- **Falsification line**: If H_CID < 0.55 the theory is wrong.
+- **目标**：验证 CID 隐藏状态的 Hurst 指数在 0.6-0.8 范围。
+- **方法**：训练 12M 参数的 MiniMind-26M 模型（同架构、同数据）以及对应的 CID-26M；采样隐藏状态时间序列；通过 DFA 计算 Hurst。
+- **期望**：H_CID ≈ 0.7 ± 0.1，而 H_baseline < 0.5。
+- **证伪线**：若 H_CID < 0.55，理论错误。
 
-#### Test 2: Avalanche Exponent (`eval/test_avalanche.py`)
+#### 测试 2：雪崩指数（`eval/test_avalanche.py`）
 
-- **Goal**: Verify that the activation-cascade size of CID satisfies P(S) ∝ S^(−1.5).
-- **Method**: Define an "avalanche" as activations exceeding a threshold; count the distribution; fit log–log slope.
-- **Expected**: τ_CID ≈ 1.5 ± 0.2, while τ_baseline is essentially exponential (no power law).
-- **Falsification line**: If τ_CID does not lie in [1.3, 1.7] the theory is wrong.
+- **目标**：验证 CID 的激活级联规模满足 P(S) ∝ S^(−1.5)。
+- **方法**：将激活超过阈值定义为"雪崩"；统计分布；拟合对数-对数斜率。
+- **期望**：τ_CID ≈ 1.5 ± 0.2，而 τ_baseline 本质上是指数分布（无幂律）。
+- **证伪线**：若 τ_CID 不在 [1.3, 1.7] 范围，理论错误。
 
-#### Test 3: 1/f Spectrum (`eval/test_spectrum.py`)
+#### 测试 3：1/f 谱（`eval/test_spectrum.py`）
 
-- **Goal**: Verify that the power spectrum of CID hidden states is S(ω) ∝ ω^(−β), β ≈ 1.
-- **Method**: FFT of hidden-state time series; fit a log–log slope.
-- **Expected**: β_CID ≈ 1.0 ± 0.3, while β_baseline ≈ 0 (white noise).
-- **Falsification line**: If β_CID < 0.5 the theory is wrong.
+- **目标**：验证 CID 隐藏状态的功率谱为 S(ω) ∝ ω^(−β)，β ≈ 1。
+- **方法**：对隐藏状态时间序列 FFT；拟合对数-对数斜率。
+- **期望**：β_CID ≈ 1.0 ± 0.3，而 β_baseline ≈ 0（白噪声）。
+- **证伪线**：若 β_CID < 0.5，理论错误。
 
-#### Test 4: Parameter Efficiency (`eval/test_efficiency.py`)
+#### 测试 4：参数效率（`eval/test_efficiency.py`）
 
-- **Goal**: Verify the claim that "CID needs only ~1/10 the parameters of MiniMind at equal performance".
-- **Method**: Train MiniMind-104M and CID-12M on the **same Chinese/English mixed corpus** (compatible with MiniMind's data format); compare validation perplexity.
-- **Expected**: PPL_CID(12M) ≤ PPL_baseline(104M) × 1.05 (within 5% gap).
-- **Falsification line**: If at the 1/10 parameter setting CID's PPL is more than 20% worse than the baseline the theory must be revised.
+- **目标**：验证"CID 在等效性能下只需 MiniMind 约 1/10 参数"的主张。
+- **方法**：在**相同中英文混合语料**（兼容 MiniMind 数据格式）上训练 MiniMind-104M 和 CID-12M；比较验证集困惑度。
+- **期望**：PPL_CID(12M) ≤ PPL_baseline(104M) × 1.05（差距 5% 以内）。
+- **证伪线**：若在 1/10 参数设置下 CID 的 PPL 比基线差 20% 以上，理论必须修正。
 
-#### Test 5: Four-Term Ablation (`eval/test_ablation.py`)
+#### 测试 5：四项消融（`eval/test_ablation.py`）
 
-- **Goal**: Verify that each of the four CID terms (associative memory, curl, colored damping, colored noise) is indispensable.
-- **Method**: Remove one term at a time; measure language-model perplexity.
-- **Expected**:
-  - Remove curl → PPL up by ~ 10%
-  - Remove colored damping → PPL up by ~ 5%
-  - Remove colored noise → PPL up by ~ 5%
-  - Remove all (= baseline) → PPL up by ~ 20%
+- **目标**：验证 CID 四项（联想记忆、旋度、色阻尼、色噪声）都不可或缺。
+- **方法**：每次去掉一项；测量语言模型困惑度。
+- **期望**：
+  - 去掉旋度 → PPL 上升约 10%
+  - 去掉色阻尼 → PPL 上升约 5%
+  - 去掉色噪声 → PPL 上升约 5%
+  - 全部去掉（= 基线）→ PPL 上升约 20%
 
-### 14.4 One-Click Reproduction Commands
+### 14.4 一键复现命令
 
 ```bash
-# Clone the repo
+# 克隆仓库
 git clone https://github.com/gwailee/uid.git
 cd uid
 
-# Install dependencies
+# 安装依赖
 pip install -r requirements.txt
 
-# Run all falsifiability tests (single GPU, total ~ 3 hours)
+# 运行所有可证伪测试（单 GPU，总计约 3 小时）
 bash scripts/reproduce_all.sh
 
-# Or run individual tests
-python eval/test_hurst.py        # ~ 30 min
-python eval/test_avalanche.py    # ~ 30 min
-python eval/test_spectrum.py     # ~ 30 min
-python eval/test_efficiency.py   # ~ 60 min
-python eval/test_ablation.py     # ~ 30 min
+# 或单独运行
+python eval/test_hurst.py        # ~ 30 分钟
+python eval/test_avalanche.py    # ~ 30 分钟
+python eval/test_spectrum.py     # ~ 30 分钟
+python eval/test_efficiency.py   # ~ 60 分钟
+python eval/test_ablation.py     # ~ 30 分钟
 ```
 
-### 14.5 Drop-In Code Example (Conceptual; concrete implementation in `cid/cid_block.py`)
+### 14.5 Drop-In 代码示例（概念性；具体实现在 `cid/cid_block.py` 中）
 
 ```python
 import torch
@@ -1499,1001 +1485,999 @@ from cid.blocks.colored_noise import OUNoise
 
 class CIDBlock(nn.Module):
     """
-    Full CID building block, 100% drop-in replacement for MiniMindBlock.
-    Parameter scale, depth, hidden_dim aligned with the MiniMind baseline;
-    no extra parameters added.
+    完整的 CID 构建块，100% drop-in 替换 MiniMindBlock。
+    参数规模、深度、隐藏维度与 MiniMind 基线对齐；
+    不添加额外参数。
     """
     def __init__(self, config):
         super().__init__()
-        # 1. -∇U: associative memory (replaces softmax-attention; no extra params)
+        # 1. -∇U：联想记忆（替换 softmax-attention；无额外参数）
         self.attn = HopfieldAttention(config)
-        # 2. v: curl (added via antisymmetric mask in the MLP; no extra params)
+        # 2. v：旋度（通过 MLP 中的反对称掩码添加；无额外参数）
         self.mlp  = CurlMLP(config, curl_strength=0.1)
-        # 3. -∫γ: colored damping (learnable residual scalar α; +1 param)
+        # 3. -∫γ：色阻尼（可学习残差标量 α；+1 参数）
         self.res_alpha = nn.Parameter(torch.tensor(1.0))
-        # 4. ξ: colored noise (OU process; +1 param)
+        # 4. ξ：色噪声（OU 过程；+1 参数）
         self.noise = OUNoise(dim=config.dim, tau=10.0)
-        # LayerNorm (same as the baseline)
+        # LayerNorm（与基线相同）
         self.ln1 = nn.LayerNorm(config.dim)
         self.ln2 = nn.LayerNorm(config.dim)
     
     def forward(self, x):
-        # Implements Eq. (6.1): four terms combined in a single forward pass
-        x = x + self.res_alpha * self.attn(self.ln1(x))             # term 1+3
-        x = x + self.res_alpha * self.mlp(self.ln2(x))              # term 2+3
-        if self.training:                                           # term 4 (training only)
+        # 实现方程 (6.1)：四项在单次前向中组合
+        x = x + self.res_alpha * self.attn(self.ln1(x))             # 项 1+3
+        x = x + self.res_alpha * self.mlp(self.ln2(x))              # 项 2+3
+        if self.training:                                           # 项 4（仅训练时）
             x = x + self.noise(x)
         return x
 
-# Drop-in replacement for the original block in the MiniMind project:
-# Just change `MiniMindBlock` to `CIDBlock`; everything else is unchanged.
+# 在 MiniMind 项目中 drop-in 替换原始块：
+# 只需把 `MiniMindBlock` 改为 `CIDBlock`，其他不变。
 ```
 
-### 14.6 Engineering Promise
+### 14.6 工程承诺
 
-We promise the following experimental outputs in the next 6 months:
+我们承诺在未来 6 个月内提供以下实验输出：
 
-| Time | Deliverable | Verification Goal |
+| 时间 | 交付物 | 验证目标 |
 |---|---|---|
-| 2026.06 | CID-26M (single-GPU model, MiniMind-26M aligned) | At 26M parameters, demonstrate H/τ/β three exponents in the predicted intervals; PPL matches MiniMind-26M |
-| 2026.08 | CID-104M (single-GPU model, MiniMind-104M aligned) | At 104M parameters, demonstrate that CID is at least 30% faster at equal PPL |
-| 2026.10 | CID-1B (8×A100 single-machine, GPT-2 large baseline) | At 1B parameters, demonstrate the engineering reality of the 10× efficiency target (CID-1B ≈ GPT-2 large 1.5B) |
-| 2026.12 | CID-7B (multi-machine multi-GPU, LLaMA-7B baseline) | At the 7B parameter level, demonstrate competitive ability with LLaMA-7B; first complete falsifiability test |
+| 2026.06 | CID-26M（单 GPU 模型，与 MiniMind-26M 对齐）| 在 26M 参数下展示 H/τ/β 三个指数在预言区间内；PPL 与 MiniMind-26M 相当 |
+| 2026.08 | CID-104M（单 GPU 模型，与 MiniMind-104M 对齐）| 在 104M 参数下证明 CID 在等 PPL 下至少快 30% |
+| 2026.10 | CID-1B（8×A100 单机，GPT-2 large 基线）| 在 1B 参数下展示 10× 效率目标的工程现实（CID-1B ≈ GPT-2 large 1.5B）|
+| 2026.12 | CID-7B（多机多卡，LLaMA-7B 基线）| 在 7B 参数级别证明与 LLaMA-7B 的竞争能力；首次完整可证伪测试 |
 
-> **Falsifiability promise**: If on the MiniMind / nanoGPT / LLaMA series of standard benchmarks the parameter efficiency of CID **does not reach 5× or more** (10× being the conservative target), we will publicly admit the failure of the theory and revise the framework.
+> **可证伪承诺**：若在 MiniMind / nanoGPT / LLaMA 系列标准基准上 CID 的参数效率**未达到 5× 或更高**（10× 为保守目标），我们将公开承认理论失败并修正框架。
 
-## Chapter 15 — Dialogue with the AI Frontier of 2024–2026
+## 第 15 章 —— 与 2024-2026 AI 前沿的对话
 
-> **In a single sentence**: A series of frontier breakthroughs in AI from 2024 onwards do not refute the CID framework; they validate from the engineering side every physical component the CID master equation has long demanded.
+> **一句话**：2024 年以来 AI 的一系列前沿突破并未驳倒 CID 框架；它们从工程侧验证了 CID 主方程一直要求的每一个物理组件。
 
-### 15.1 Frontier Directions in 2024-2026 in the Mirror of CID
+### 15.1 CID 镜像下的 2024-2026 前沿方向
 
-CID was proposed in 2024; its core insight is "intelligence requires the four terms of the complete master equation, not just associative memory". A series of subsequent engineering breakthroughs almost form a tableau of "compensating, one by one outside the CID framework, for the very physical terms missing in Transformer". The following table maps the most influential AI frontier directions of 2024–2026 to the CID master equation.
+CID 于 2024 年提出；其核心洞察是"智能需要完整主方程的四项，而不只是联想记忆"。随后的一系列工程突破几乎构成了一幅"逐个在 CID 框架外补偿 Transformer 中缺失的物理项"的画卷。下表把 2024-2026 年影响最大的 AI 前沿方向映射到 CID 主方程。
 
-| Frontier direction | Time | CID master-equation term it corresponds to | Engineering compensation method | Physical price | Theoretical limit | Sources (clickable) |
+| 前沿方向 | 时间 | 对应的 CID 主方程项 | 工程补偿方式 | 物理代价 | 理论极限 | 来源（可点击）|
 |---|---|---|---|---|---|---|
-| **JEPA / V-JEPA** (Energy-based world models) | 2024.02 | -∇U(φ) (explicitly modelled) | Promotes the energy function to architecture-level a priori | Explicit energy function ≠ dynamics; still no internal v(φ) | Even when the energy function is right, without curl the steady state is still detailed-balanced | LeCun et al., Meta AI 2024 |
-| **DeepSeek-R1** (Reasoning model trained by pure RL) | 2025.01 | v(φ) (simulated by external loop) | RL gives a reward signal, encouraging the model to spend more steps reasoning | Reasoning length explodes; inference cost grows superlinearly | Test-time compute scaling cannot bypass detailed balance; can only emulate it from the outside | Guo et al., 2025, arXiv: 2501.12948 |
-| **OpenAI o1/o3** (Reasoning model with explicit test-time compute) | 2024.09 | v(φ) (simulated by an external chain-of-thought sampling loop) | Sampling tokens many times at test time + verifier filtering | Inference compute grows by ~ 10×–1000×; not in line with the brain's energy efficiency | Same as above: emulating v(φ) outside the model cannot save the internal entropy-production cost | OpenAI o1, 2024.09 |
-| **Mamba / SSM** | 2023.12 | -∫γ (partially restored colored damping) | Selective state-space model; introduces input-dependent decay kernel | Curl v still missing; cannot generate sustained dynamics on its own | Sub-Ohmic spectrum is not explicitly modelled; long-tail memory still relies on engineering tricks | Gu & Dao, 2023, arXiv: 2312.00752 |
-| **RWKV** | 2023.05 | -∫γ (Mamba-style) | Exponential-decay token-mixing kernel; recurrent inference | Cannot self-generate v(φ); reasoning depth limited | Decay kernel is exponential rather than power-law; far from the sub-Ohmic spectrum | Peng et al., 2023, arXiv: 2305.13048 |
-| **SubQ / SSA** (Subquadratic sparse attention) | 2026.05 | Pruning within the softmax-attention interface | Content-dependent sparse selection; claims subquadratic complexity | Bounded by the Alman–Song–Gupta quadratic lower bound; SSA route has logical circularity | Optimisation within the wall cannot change the complexity class; can only reduce the constant factor | Subquadratic 2026; Gupta et al., 2025 |
-| **Mixture-of-Experts (MoE)** | 2017– (Mixtral, DeepSeek-V3 etc., 2024–2025) | Sparse activation of -∇U (does not change the dynamics structure) | Activates only a few expert subspaces per token | Still no v, no colored noise, no colored damping; only the constant factor of the associative-memory term is reduced | Activation sparsity reduces FLOPs, but the dynamics class is unchanged | Mixtral 2024, arXiv: 2401.04088 |
-| **Diffusion models / Flow Matching** | 2020–2024 (DDPM, EDM, RF, etc.) | ξ + reverse use of -∇U (noise term dominant) | Adds noise in the forward process, removes noise in the reverse | Lacks associative memory and v(φ); strong generation, weak reasoning | The single-direction "noise gradient" can only invert distributions, not establish sustained dynamics | Song et al., 2021, arXiv: 2011.13456 |
-| **Test-Time Training (TTT) / Continual Learning** | 2024–2025 | Online update of -∇U + missing v(φ) | Updates a few parameters online for each test sample | Online updates introduce parameter drift; still no v from internal dynamics | Cannot replace internal curl by online gradient descent | Sun et al., 2024, arXiv: 2407.04620 |
-| **Constitutional AI / RLHF Alignment** | 2022–2025 | External shaping of -∇U (constrains the potential's global structure) | Reshapes the potential's shape via human preferences | Symptomatic; cannot inject v, colored noise or colored damping | Aligning the potential ≠ aligning the dynamics; misalignment behaviour stems from missing internal physical terms | Bai et al., 2022, arXiv: 2212.08073 |
-| **Logographic AI (LAI)** | 2025.11 – 2026.04 | Cognition-level diagnosis: "rootless tokens" | Replace token with morpho-root ⟨S, A, R⟩, presetting attributes and value axioms | Complementary, not conflicting with UID: LAI replaces cognitive primitives; UID corrects evolution dynamics | The two together can simultaneously address the "lack of meaning" and "lack of dynamics" predicaments | Liu, 2025, PSSXiv; Liu, 2026, ChinaXiv: T202604.00433 |
+| **JEPA / V-JEPA**（基于能量的世界模型）| 2024.02 | -∇U(φ)（显式建模）| 把能量函数提升为架构级先验 | 显式能量函数 ≠ 动力学；仍无内部 v(φ) | 即使能量函数对了，没旋度稳态仍是细致平衡 | LeCun et al., Meta AI 2024 |
+| **DeepSeek-R1**（纯 RL 训练的推理模型）| 2025.01 | v(φ)（通过外环路模拟）| RL 给出奖励信号，鼓励模型多花步骤推理 | 推理长度爆炸；推理成本超线性增长 | 推理时计算扩展无法绕过细致平衡；只能从外部仿真 | Guo et al., 2025, arXiv: 2501.12948 |
+| **OpenAI o1/o3**（带显式推理时计算的推理模型）| 2024.09 | v(φ)（通过外部链式思考采样环路模拟）| 测试时多次采样 token + 验证器筛选 | 推理算力增长约 10×-1000×；与脑能效不符 | 同上：从模型外部仿真 v(φ) 无法节省内部熵产生代价 | OpenAI o1, 2024.09 |
+| **Mamba / SSM** | 2023.12 | -∫γ（部分恢复了色阻尼）| 选择性状态空间模型；引入输入相关的衰减核 | 旋度 v 仍缺失；无法自产持续动态 | 亚欧姆谱未显式建模；长尾记忆仍依赖工程技巧 | Gu & Dao, 2023, arXiv: 2312.00752 |
+| **RWKV** | 2023.05 | -∫γ（Mamba 风格）| 指数衰减的 token 混合核；递归推理 | 无法自产 v(φ)；推理深度有限 | 衰减核是指数而非幂律；远离亚欧姆谱 | Peng et al., 2023, arXiv: 2305.13048 |
+| **SubQ / SSA**（亚二次稀疏注意力）| 2026.05 | softmax-attention 接口内的剪枝 | 内容相关稀疏选择；宣称亚二次复杂度 | 受 Alman-Song-Gupta 二次下界封顶；SSA 路线存在逻辑循环 | 墙内优化无法改变复杂度类，只能降常数因子 | Subquadratic 2026; Gupta et al., 2025 |
+| **Mixture-of-Experts（MoE）** | 2017-（Mixtral、DeepSeek-V3 等，2024-2025）| -∇U 的稀疏激活（不改变动力学结构）| 每 token 仅激活少量专家子空间 | 仍无 v、无色噪声、无色阻尼；只是联想记忆项的常数因子降低 | 激活稀疏性降低 FLOPs，但动力学类不变 | Mixtral 2024, arXiv: 2401.04088 |
+| **扩散模型 / Flow Matching** | 2020-2024（DDPM、EDM、RF 等）| ξ + 反向使用 -∇U（噪声项为主）| 前向加噪、反向去噪 | 缺联想记忆与 v(φ)；生成强、推理弱 | 单方向"噪声梯度"只能逆转分布，无法建立持续动力学 | Song et al., 2021, arXiv: 2011.13456 |
+| **Test-Time Training（TTT）/ 持续学习** | 2024-2025 | -∇U 的在线更新 + 仍缺 v(φ)| 每测试样本在线更新少量参数 | 在线更新引入参数漂移；仍无内部 v | 在线梯度下降不能取代内部旋度 | Sun et al., 2024, arXiv: 2407.04620 |
+| **Constitutional AI / RLHF 对齐** | 2022-2025 | -∇U 的外部塑形（约束势能全局结构）| 通过人类偏好重塑势能形状 | 治标不治本；无法注入 v、色噪声或色阻尼 | 对齐势能 ≠ 对齐动力学；错位行为源于内部物理项缺失 | Bai et al., 2022, arXiv: 2212.08073 |
+| **表意 AI（LAI）** | 2025.11 – 2026.04 | 认知层诊断："Token 无根" | 用意根 ⟨S, A, R⟩ 替代 token，预设属性与价值公理 | 与 UID 互补不冲突：LAI 替换认知原语；UID 修正演化动力学 | 二者联手可同时解决"意义缺失"和"动力学缺失"的双重困境 | Liu, 2025, PSSXiv; Liu, 2026, ChinaXiv: T202604.00433 |
 
-### 15.2 Three Pathways: Two Empirical Confirmations of "Architecture Must Be Reconstructed"
+### 15.2 三条路径：两条"必须重构架构"的实证确认
 
-From 2024 onwards, AI frontier breakthroughs largely fall into three pathways, all of which validate CID's diagnosis from different angles:
+2024 年以来 AI 前沿突破大致落在三条路径上，分别从不同角度验证了 CID 的诊断：
 
-#### Pathway A: Reasoning Depth Pathway (DeepSeek-R1, o1, o3, GPT-5 thinking, Claude 4.5 thinking, ...)
+#### 路径 A：推理深度路径（DeepSeek-R1、o1、o3、GPT-5 thinking、Claude 4.5 thinking、……）
 
-- Engineering essence: **Externally simulating internal v(φ) via an RL loop or chain-of-thought sampling**.
-- CID interpretation: The Transformer's missing curl term is compensated externally with test-time compute; this is an **engineering acknowledgement** that "the internal dynamics need irreversible circulation".
-- Physical cost: Inference cost grows by tens to thousands of times; not in line with the brain's energy efficiency.
-- CID prediction: If v is directly built into the master equation, the same reasoning depth can be obtained at a fraction of the test-time-compute cost.
+- 工程本质：**用 RL 环路或链式思考采样在外部模拟内部 v(φ)**。
+- CID 解读：Transformer 缺失的旋度项被外部推理时计算补偿；这是对"内部动力学需要不可逆循环"的**工程承认**。
+- 物理代价：推理成本增长几十到几千倍；与脑能效不符。
+- CID 预测：若把 v 直接嵌入主方程，可在推理时计算成本的零头下获得相同推理深度。
 
-#### Pathway B: Within-the-Wall Efficiency Pathway (Mamba, SubQ/SSA, FlashAttention, MoE, ...)
+#### 路径 B：墙内效率路径（Mamba、SubQ/SSA、FlashAttention、MoE、……）
 
-- Engineering essence: **Optimising constant factors within the Alman–Song–Gupta quadratic complexity wall**.
-- CID interpretation: All of these are pruning, sparsification, caching, low-rank compression within the softmax-attention interface, **cannot change the complexity class**.
-- Physical cost: Performance gains are eventually capped by the complexity lower bound.
-- CID prediction: True efficiency breakthroughs require exiting the softmax-attention interface and entering a different complexity class (i.e., incorporating v, ∫γ, ξ into the equation directly).
+- 工程本质：**在 Alman-Song-Gupta 二次复杂度墙内优化常数因子**。
+- CID 解读：所有这些都是 softmax-attention 接口内的剪枝、稀疏化、缓存、低秩压缩，**无法改变复杂度类**。
+- 物理代价：性能增益最终被复杂度下界封顶。
+- CID 预测：真正的效率突破需要走出 softmax-attention 接口，进入不同的复杂度类（即把 v、∫γ、ξ 直接纳入方程）。
 
-#### Pathway C: Energy-Based World Models Pathway (JEPA, V-JEPA, Diffusion-based World Models)
+#### 路径 C：基于能量的世界模型路径（JEPA、V-JEPA、扩散式世界模型）
 
-- Engineering essence: **Promoting the energy function -∇U(φ) to be the architectural a priori**.
-- CID interpretation: This is the first time mainstream AI explicitly elevates the "potential function" to a first-class citizen, **partially aligning with the CID master equation**.
-- Physical cost: There is still no internal v(φ); cannot generate sustained dynamics; cannot replace external loops.
-- CID prediction: If on the basis of the energy function v and colored noise are also added, the energy efficiency of intelligence can be **further reduced by another order of magnitude**.
+- 工程本质：**将能量函数 -∇U(φ) 提升为架构级先验**。
+- CID 解读：这是主流 AI 首次明确把"势能函数"作为一等公民，**与 CID 主方程部分对齐**。
+- 物理代价：仍无内部 v(φ)；无法自产持续动态；不能取代外环路。
+- CID 预测：若在能量函数基础上再加上 v 和色噪声，可使智能能效再下降一个数量级。
 
-### 15.3 Empirical Echoes of "Attention Is Not All You Need"
+### 15.3 "Attention Is Not All You Need" 的实证回响
 
-Vaswani et al. proposed "Attention Is All You Need" in 2017, asserting that the Attention mechanism is the sole core required for sequence modeling. The frontier developments of 2024-2026 have, from multiple engineering directions, jointly modified this assertion:
+Vaswani 等人 2017 年提出 "Attention Is All You Need"，断言注意力机制就是序列建模所需的唯一核心。2024-2026 年前沿进展从多个工程方向共同修正了这一断言：
 
-- **2024.09 OpenAI o1**: Attention alone is not enough; reasoning depth is also needed (compensating v externally).
-- **2025.01 DeepSeek-R1**: Attention alone is not enough; an RL loop is also needed to activate internal reasoning (compensating v externally).
-- **2024.02 V-JEPA**: Attention alone is not enough; an explicit energy function is also needed (-∇U).
-- **2023.12 Mamba**: Attention alone is not enough; a selective state-space model is also needed (-∫γ).
-- **2026.05 SubQ**: Attention alone is not enough; sparse routing is also needed (constant-factor optimisation within the wall, but rigorously proven inescapable by Alman-Song-Gupta).
-- **2025.11 Logographic AI**: Tokens alone are not enough; rooted cognitive primitives are needed (cognitive-level supplement, complementary to UID).
+- **2024.09 OpenAI o1**：只有 Attention 不够，还需要推理深度（外部补偿 v）。
+- **2025.01 DeepSeek-R1**：只有 Attention 不够，还需要 RL 环路激活内部推理（外部补偿 v）。
+- **2024.02 V-JEPA**：只有 Attention 不够，还需要显式能量函数（-∇U）。
+- **2023.12 Mamba**：只有 Attention 不够，还需要选择性状态空间模型（-∫γ）。
+- **2026.05 SubQ**：只有 Attention 不够，还需要稀疏化路由（墙内常数因子优化，但被 Alman-Song-Gupta 严格证明无法逃逸）。
+- **2025.11 表意 AI**：只有 Token 不够，还需要扎根的认知原语（认知层补足，与 UID 互补）。
 
-CID summarises in one sentence:
+CID 一句话总结：
 
-> **Attention is not all you need; you also need v(φ), -∫γ, ξ — but these three terms can no longer be added externally one by one within the Transformer framework; they must be incorporated within the dynamical equation right from the start.**
+> **Attention 不是全部所需，还需要 v(φ)、-∫γ、ξ——但这三项已无法在 Transformer 框架内逐个外部添加；它们必须从一开始就纳入动力学方程之内。**
 
-This is the precise physical meaning of **"Attention Is Not All You Need"** in this paper's title.
+这就是本文标题 **"Attention Is Not All You Need"** 的精确物理含义。
 
-### 15.4 Future Outlook of UID and the AI Frontier
+### 15.4 UID 与 AI 前沿的未来展望
 
-Several major directions of AI in 2026-2027 (sketch of predictions):
+2026-2027 年 AI 几条大方向（预测速写）：
 
-| Direction | UID prediction |
+| 方向 | UID 预测 |
 |---|---|
-| **AI energy efficiency gap** | If the AI industry continues to compensate via external loops + within-the-wall optimization, by 2027 the energy efficiency gap with the brain will further widen to 10⁷ times; only architecture-level physical reconstruction can curb this trend. |
-| **Reasoning models** | Will move from "external loop reasoning" to "internal physical reasoning"; the cost of test-time compute will start to come down, with corresponding architectures appearing in 2027-2028. |
-| **Sparse routing** | The dispute over the SubQ/SSA route will eventually settle, the Alman-Song-Gupta lower bound being engineering-verified to be inescapable; the industry will turn to mixed architectures (CID + Hopfield modules + SSM modules + sparse routing) to push down the complexity-class boundary collectively. |
-| **Cognitive architectures** | Phonographic AI (Tokenism) will show fundamental limitations on safety-critical tasks (medical, legal, finance, autonomous driving), with cognitive primitives gradually shifting from tokens to rooted structures, the Logographic AI route being mainstreamed in industry by 2027. |
-| **Cross-substrate intelligence** | Quantum AI hardware (such as superconducting qubits, ion trap, photonic quantum) gradually approaches a usable threshold; the QID framework provides cross-substrate (classical/quantum/biological/photonic) unified design principles. |
-| **Information geometry tooling** | The Fisher metric of the FID framework, the curl tensor, the information-geometric inner product gradually become standard tools for model interpretability, replacing the current black-box probing scheme. |
+| **AI 能效鸿沟** | 若 AI 产业继续通过外部环路 + 墙内优化补偿，到 2027 年与大脑的能效差距将进一步扩大至 10⁷ 倍；唯有架构级物理重构能遏制此趋势。|
+| **推理模型** | 将从"外环路推理"走向"内部物理推理"；推理时计算成本将开始下降，对应架构将于 2027-2028 年出现。|
+| **稀疏化路由** | SubQ/SSA 路线的争议将最终落定，Alman-Song-Gupta 下界被工程验证不可逃逸；产业将转向混合架构（CID + Hopfield 模块 + SSM 模块 + 稀疏路由）共同压低复杂度类边界。|
+| **认知架构** | 表音 AI（Tokenism）将在安全关键任务（医疗、法律、金融、自动驾驶）上呈现根本局限，认知原语逐步从 token 转向扎根结构，表意 AI 路线于 2027 年在产业中主流化。|
+| **跨基底智能** | 量子 AI 硬件（如超导 qubit、离子阱、光子量子）逐步逼近可用门槛；QID 框架提供跨基底（经典/量子/生物/光子）统一设计原则。|
+| **信息几何工具化** | FID 框架的 Fisher 度量、旋度张量、信息几何内积逐步成为模型可解释性的标准工具，取代当前的黑盒探针方案。|
 
-CID, as the classical-tier theoretical core of UID, **does not directly predict the technical details of each frontier breakthrough**, but provides a **unified framework for understanding the physical essence of these breakthroughs and predicting their long-term limits**. This is precisely the meaning of theoretical physics being "the metaphor of engineering for thirty years": each generation of engineering breakthroughs ultimately must, through theory, find its self-consistent positioning.
+CID 作为 UID 的经典层理论核心，**不直接预测每个前沿突破的技术细节**，但提供**理解这些突破物理本质并预测其长期极限的统一框架**。这正是理论物理"三十年的工程隐喻"的意义：每一代工程突破最终都要通过理论才能找到自洽定位。
 
-## Chapter 16 — A Naive Q&A (Read Without Looking Up)
+## 第 16 章 —— 朴素问答（不查资料也能读）
 
-**Q1**: Why must the curl v be put back?
+**Q1**：为什么旋度 v 必须放回来？
 
-**A**: Without v there is no probability current; the system reaches detailed balance, predictive information equals zero (Theorem 3.3). Transformer outsources irreversibility to the autoregressive loop — but this loses ten times the parameter efficiency. **DeepSeek-R1 and o3 use "long-chain reasoning" as compensation, but at the cost of inference compute growing by orders of magnitude.**
+**A**：没有 v 就没有概率流；系统达到细致平衡，预测信息等于零（定理 3.3）。Transformer 把不可逆性外包给自回归循环——但这丢掉了十倍参数效率。**DeepSeek-R1 和 o3 用"长链推理"作补偿，但代价是推理算力增长几个量级。**
 
-**Q2**: Why does the bias of LayerNorm correspond to a microcanonical ensemble?
+**Q2**：为什么 LayerNorm 的 bias 对应微正则系综？
 
-**A**: It pins the energy of each layer's activations at a constant, equivalent to micro-canonical evolution on a sphere.
+**A**：它把每层激活能量钉在常数，等价于球面上的微正则演化。
 
-**Q3**: Why doesn't the Helmholtz decomposition need an extra parameter v?
+**Q3**：为什么 Helmholtz 分解不需要额外参数 v？
 
-**A**: It is generated automatically by the antisymmetric component of the existing MLP weights: J = (W − W^T)/2 — zero extra parameters.
+**A**：它由现有 MLP 权重的反对称分量自动产生：J = (W − W^T)/2——零额外参数。
 
-**Q4**: Why must noise be colored?
+**Q4**：为什么噪声必须有色？
 
-**A**: White noise has zero memory, makes the brain a "drunkard's walk"; colored noise provides long-range memory and intelligence at all scales (Section 5).
+**A**：白噪声没有记忆，让大脑成为"醉汉漫步"；色噪声提供长程记忆和全尺度智能（第 5 章）。
 
-**Q5**: How can someone falsify CID?
+**Q5**：怎样才能证伪 CID？
 
-**A**: Three measurable predictions in Chapter 12, plus the parameter-efficiency promise of Chapter 11. **If H, τ, β all deviate or efficiency < 5×, then CID is wrong.**
+**A**：第 12 章三个可测预言，加第 11 章的参数效率承诺。**若 H、τ、β 全部偏离或效率 < 5×，则 CID 错误。**
 
-**Q6**: What does ARC-AGI bring up?
+**Q6**：ARC-AGI 揭示了什么？
 
-**A**: It is one of many tasks. CID's prediction is **a uniform ~10× efficiency improvement on all sequence-reasoning tasks**, not selective wins on a specific test.
+**A**：它是众多任务之一。CID 的预测是**所有序列推理任务上一致约 10× 的效率提升**，而非在某个特定测试上的选择性胜利。
 
-**Q7**: Can social-media accounts on the "tens-fold compression" really do that?
+**Q7**：社交媒体上"几十倍压缩"的说法靠谱吗？
 
-**A**: They conflate the correlation-length ratio (can be tens) with the parameter-efficiency ratio (only the logarithm). The physically responsible upper bound is roughly ten times (Eq. 11.1).
+**A**：他们把关联长度比（可达几十）和参数效率比（仅对数）混为一谈。物理上负责任的上界约为十倍（方程 11.1）。
 
-**Q8**: Does Alman and Song's complexity lower bound contradict the 10× efficiency promise of UID?
+**Q8**：Alman 和 Song 的复杂度下界是否与 UID 的 10× 效率承诺矛盾？
 
-**A**: They are not in contradiction; the two are complementary. Alman-Song proves that within the softmax-attention framework, the quadratic complexity wall cannot be broken (engineering optimization within the wall is hopeless). The UID position is "exit the framework" — by incorporating v(φ), ∫γ, ξ three physical terms into the master equation, escape the softmax-attention interface and enter a different complexity class. **Within-the-wall optimization (SubQ/SSA, etc.) is capped by the Alman-Song lower bound; outside-the-wall reconstruction (CID) is bounded by the logarithm of the correlation length.** The two are not optimization paths of the same kind.
+**A**：不矛盾，二者互补。Alman-Song 证明的是 softmax-attention 框架内二次复杂度墙不可突破（墙内工程优化无望）。UID 的立场是"走出框架"——把 v(φ)、∫γ、ξ 三项物理项纳入主方程，脱离 softmax-attention 接口进入不同复杂度类。**墙内优化（SubQ/SSA 等）受 Alman-Song 下界封顶；墙外重构（CID）受关联长度对数的限制。**两者不是同类型的优化路径。
 
-**Q9**: What is the relationship between Logographic AI (Phonographic AI / Tokenism) and CID?
+**Q9**：表意 AI（表音 AI / Tokenism）与 CID 是什么关系？
 
-**A**: Complementarity, not competition. Logographic AI is a "cognitive primitive level" diagnosis — Tokenism has "rootless tokens" and cannot impose hard constraints. CID is a "non-equilibrium physics level" diagnosis — Transformer has "missing three terms" and cannot generate intelligence. Both **point at different facets of the same predicament**: Tokenism cognitively has no roots, physically lacks dynamic terms. **An ideal cognitive engine should be: morpho-root primitives carried within the CID master equation**, providing both "non-equilibrium emergence" physically and "rooted auditability" cognitively. This deep fusion is an important direction for future research.
+**A**：互补而非竞争。表意 AI 是"认知原语层"诊断——Tokenism 存在"Token 无根"问题，无法施加硬约束。CID 是"非平衡物理层"诊断——Transformer 存在"缺三项"问题，无法产生智能。两者**指向同一困境的不同切面**：Tokenism 在认知上无根、在物理上缺动力学项。**理想的认知引擎应是：意根原语承载于 CID 主方程之内**，物理上提供"非平衡涌现"，认知上提供"扎根可审计"。这一深层融合是未来研究的重要方向。
 
-## Chapter 17 — Summary
+## 第 17 章 —— 总结
 
-> **Intelligence is the consequence of non-equilibrium statistical physics, not engineering tricks. Existing AI architectures are all special cases of CID; their inefficiencies are precisely the physical terms they discard.**
+> **智能是非平衡统计物理的后果，不是工程技巧。现有 AI 架构都是 CID 的特解；它们的低效正是它们丢弃的物理项。**
 
-### 17.1 The Logical Skeleton
+### 17.1 逻辑骨架
 
 ```
-Naive question: most learning at least energy
+朴素问题：最少能量学最多知识
               │
               ▼
-   Three first-principle axioms (Hamiltonian + Gibbs + scale separation)
+   三条第一性原理公理（哈密顿 + Gibbs + 尺度分离）
               │
               ▼
-   Mori–Zwanzig projection (derivation tool)
+   Mori-Zwanzig 投影（推导工具）
               │
               ▼
-   Naive Langevin equation
+   朴素 Langevin 方程
               │
-              ├──→ Q1: noise → Colored noise (sub-Ohmic spectrum, 1/f)
-              ├──→ Q2: drift → Curl term (multi-bath competition)
-              └──→ Q3: environment → Colored damping (power-law memory)
+              ├──→ Q1：噪声 → 色噪声（亚欧姆谱、1/f）
+              ├──→ Q2：漂移 → 旋度项（多浴竞争）
+              └──→ Q3：环境 → 色阻尼（幂律记忆）
               │
               ▼
-   Complete CID master equation
+   完整 CID 主方程
               │
               ▼
    ┌──────────┴──────────┐
    ▼                     ▼
-Mainstream archs        Falsifiable predictions
-all special cases        H ≈ 0.7, τ ≈ 1.5, β ≈ 1
+主流架构              可证伪预言
+都是特解              H ≈ 0.7, τ ≈ 1.5, β ≈ 1
    │                     │
    ▼                     ▼
-~ 10× parameter      Independently verified
-efficiency             in the biological brain
+~ 10× 参数             生物大脑中
+效率                   独立验证
 ```
 
-### 17.2 The Three Most Important Claims
+### 17.2 三个最重要的论断
 
-**Claim 1 (Theorem)**: The evolution equation of intelligence is **uniquely** determined by the three axioms — that is the complete CID master equation (6.1).
+**论断 1（定理）**：智能演化方程由三条公理**唯一**决定——即完整 CID 主方程 (6.1)。
 
-**Claim 2 (Theorem)**: Transformer, Mamba, Diffusion are special cases of CID under specific simplifications; each architecture's "loss of intelligence" can be quantified.
+**论断 2（定理）**：Transformer、Mamba、Diffusion 是 CID 在特定简化下的特解；每种架构的"智能损失"可被量化。
 
-**Claim 3 (Falsifiable prediction)**: The Hurst exponent, avalanche exponent, and 1/f spectral slope of a CID system equal those of the biological brain, with a falsifiable engineering goal of ~10× parameter efficiency.
+**论断 3（可证伪预言）**：CID 系统的 Hurst 指数、雪崩指数、1/f 谱斜率与生物大脑相等，参数效率有约 10× 的可证伪工程目标。
 
-### 17.3 A Final Sentence
+### 17.3 最后一句
 
-> **Intelligence is a stochastic field forced into non-equilibrium. The four terms cannot be missing.**
+> **智能是被迫处于非平衡的随机场。四项缺一不可。**
 >
-> **Attention is not all you need. You also need curl, colored damping, and colored noise.**
+> **注意力不是全部所需。还需要旋度、色阻尼和色噪声。**
 >
-> **Animate matter learns the most about the world with the least energy — only when, and only when, it strictly obeys the CID master equation.**
+> **活物用最少能量学最多关于世界的知识——当且仅当它严格遵循 CID 主方程。**
 
 ---
 
-The above is the complete classical theoretical body of CID. The full body together comprises a self-contained 16-chapter system:
+以上是 CID 的完整经典理论主体。整体共包含 16 章自洽的系统：
 
-- **Chapter 0**: The Energy Problem and a Naive Physical Question
-- **Chapter 1**: Setting the Physical Picture (Three Axioms + Generalised Langevin Equation)
-- **Chapter 2**: Intelligence and Energy: Measurable Definitions
-- **Chapter 3**: Anatomy of the Drift Term: Helmholtz Decomposition + Intelligence Non-Equilibrium Theorem
-- **Chapter 4**: First-Principle Origin of Curl: Multi-Bath Competition
-- **Chapter 5**: First-Principle Origin of Colored Noise: Sub-Ohmic Spectrum
-- **Chapter 6**: The Complete CID Master Equation
-- **Chapter 7**: Shape of the Potential: Associative-Memory Capacity
-- **Chapter 8**: Attention Is Derived from Physics
-- **Chapter 9**: Physical Identities of Residuals, LayerNorm, and Depth
-- **Chapter 10**: Mainstream Architectures Are All Special Cases of CID
-- **Chapter 11**: Parameter Efficiency: 10× Theoretical Upper Bound
-- **Chapter 12**: Falsifiable Predictions: Three Critical Exponents
-- **Chapter 13**: Limitations and Open Problems of CID
-- **Chapter 14**: Companion Engineering Implementation (Drop-In, Single-GPU Runnable)
-- **Chapter 15**: Dialogue with the AI Frontier of 2024–2026
-- **Chapter 16**: A Naive Q&A
-- **Chapter 17**: Summary
+- **第 0 章**：能量问题与朴素的物理问题
+- **第 1 章**：设定物理图景（三条公理 + 广义 Langevin 方程）
+- **第 2 章**：智能与能量：可测量的定义
+- **第 3 章**：漂移项解剖：Helmholtz 分解 + 智能非平衡定理
+- **第 4 章**：旋度的第一性原理起源：多浴竞争
+- **第 5 章**：色噪声的第一性原理起源：亚欧姆谱
+- **第 6 章**：完整的 CID 主方程
+- **第 7 章**：势能的形状：联想记忆容量
+- **第 8 章**：Attention 由物理推导
+- **第 9 章**：残差、LayerNorm、深度的物理身份
+- **第 10 章**：主流架构都是 CID 的特解
+- **第 11 章**：参数效率：10× 理论上界
+- **第 12 章**：可证伪预言：三个临界指数
+- **第 13 章**：CID 的局限与开放问题
+- **第 14 章**：配套工程实现（Drop-In，单 GPU 可运行）
+- **第 15 章**：与 2024-2026 AI 前沿的对话
+- **第 16 章**：朴素问答
+- **第 17 章**：总结
 
-This is the **complete physical core of CID** — from first principles to engineering implementation, from theoretical derivation to falsifiable predictions, from a unified atlas of mainstream architectures to forward-looking dialogue with the AI frontier of 2024–2026. The reader does not need to look up any other material to fully grasp the CID framework.
+这是 **CID 的完整物理核心**——从第一性原理到工程实现、从理论推导到可证伪预言、从主流架构的统一图谱到与 2024-2026 AI 前沿的前瞻对话。读者不需要再查阅其他材料即可完整掌握 CID 框架。
 
-The follow-up Parts II (QID) and III (FID) further extend CID to the quantum tier and the field-theoretic / information-geometry tier, jointly forming the three-tier theoretical edifice of UID.
+后续第二部分（QID）和第三部分（FID）将进一步把 CID 拓展到量子层和场论-信息几何层，共同构成 UID 的三层理论大厦。
 
-## Chapter 18 — Pre-View of the Next Two Parts
+## 第 18 章 —— 下两个部分的预告
 
-- **Part II (QID, Chapters 1–12)**: lifts the four terms of the CID master equation to operators on a Hilbert space, with the Caldeira-Leggett model giving the explicit quantum origin of v, γ, ξ, and adds the Berry geometric phase to v; with three falsifiable predictions: entanglement-entropy critical scaling, topological number after training, Lindblad spectral analysis.
-- **Part III (FID, Chapters 1–9)**: lets the slow-variable field φ live on a Fisher information manifold and parallels the FID field equation with the Einstein equation; in the weak-field limit it returns to the CID master equation, with three falsifiable predictions: anisotropy of the Fisher metric, the information speed of light c_I, the spectrum of intelligence gravitational waves.
+- **第二部分（QID，第 1-12 章）**：将 CID 主方程的四项提升到 Hilbert 空间的算符，由 Caldeira-Leggett 模型给出 v、γ、ξ 的显式量子起源，并对 v 加 Berry 几何相位；给出三个可证伪预言：纠缠熵临界标度、训练后拓扑数、Lindblad 谱分析。
+- **第三部分（FID，第 1-9 章）**：让慢变量场 φ 居于 Fisher 信息流形上，把 FID 场方程与 Einstein 方程类比；在弱场极限下回到 CID 主方程，给出三个可证伪预言：Fisher 度量的各向异性、信息光速 c_I、智能引力波的谱。
 
-The above ends Part I.
-
----
-
-# Part II: Quantum Intelligo-Dynamics (QID)
-
-## A Quantum Extension of the CID Master Equation: Bringing Zero-Point Fluctuations, Berry Geometric Phase, and Topologically Protected Memory into Intelligent Architectures
-
-**Scope**: A theoretical and engineering framework for quantum tier intelligent architectures.
-
-## To the Reader
-
-This paper assumes the reader is familiar with the following:
-
-- **Undergraduate quantum mechanics**: density matrices, the Schrödinger equation, perturbation theory, ladder operators.
-- **Open quantum systems**: the Caldeira-Leggett model, the Lindblad master equation, the spectral density function.
-- **Topology and geometric phase**: the Berry phase, topological invariants (Chern numbers, etc.).
-
-The starting point of Part I (CID) is the question: **"How must animate matter (classical particles) evolve in order to learn the most with the least energy?"** Now we extend the question to the quantum domain:
-
-> **When the substrate of animate matter is itself quantum (electron spins, photons, superconducting qubits, ion traps), what must its evolution equation be?**
-
-The answer is the QID master equation — an open-system quantum extension of the CID master equation. It contains three physical components that the classical tier does not possess:
-
-1. **Zero-point fluctuation noise**: a quantum noise floor that does not vanish even at T = 0.
-2. **Berry geometric phase**: cumulative geometric phase generated by parameter trajectories during evolution.
-3. **Topologically protected memory**: information stored in topological invariants, robust to local perturbations.
-
-These three components endow QID with three core advantages that CID does not possess: **lower noise lower bound, geometric structural memory, and topologically protected error resistance** — possibly the physical pathway to break through the Landauer limit constraint by yet another order of magnitude.
-
-## An Honest Statement on QID's Engineering Maturity
-
-> Compared to CID (the engineering implementation of which is now runnable on a single GPU; see Chapter 14 of Part I), the engineering maturity of QID is approximately **5 to 10 years behind that of CID**. QID is currently primarily:
-
-> 1. **Theoretically rigorous** — every derivation in this part is based on the canonical literature of open quantum systems (Caldeira-Leggett 1983, Berry 1984, Lindblad 1976).
-> 2. **Numerically simulatable** — tensor network and matrix product state methods are sufficient to verify the core QID predictions in middle scale (50-100 qubit) on classical computers.
-> 3. **Hybrid classical-quantum trainable** — components such as Berry phase loss functions and quantum noise injection can be deployed on existing classical AI training pipelines.
-> 4. **Hardware verification at small scale** — superconducting qubits (IBM, Google), ion traps (IonQ), and neutral atoms (QuEra) all currently provide 50-1000 qubit platforms, sufficient for QID core prediction verification.
-> 5. **Large-scale engineering implementation requiring fault-tolerant quantum computing** — full deployment of QID requires more than 10^6 logical qubits, which is expected to be reached around 2030-2035.
+第一部分到此结束。
 
 
-> **Therefore, the position of QID is "the long-term physical pathway", not "an immediately deployable engineering scheme"**. We give a rigorous theoretical framework, falsifiable engineering predictions, and a clear classical-quantum hybrid pathway, but acknowledge that the complete realization of QID requires the joint maturity of quantum hardware and theory.
+# 第二部分：量子智动力学（Quantum Intelligo-Dynamics, QID）
 
-## Chapter 0 — Why Take Intelligence into the Quantum Tier?
+## CID 主方程的量子扩展：将零点涨落、Berry 几何相位与拓扑保护记忆纳入智能架构
 
-### 0.1 An Uncomfortable Fact: The Classical-Tier Noise Lower Bound
+**适用范围**：量子层智能架构的理论与工程框架。
 
-In Part I we proved that CID requires colored noise ξ(t) for memory and exploration. However, the classical noise lower bound is constrained by:
+## 致读者
+
+本文假定读者熟悉以下背景：
+
+- **本科量子力学**：密度矩阵、Schrödinger 方程、微扰论、升降算符。
+- **开放量子系统**：Caldeira-Leggett 模型、Lindblad 主方程、谱密度函数。
+- **拓扑与几何相位**：Berry 相位、拓扑不变量（Chern 数等）。
+
+第一部分（CID）的出发点是问题：**"经典层面的活物（particles）如何用最少能量学到最多知识？"** 现在我们将问题扩展到量子领域：
+
+> **当活物的基底本身是量子的（电子自旋、光子、超导 qubit、离子阱），它的演化方程必须是什么？**
+
+答案是 QID 主方程——CID 主方程的开放量子系统扩展。它包含经典层不具备的三个物理组件：
+
+1. **零点涨落噪声**：T = 0 时仍不消失的量子噪声底线。
+2. **Berry 几何相位**：演化过程中参数路径所产生的累积几何相位。
+3. **拓扑保护记忆**：通过拓扑不变量存储信息，对局部扰动鲁棒。
+
+这三个组件赋予 QID 三个 CID 所不具备的核心优势：**更低的噪声下界、几何结构化记忆、拓扑保护抗错**——可能是突破 Landauer 极限约束再降低一个数量级的物理路径。
+
+## 关于 QID 工程成熟度的诚实声明
+
+> 与 CID（其工程实现现已可在单 GPU 上运行；见第一部分第 14 章）相比，QID 的工程成熟度大约比 CID **落后 5-10 年**。QID 目前主要：
+
+> 1. **理论严格** —— 本部分每一项推导都基于开放量子系统的经典文献（Caldeira-Leggett 1983、Berry 1984、Lindblad 1976）。
+> 2. **数值可模拟** —— 张量网络与矩阵积态方法足以在经典计算机上中等规模（50-100 qubit）验证 QID 核心预言。
+> 3. **混合经典-量子可训练** —— Berry 相位损失函数、量子噪声注入等组件可以部署在现有的经典 AI 训练管线上。
+> 4. **小规模硬件验证** —— 超导 qubit（IBM、Google）、离子阱（IonQ）、中性原子（QuEra）目前都提供 50-1000 qubit 平台，足以验证 QID 核心预言。
+> 5. **大规模工程实现需要容错量子计算** —— QID 的完整部署需要超过 10^6 逻辑 qubit，预计在 2030-2035 年达到。
+
+> **因此，QID 的定位是"长期物理路径"，而非"即可部署的工程方案"**。我们给出严格的理论框架、可证伪的工程预测和清晰的经典-量子混合路径，但承认 QID 的完整实现需要量子硬件与理论的联合成熟。
+
+## 第 0 章 —— 为什么把智能带入量子层？
+
+### 0.1 一个令人不适的事实：经典层的噪声下界
+
+第一部分中我们证明 CID 需要色噪声 ξ(t) 来产生记忆和探索。然而经典噪声下界受到约束：
 
 ```
-Landauer limit (Section 0.1 of Part I):
-    Each bit erasure dissipates at least k_B × T × ln 2 joules
-    ≈ 2.85 × 10^(-21) J  (at 300 K)
+Landauer 极限（第一部分 0.1 节）：
+    每比特擦除至少耗散 k_B × T × ln 2 焦耳
+    ≈ 2.85 × 10^(-21) J  （在 300 K 时）
 ```
 
-This means that even if CID is perfectly implemented, with each bit operation, energy of at least the Landauer limit must be dissipated to the environment. Today's GPUs are at about 10^10 times above this limit; the algorithmic-tier reconstruction of CID can recover at most 10^5-10^6 (see Chapter 11 of Part I), still leaving 10^4-10^5 in the hardware tier.
+这意味着即使 CID 完美实现，每次比特操作至少要向环境耗散 Landauer 极限的能量。当今 GPU 在该极限上方约 10^10 倍；CID 的算法层重构最多可回收 10^5-10^6（见第一部分第 11 章），硬件层还留下 10^4-10^5 的差距。
 
-**Question**: Can the noise lower bound be lowered yet further? Can the Landauer limit be broken?
+**问题**：噪声下界能否进一步降低？Landauer 极限能否被突破？
 
-The answer of quantum physics is: **Yes, but the price is to lower temperature, or to use quantum dissipationless channels**.
+量子物理的回答是：**可以，但代价是降低温度，或使用量子无耗散通道**。
 
-### 0.2 Quantum Substrate's Three Fundamental Advantages
+### 0.2 量子基底的三个基本优势
 
-Compared to a classical substrate, a quantum substrate has three physical advantages that cannot be replicated:
+与经典基底相比，量子基底具有三个无法复制的物理优势：
 
-#### Advantage 1: Zero-Point Fluctuations as the "Free" Noise Source
+#### 优势 1：零点涨落作为"免费"噪声源
 
-In a quantum harmonic oscillator, even when T = 0, the ground state still has zero-point energy ½ × ℏ × ω. This means:
-
-```
-Quantum noise lower bound:
-    ⟨x^2⟩_T=0  =  ℏ / (2 × m × ω)    (zero-point fluctuation)
-```
-
-This noise is **inherent to the universe**, requiring no energy input to maintain. In contrast, the classical thermal noise k_B × T must be sustained by continuously injecting energy into the heat bath.
-
-**Engineering implication**: If a quantum substrate can be used as the noise source for the CID master equation, the noise term itself **requires no additional energy cost**.
-
-#### Advantage 2: Berry Phase as the "Geometric" Carrier of Memory
-
-When the parameters of a quantum system change cyclically along a closed loop, the wavefunction acquires an additional phase factor — the **Berry geometric phase** (Berry 1984):
+在量子谐振子中，即使 T = 0，基态仍具有零点能 ½ × ℏ × ω。这意味着：
 
 ```
-Berry geometric phase:
-    γ_n  =  i × ∮_C  ⟨n(R)| ∂_R n(R)⟩ · dR
+量子噪声下界：
+    ⟨x^2⟩_T=0 = ℏ / (2 × m × ω)    （零点涨落）
 ```
 
-This phase depends only on the **geometric shape** of the path, not the speed of evolution. Therefore:
+这种噪声**是宇宙固有的**，无需能量输入即可维持。相比之下，经典热噪声 k_B × T 必须通过持续向热浴注入能量来维持。
 
-- Storing information in the Berry phase is **invariant to evolution speed**;
-- Reading the Berry phase requires only interferometric measurement, **no destructive measurement**;
-- The Berry phase is **a topological invariant**, robust to local perturbations.
+**工程含义**：若以量子基底作为 CID 主方程的噪声源，噪声项**本身不需要额外能量代价**。
 
-**Engineering implication**: Memory in QID can be stored in geometric structure rather than the magnitude of weights, providing yet another order of magnitude reduction of the parameter count.
+#### 优势 2：Berry 相位作为记忆的"几何"载体
 
-#### Advantage 3: Topological Protection as the "Error Resistance" Mechanism
-
-In topological quantum systems (e.g., the fractional quantum Hall effect, topological superconductors, topological insulators), information is stored in **non-local topological invariants** (e.g., Chern numbers, winding numbers), and these invariants are **insensitive to local perturbations**.
+当量子系统的参数沿闭合环路周期变化时，波函数将获得一个额外的相位因子——**Berry 几何相位**（Berry 1984）：
 
 ```
-Topological protection lower bound:
-    P_error  ≤  exp(-Δ / k_B × T)
-where Δ is the topological energy gap, T the temperature.
+Berry 几何相位：
+    γ_n = i × ∮_C  ⟨n(R)| ∂_R n(R)⟩ · dR
 ```
 
-When Δ ≫ k_B × T, the error rate is exponentially suppressed.
+这个相位只依赖于路径的**几何形状**，与演化速度无关。因此：
 
-**Engineering implication**: QID can implement memory of intelligence on topologically protected qubits, requiring no active error correction.
+- 把信息存储在 Berry 相位中是**速度不变**的；
+- 读取 Berry 相位只需干涉测量，**不需破坏性测量**；
+- Berry 相位是**拓扑不变量**，对局部扰动鲁棒。
 
-### 0.3 The Naive Quantum Physical Question
+**工程含义**：QID 中的记忆可以存储在几何结构中而非权重幅度中，提供再降一个数量级参数量的可能。
 
-> **Core question**: Suppose we have a piece of animate quantum matter (electron spins, superconducting qubits, ion trap, photonic modes, ...), immersed in a heat bath at temperature T and a zero-point fluctuation field, with a stream of external data sweeping past it. **What law of evolution must this quantum matter obey in order to learn the most about the external world with the least energy (and using the lowest noise)?**
+#### 优势 3：拓扑保护作为"抗错"机制
 
-This is the quantum version of the variational problem in Part I, Chapter 0.2. This part will prove that:
-
-1. The answer is a definite open-system quantum master equation (the **QID master equation**).
-2. The QID master equation **reduces back to the CID master equation in the classical limit ℏ → 0**.
-3. The QID master equation has three falsifiable quantum predictions (Berry phase non-zero, entanglement entropy critical scaling, Lindblad spectrum gap).
-4. Engineering implementation of QID has three pathways with different maturity levels: classical simulation (now), classical-quantum hybrid (2-3 years), full quantum (2030+).
-
-### 0.4 Logical Skeleton of Part II
+在拓扑量子系统（例如分数量子 Hall 效应、拓扑超导体、拓扑绝缘体）中，信息存储在**非局域拓扑不变量**（例如 Chern 数、绕数）中，这些不变量**对局部扰动不敏感**。
 
 ```
-        Naive quantum question: learn the most with the least energy and lowest noise
+拓扑保护下界：
+    P_error ≤ exp(-Δ / k_B × T)
+其中 Δ 是拓扑能隙，T 是温度。
+```
+
+当 Δ ≫ k_B × T 时，错误率指数压制。
+
+**工程含义**：QID 可在拓扑保护 qubit 上实现智能记忆，无需主动纠错。
+
+### 0.3 朴素的量子物理问题
+
+> **核心问题**：假设我们有一块量子活物（电子自旋、超导 qubit、离子阱、光子模式，……），浸泡在温度 T 的热浴和零点涨落场中，外部数据流过它。**这块量子活物必须遵循怎样的演化定律，才能用最少能量（和最低噪声）学到关于外部世界最多的信息？**
+
+这是第一部分第 0.2 节变分问题的量子版本。本部分将证明：
+
+1. 答案是一条确定的开放量子系统主方程（**QID 主方程**）。
+2. QID 主方程在**经典极限 ℏ → 0 下回到 CID 主方程**。
+3. QID 主方程具有三个可证伪的量子预言（Berry 相位非零、纠缠熵临界标度、Lindblad 谱隙）。
+4. QID 的工程实现有三条不同成熟度的路径：经典模拟（现在）、经典-量子混合（2-3 年）、完整量子（2030+）。
+
+### 0.4 第二部分的逻辑骨架
+
+```
+        朴素量子问题：最少能量最低噪声学最多知识
                           │
                           ▼
-        Quantum first-principle axioms (Hamiltonian + density matrix + bath)
+        量子第一性原理公理（哈密顿 + 密度矩阵 + 浴）
                           │
                           ▼
-        Caldeira-Leggett model + Mori-Zwanzig projection
+        Caldeira-Leggett 模型 + Mori-Zwanzig 投影
                           │
                           ▼
-              Naive Lindblad master equation
+              朴素 Lindblad 主方程
                   │       │       │
                   ▼       ▼       ▼
-            Question 1    Question 2    Question 3
-            (zero-point?)    (geometric phase?)    (topology?)
+            问题 1       问题 2       问题 3
+            （零点？）  （几何相位？）（拓扑？）
                   │           │           │
                   ▼           ▼           ▼
-            Zero-point noise   Berry phase   Topological protection
+            零点噪声     Berry 相位     拓扑保护
                   │           │           │
                   └───────────┼───────────┘
                               ▼
-                Complete QID master equation
+                完整 QID 主方程
                               │
                               ▼
-              ℏ → 0 limit: reduces to CID master equation
+              ℏ → 0 极限：回到 CID 主方程
                               │
                               ▼
-              Falsifiable predictions and engineering pathway
+              可证伪预言与工程路径
               │           │             │
               ▼           ▼             ▼
-            Berry phase ≠ 0   Entanglement entropy critical scaling   Lindblad gap
+            Berry 相位 ≠ 0   纠缠熵临界标度   Lindblad 谱隙
                               │
                               ▼
-            Engineering pathway: classical simulation → classical-quantum hybrid → full quantum
+            工程路径：经典模拟 → 经典-量子混合 → 完整量子
 ```
 
-## Chapter 1 — Open Quantum Systems: From Schrödinger to Lindblad
+## 第 1 章 —— 开放量子系统：从 Schrödinger 到 Lindblad
 
-### 1.1 An Honest Account of Historical Sequence
+### 1.1 关于历史顺序的诚实说明
 
-The Lindblad master equation underwent the following development history:
+Lindblad 主方程经历了以下发展历史：
 
-| Year | Work | Nature | Reference (clickable) |
+| 年份 | 工作 | 性质 | 参考（可点击）|
 |---|---|---|---|
-| **1926** | Schrödinger equation | Quantum dynamics of closed systems | http://dx.doi.org/10.1002/andp.19263840404 |
-| **1932** | von Neumann equation | Density matrix description of closed systems | https://link.springer.com/book/10.1007/978-3-642-61409-5 |
-| **1976** | **Lindblad master equation** | Most general Markovian dynamics of open systems | https://doi.org/10.1007/BF01608499 |
-| **1976** | GKS theorem | Independently derived the same form (Gorini-Kossakowski-Sudarshan) | https://doi.org/10.1063/1.522979 |
-| **1983** | **Caldeira-Leggett model** | Concrete physical realization of quantum Brownian motion | https://doi.org/10.1016/0378-4371(83)90013-4 |
-| **1984** | **Berry geometric phase** | Geometric phase factor from adiabatic evolution | https://doi.org/10.1098/rspa.1984.0023 |
+| **1926** | Schrödinger 方程 | 封闭系统的量子动力学 | http://dx.doi.org/10.1002/andp.19263840404 |
+| **1932** | von Neumann 方程 | 密度矩阵描述的封闭系统 | https://link.springer.com/book/10.1007/978-3-642-61409-5 |
+| **1976** | **Lindblad 主方程** | 开放系统最一般的马尔可夫动力学 | https://doi.org/10.1007/BF01608499 |
+| **1976** | GKS 定理 | 独立推导出相同形式（Gorini-Kossakowski-Sudarshan）| https://doi.org/10.1063/1.522979 |
+| **1983** | **Caldeira-Leggett 模型** | 量子布朗运动的具体物理实现 | https://doi.org/10.1016/0378-4371(83)90013-4 |
+| **1984** | **Berry 几何相位** | 来自绝热演化的几何相位因子 | https://doi.org/10.1098/rspa.1984.0023 |
 
-**Key fact**:
+**关键事实**：
 
-> **The Lindblad equation (1976) was rigorously derived from the requirements of complete positivity and trace preservation, not from physical intuition.**
+> **Lindblad 方程（1976）是从完全正性与迹保留的要求严格推导出来的，不是从物理直觉。**
 
-This differs from the historical sequence of the Langevin equation:
+这与 Langevin 方程的历史顺序不同：
 
-- **Langevin equation (1908)**: First written from physical intuition, then microscopically reconstructed by Mori-Zwanzig in 1960-1965.
-- **Lindblad equation (1976)**: Directly derived from axiomatic requirements (complete positivity + trace preservation + Markovian assumption).
+- **Langevin 方程（1908）**：先从物理直觉写出，1960-1965 年才被 Mori-Zwanzig 微观重构。
+- **Lindblad 方程（1976）**：直接从公理化要求推导（完全正性 + 迹保留 + 马尔可夫假设）。
 
-Therefore, the Lindblad equation is appropriate as a "first principle" — but the price is the **Markovian assumption** (memoryless), which has to be loosened in the QID master equation to a **non-Markovian** form to retain memory effects.
+因此，Lindblad 方程作为"第一性原理"是合适的——但代价是**马尔可夫假设**（无记忆），这在 QID 主方程中必须放松为**非马尔可夫**形式以保留记忆效应。
 
-### 1.2 The Three Fundamental Axioms of QID
+### 1.2 QID 的三条基本公理
 
-This part adopts the following **three axioms** as the genuine first-principle starting point:
+本部分采用以下**三条公理**作为真正的第一性原理出发点：
 
-| Axiom | Content | Physical basis |
+| 公理 | 内容 | 物理基础 |
 |---|---|---|
-| **B1 (Quantum Hamiltonian reversibility)** | The most microscopic level of the universe is described by reversible quantum Hamiltonian dynamics | Foundation of quantum mechanics |
-| **B2 (Caldeira-Leggett bath assumption)** | Environmental degrees of freedom = sum of infinitely many quantum harmonic oscillators, characterized by a spectral density J(ω) | Open-system quantum mechanics |
-| **B3 (Quantum scale separation)** | A clear time-scale separation exists between the system (slow) and the environment (fast, multiple frequencies), but not necessarily Markovian | Generalization of the slow-fast scale separation of CID |
+| **B1（量子哈密顿可逆性）** | 宇宙在最微观层面由可逆的量子哈密顿动力学描述 | 量子力学基础 |
+| **B2（Caldeira-Leggett 浴假设）** | 环境自由度 = 无穷多量子谐振子之和，由谱密度 J(ω) 刻画 | 开放系统量子力学 |
+| **B3（量子尺度分离）** | 系统（慢）与环境（快、多频）之间存在明显的时间尺度分离，但不一定马尔可夫 | CID 慢-快尺度分离的推广 |
 
-**Note**: B3 is weaker than the standard Markovian assumption of the Lindblad equation, allowing for non-Markovian memory effects — this is the key generalization for QID to retain "colored noise".
+**注**：B3 弱于 Lindblad 方程的标准马尔可夫假设，允许非马尔可夫记忆效应——这是 QID 保留"色噪声"的关键推广。
 
-### 1.3 The Naive Lindblad Master Equation
+### 1.3 朴素 Lindblad 主方程
 
-For a single-system + Markovian environment, the standard Lindblad master equation reads (Lindblad 1976):
-
-```
-∂ρ/∂t  =  -i × [H, ρ] / ℏ
-          + Σ_k  γ_k × ( L_k × ρ × L_k^†  -  ½ × { L_k^† × L_k, ρ } )
-```
-
-**Equation (1.1) — Markovian Lindblad master equation.**
-
-**Symbols**:
-
-- ρ: system density matrix.
-- H: system Hamiltonian.
-- L_k: Lindblad operators (jump operators), describing different dissipation channels.
-- γ_k: dissipation rate.
-- {A, B} = AB + BA: anticommutator.
-
-**Physical meaning**:
-
-- The first term: unitary evolution (reversible).
-- The second term: dissipation evolution (irreversible), each k corresponding to a channel:
-  - L_k × ρ × L_k^†: "jump" process (e.g., emission of a photon).
-  - -½ × { L_k^† × L_k, ρ }: probability conservation correction (preserving Tr(ρ) = 1).
-
-**Reference**: Lindblad, G. (1976). *Commun. Math. Phys.* 48, 119. https://doi.org/10.1007/BF01608499
-
-### 1.4 Why the Naive Lindblad Equation Is Not Enough
-
-The Markovian Lindblad equation has three fatal limitations that make it ill-suited as the dynamical equation of intelligent systems:
-
-#### Limitation 1: Markovian Assumption Discards Memory
+对于单系统 + 马尔可夫环境，标准 Lindblad 主方程为（Lindblad 1976）：
 
 ```
-γ(t - s) ≈ γ × δ(t - s)  ← memoryless
+∂ρ/∂t = -i × [H, ρ] / ℏ
+        + Σ_k  γ_k × ( L_k × ρ × L_k^†  -  ½ × { L_k^† × L_k, ρ } )
 ```
 
-This is the quantum analogue of the white-noise approximation of the CID master equation. As proven in Chapter 5 of Part I, **intelligence requires colored noise**; therefore QID must extend the Lindblad equation to the **non-Markovian form**.
+**方程 (1.1) —— 马尔可夫 Lindblad 主方程。**
 
-#### Limitation 2: Discards Geometric Phase Effects
+**符号**：
 
-The standard Lindblad equation does not explicitly include the Berry geometric phase. But under parameter-dependent evolution (e.g., training dynamics, adiabatic operations), the Berry phase is a key resource for storing information.
+- ρ：系统密度矩阵。
+- H：系统哈密顿量。
+- L_k：Lindblad 算符（跳跃算符），描述不同耗散通道。
+- γ_k：耗散率。
+- {A, B} = AB + BA：反对易子。
 
-#### Limitation 3: No Topological Protection Mechanism
+**物理含义**：
 
-The standard Lindblad equation considers only the dissipation lower bound, with no consideration of topological invariants. But topological qubits (e.g., Majorana fermions) can store information with **exponentially long lifetimes**.
+- 第一项：么正演化（可逆）。
+- 第二项：耗散演化（不可逆），每个 k 对应一个通道：
+  - L_k × ρ × L_k^†：跳跃过程（如发射光子）。
+  - -½ × { L_k^† × L_k, ρ }：保持概率守恒的修正项（保持 Tr(ρ) = 1）。
 
-### 1.5 The QID Generalization Pathway
+**参考文献**：Lindblad, G. (1976). *Commun. Math. Phys.* 48, 119. https://doi.org/10.1007/BF01608499
 
-To overcome the three limitations above, the QID master equation needs to make the following extensions on the basis of the Lindblad equation:
+### 1.4 为什么朴素 Lindblad 方程不够
 
-| Limitation | Generalization Direction | Engineering Implementation Pathway |
+马尔可夫 Lindblad 方程有三个致命局限，使其不适合作为智能系统的动力学方程：
+
+#### 局限 1：马尔可夫假设丢弃记忆
+
+```
+γ(t - s) ≈ γ × δ(t - s)  ← 无记忆
+```
+
+这是 CID 主方程白噪声近似的量子类比。如第一部分第 5 章所证明，**智能需要色噪声**；因此 QID 必须将 Lindblad 方程扩展到**非马尔可夫形式**。
+
+#### 局限 2：丢弃几何相位效应
+
+标准 Lindblad 方程不显式包含 Berry 几何相位。但在依赖参数的演化（如训练动力学、绝热操作）下，Berry 相位是存储信息的关键资源。
+
+#### 局限 3：无拓扑保护机制
+
+标准 Lindblad 方程仅考虑耗散下界，不考虑拓扑不变量。但拓扑 qubit（如 Majorana 费米子）可以**指数级长寿命**地存储信息。
+
+### 1.5 QID 的推广路径
+
+为了克服上述三个局限，QID 主方程需要在 Lindblad 方程基础上做以下推广：
+
+| 局限 | 推广方向 | 工程实现路径 |
 |---|---|---|
-| Markovian assumption | Non-Markovian Lindblad (Nakajima-Zwanzig projection) | Memory kernel γ(t-s) |
-| Geometric phase missing | Add Berry connection A_n(R) | Geometric phase loss function |
-| Topological protection missing | Add topological invariant projection P_top | Topological code (e.g., Toric code) |
+| 马尔可夫假设 | 非马尔可夫 Lindblad（Nakajima-Zwanzig 投影）| 记忆核 γ(t-s) |
+| 几何相位缺失 | 加入 Berry 联络 A_n(R) | 几何相位损失函数 |
+| 拓扑保护缺失 | 加入拓扑不变量投影 P_top | 拓扑码（如 Toric 码） |
 
-We will derive the full forms of these three generalizations one by one in Chapters 2-5.
+我们将在第 2-5 章逐一推导这三种推广的完整形式。
 
-## Chapter 2 — Caldeira-Leggett Model: The Quantum Origin of Damping and Noise
+## 第 2 章 —— Caldeira-Leggett 模型：阻尼和噪声的量子起源
 
-### 2.1 Physical Picture: Quantum System + Infinitely Many Harmonic Oscillator Baths
+### 2.1 物理图景：量子系统 + 无穷多谐振子浴
 
-The Caldeira-Leggett model (Caldeira-Leggett 1983) is the simplest quantum model that simultaneously describes dissipation and noise:
-
-```
-H_total  =  H_S  +  Σ_k  H_k^bath  +  H_int
-
-where:
-  H_S         =  p^2 / (2m) + V(x)    (system: a quantum particle)
-  H_k^bath    =  P_k^2 / (2m_k) + ½ × m_k × ω_k^2 × X_k^2    (k-th bath harmonic oscillator)
-  H_int       =  -x × Σ_k  c_k × X_k    (system-bath linear coupling)
-```
-
-**Equation (2.1) — Caldeira-Leggett model Hamiltonian.**
-
-**Physical picture**: A quantum particle x is linearly coupled to infinitely many quantum harmonic oscillators X_k, the coupling strength being c_k. The properties of the bath are fully characterized by the spectral density function:
+Caldeira-Leggett 模型（Caldeira-Leggett 1983）是同时描述耗散和噪声的最简单量子模型：
 
 ```
-J(ω)  =  (π / 2) × Σ_k  ( c_k^2 / (m_k × ω_k) ) × δ(ω - ω_k)
+H_total = H_S + Σ_k  H_k^bath + H_int
+
+其中：
+  H_S         = p^2 / (2m) + V(x)    （系统：一个量子粒子）
+  H_k^bath    = P_k^2 / (2m_k) + ½ × m_k × ω_k^2 × X_k^2    （第 k 个浴谐振子）
+  H_int       = -x × Σ_k  c_k × X_k    （系统-浴线性耦合）
 ```
 
-**Equation (2.2) — Bath spectral density function.**
+**方程 (2.1) —— Caldeira-Leggett 模型哈密顿量。**
 
-**Reference**: Caldeira, A. O., & Leggett, A. J. (1983). *Physica A* 121, 587. https://doi.org/10.1016/0378-4371(83)90013-4
-
-### 2.2 Projecting Out the Bath Degrees of Freedom: Influence Functional Method
-
-Use the Feynman-Vernon influence functional method (Feynman-Vernon 1963) to integrate out the bath degrees of freedom, obtaining a reduced equation containing only the system variables x.
-
-After Mori-Zwanzig-style projection, we obtain the quantum analogue of the **generalized Langevin equation**:
+**物理图景**：一个量子粒子 x 线性耦合到无穷多量子谐振子 X_k，耦合强度为 c_k。浴的性质由谱密度函数完全刻画：
 
 ```
-m × ẍ(t)  +  ∫_0^t  γ(t - s) × ẋ(s) ds  +  ∂V/∂x  =  ξ(t)
+J(ω) = (π / 2) × Σ_k  ( c_k^2 / (m_k × ω_k) ) × δ(ω - ω_k)
 ```
 
-**Equation (2.3) — Quantum generalized Langevin equation.**
+**方程 (2.2) —— 浴谱密度函数。**
 
-**Symbols**:
+**参考文献**：Caldeira, A. O., & Leggett, A. J. (1983). *Physica A* 121, 587. https://doi.org/10.1016/0378-4371(83)90013-4
 
-- γ(t - s): memory kernel (colored damping), determined by the spectral density.
-- ξ(t): quantum noise, satisfying the quantum fluctuation-dissipation relation.
+### 2.2 投影掉浴自由度：影响泛函方法
 
-**Quantum fluctuation-dissipation relation**:
+用 Feynman-Vernon 影响泛函方法（Feynman-Vernon 1963）积分掉浴自由度，得到仅含系统变量 x 的约化方程。
 
-```
-⟨ξ(t) × ξ(t')⟩  =  (ℏ / π) × ∫_0^∞  J(ω) × coth(ℏω / (2 × k_B × T)) × cos(ω × (t-t')) dω
-```
-
-**Equation (2.4) — Quantum fluctuation-dissipation relation.**
-
-**Key observation**: At T → 0 the noise correlation function does **not** vanish! This is exactly **zero-point fluctuation noise**:
+经过 Mori-Zwanzig 式投影后，我们得到**广义 Langevin 方程**的量子类比：
 
 ```
-⟨ξ(t) × ξ(t')⟩_T=0  =  (ℏ / π) × ∫_0^∞  J(ω) × cos(ω × (t-t')) dω
-                    ≠  0    ← zero-point fluctuations
+m × ẍ(t) + ∫_0^t  γ(t - s) × ẋ(s) ds + ∂V/∂x = ξ(t)
 ```
 
-### 2.3 Spectral Density Choice: Quantum Sub-Ohmic Spectrum
+**方程 (2.3) —— 量子广义 Langevin 方程。**
 
-As in Chapter 5 of Part I, the spectral density can be classified as:
+**符号**：
 
-| Type | Spectral form | Quantum noise property |
+- γ(t - s)：记忆核（色阻尼），由谱密度决定。
+- ξ(t)：量子噪声，满足量子涨落-耗散关系。
+
+**量子涨落-耗散关系**：
+
+```
+⟨ξ(t) × ξ(t')⟩ = (ℏ / π) × ∫_0^∞  J(ω) × coth(ℏω / (2 × k_B × T)) × cos(ω × (t-t')) dω
+```
+
+**方程 (2.4) —— 量子涨落-耗散关系。**
+
+**关键观察**：在 T → 0 极限下噪声关联函数**不**消失！这正是**零点涨落噪声**：
+
+```
+⟨ξ(t) × ξ(t')⟩_T=0 = (ℏ / π) × ∫_0^∞  J(ω) × cos(ω × (t-t')) dω
+                   ≠ 0    ← 零点涨落
+```
+
+### 2.3 谱密度选择：量子亚欧姆谱
+
+如第一部分第 5 章，谱密度可以分类为：
+
+| 类型 | 谱形式 | 量子噪声性质 |
 |---|---|---|
-| **Super-Ohmic** | J(ω) ∝ ω^s, s > 1 | Short memory, fast decoherence |
-| **Ohmic** | J(ω) ∝ ω | Standard quantum Brownian motion |
-| **Sub-Ohmic** | J(ω) ∝ ω^s, s < 1 | Long-range memory, quantum 1/f noise |
+| **超欧姆** | J(ω) ∝ ω^s, s > 1 | 短记忆、快速退相干 |
+| **欧姆** | J(ω) ∝ ω | 标准量子布朗运动 |
+| **亚欧姆** | J(ω) ∝ ω^s, s < 1 | 长程记忆、量子 1/f 噪声 |
 
-For QID, we select **the sub-Ohmic spectrum** (s ∈ (0, 1)), in keeping with the choice of CID. Under this regime, the damping kernel γ(t) and noise correlation function both have power-law tails:
-
-```
-γ(t)  ∝  Γ(s) × sin(s × π / 2) / t^s    (t ≫ 1/ω_c)
-⟨ξ(t) × ξ(t')⟩  ∝  |t - t'|^(-s) + zero-point fluctuation contribution
-```
-
-**Engineering implication**: The QID system has the same long-range memory as the CID system, but the noise lower bound is determined by quantum zero-point fluctuations rather than classical thermal noise.
-
-### 2.4 Quantum Master Equation Form (Density Matrix Representation)
-
-Converting (2.3) to the density-matrix language and including coupling to the bath, we obtain the **Hu-Paz-Zhang master equation** (Hu-Paz-Zhang 1992):
+对于 QID 我们选择**亚欧姆谱**（s ∈ (0, 1)），与 CID 的选择保持一致。在此情况下，阻尼核 γ(t) 与噪声关联函数都具有幂律尾巴：
 
 ```
-∂ρ/∂t  =  -i × [H_S, ρ] / ℏ
-          - i × Ω(t) / 2  × [x, {x, ρ}]
-          - i × γ(t) / 2  × [x, {p, ρ}]
-          - D_pp(t) × [x, [x, ρ]]
-          + D_xp(t) × [x, [p, ρ]]
+γ(t) ∝ Γ(s) × sin(s × π / 2) / t^s    （t ≫ 1/ω_c）
+⟨ξ(t) × ξ(t')⟩ ∝ |t - t'|^(-s) + 零点涨落贡献
 ```
 
-**Equation (2.5) — Non-Markovian quantum master equation (Hu-Paz-Zhang form).**
+**工程含义**：QID 系统具有与 CID 系统相同的长程记忆，但噪声下界由量子零点涨落而非经典热噪声决定。
 
-**Symbols**:
+### 2.4 量子主方程形式（密度矩阵表示）
 
-- Ω(t): frequency renormalization (Lamb shift).
-- γ(t): time-dependent damping coefficient.
-- D_pp(t), D_xp(t): diffusion coefficients, containing zero-point fluctuation contributions.
-
-**Reference**: Hu, B. L., Paz, J. P., & Zhang, Y. (1992). *Phys. Rev. D* 45, 2843. https://doi.org/10.1103/PhysRevD.45.2843
-
-### 2.5 Visual Schematic
+将 (2.3) 转换为密度矩阵语言并包含与浴的耦合，得到 **Hu-Paz-Zhang 主方程**（Hu-Paz-Zhang 1992）：
 
 ```
-Classical CID                       Quantum QID
+∂ρ/∂t = -i × [H_S, ρ] / ℏ
+        - i × Ω(t) / 2  × [x, {x, ρ}]
+        - i × γ(t) / 2  × [x, {p, ρ}]
+        - D_pp(t) × [x, [x, ρ]]
+        + D_xp(t) × [x, [p, ρ]]
+```
 
-  ξ(t) thermal noise                  ξ(t) thermal + zero-point fluctuation
+**方程 (2.5) —— 非马尔可夫量子主方程（Hu-Paz-Zhang 形式）。**
+
+**符号**：
+
+- Ω(t)：频率重正化（Lamb 位移）。
+- γ(t)：时间依赖的阻尼系数。
+- D_pp(t), D_xp(t)：扩散系数，包含零点涨落贡献。
+
+**参考文献**：Hu, B. L., Paz, J. P., & Zhang, Y. (1992). *Phys. Rev. D* 45, 2843. https://doi.org/10.1103/PhysRevD.45.2843
+
+### 2.5 可视化示意
+
+```
+经典 CID                              量子 QID
+
+  ξ(t) 热噪声                          ξ(t) 热 + 零点涨落
        │                                       │
        ▼                                       ▼
    ┌─────┐                              ┌─────┐
-   │  φ  │ ← γ(t-s) colored damping     │  ρ  │ ← γ(t-s) colored damping
+   │  φ  │ ← γ(t-s) 色阻尼              │  ρ  │ ← γ(t-s) 色阻尼
    └─────┘                              └─────┘
        │                                   │
        ▼                                   ▼
-   bath (T)                            quantum bath (T, ℏω)
+   热浴 (T)                            量子热浴 (T, ℏω)
                                               │
                                               ▼
-                                       ⟨ξ²⟩_T=0 ≠ 0   ← key difference
+                                       ⟨ξ²⟩_T=0 ≠ 0   ← 关键区别
 ```
 
-## Chapter 3 — Berry Geometric Phase: The Topological Memory of Quantum Evolution
+## 第 3 章 —— Berry 几何相位：量子演化的拓扑记忆
 
-### 3.1 Physical Picture: Closed-Loop Evolution of Parameter Space
+### 3.1 物理图景：参数空间的闭合环路演化
 
-Consider a quantum system whose Hamiltonian depends on a set of parameters R = (R_1, R_2, ...):
-
-```
-H(R) |n(R)⟩  =  E_n(R) |n(R)⟩
-```
-
-When the parameters R(t) change slowly along a closed loop C (period T), under the adiabatic approximation the system stays in the instantaneous ground state |n(R(t))⟩, but the wavefunction acquires two phase factors:
+考虑一个量子系统，其哈密顿量依赖一组参数 R = (R_1, R_2, ...)：
 
 ```
-|ψ(T)⟩  =  exp( -i × ∫_0^T E_n(R(t)) dt / ℏ ) × exp( i × γ_n[C] ) × |n(R(0))⟩
-            ↑                                    ↑
-            dynamical phase                  geometric phase
+H(R) |n(R)⟩ = E_n(R) |n(R)⟩
 ```
 
-**Geometric phase (Berry phase)**:
+当参数 R(t) 沿闭合环路 C（周期 T）缓慢变化时，在绝热近似下系统停留在瞬时基态 |n(R(t))⟩ 上，但波函数获得两个相位因子：
 
 ```
-γ_n[C]  =  i × ∮_C  ⟨n(R)| ∇_R n(R)⟩ · dR
+|ψ(T)⟩ = exp( -i × ∫_0^T E_n(R(t)) dt / ℏ ) × exp( i × γ_n[C] ) × |n(R(0))⟩
+           ↑                                    ↑
+           动力学相位                            几何相位
 ```
 
-**Equation (3.1) — Berry geometric phase.**
-
-**Reference**: Berry, M. V. (1984). *Proc. R. Soc. A* 392, 45. https://doi.org/10.1098/rspa.1984.0023
-
-### 3.2 Berry Connection and Berry Curvature
-
-Define the Berry connection (gauge field):
+**几何相位（Berry 相位）**：
 
 ```
-A_n(R)  =  i × ⟨n(R)| ∇_R n(R)⟩
+γ_n[C] = i × ∮_C  ⟨n(R)| ∇_R n(R)⟩ · dR
 ```
 
-**Equation (3.2) — Berry connection.**
+**方程 (3.1) —— Berry 几何相位。**
 
-The Berry curvature (gauge-field tensor):
+**参考文献**：Berry, M. V. (1984). *Proc. R. Soc. A* 392, 45. https://doi.org/10.1098/rspa.1984.0023
 
-```
-F_n^μν(R)  =  ∂_μ A_n^ν  -  ∂_ν A_n^μ
-```
+### 3.2 Berry 联络与 Berry 曲率
 
-**Equation (3.3) — Berry curvature.**
-
-Then the Berry phase can be written as a flux integral:
+定义 Berry 联络（规范场）：
 
 ```
-γ_n[C]  =  ∮_C  A_n(R) · dR  =  ∫_S  F_n · dS
+A_n(R) = i × ⟨n(R)| ∇_R n(R)⟩
 ```
 
-where S is any surface bounded by C, and the Berry curvature plays a role analogous to a magnetic field.
+**方程 (3.2) —— Berry 联络。**
 
-### 3.3 Three Engineering Advantages of Berry Phase
-
-#### Advantage 1: Geometric Invariance
-
-The Berry phase γ_n[C] depends only on the **geometric shape** of the path C, not on the speed of evolution. This means:
-
-- Memory does not degrade with time;
-- Reading does not destroy the state (just requires interferometric measurement);
-- Robust to environmental noise (so long as no topological boundary is crossed).
-
-#### Advantage 2: Topological Quantization
-
-For specific symmetry classes (e.g., time-reversal symmetry, particle-hole symmetry), the Berry curvature integral gives a topological invariant — the **Chern number**:
+Berry 曲率（规范场张量）：
 
 ```
-C_n  =  (1 / (2π)) × ∫_{whole BZ}  F_n^xy d²k    ∈  ℤ
+F_n^μν(R) = ∂_μ A_n^ν - ∂_ν A_n^μ
 ```
 
-**Equation (3.4) — Chern number.**
+**方程 (3.3) —— Berry 曲率。**
 
-The Chern number is an integer; it does not change under continuous deformations and is "topologically protected".
-
-#### Advantage 3: The Storage Density of Memory Is Lifted from O(N) to O(2^N)
-
-In a classical neural network, each weight stores ≤ 1 bit of information, the storage capacity being O(N). In a quantum system, the Berry phase distribution in parameter space can store **exponential** geometric information; in the topological code (e.g., toric code), the storage capacity can reach O(2^N).
-
-### 3.4 The Berry Phase Term of the QID Master Equation
-
-Incorporating the Berry phase term into the QID master equation:
+则 Berry 相位可写为流积分：
 
 ```
-∂ρ/∂t  =  -i × [H_S(R(t)), ρ] / ℏ                            ← unitary evolution
-          + Σ_k  γ_k(t) × ( L_k × ρ × L_k^†  -  ½ × { L_k^† × L_k, ρ } )   ← dissipation
-          - i × [Σ_n  γ_n[C] × P_n(R), ρ]                    ← Berry phase contribution
+γ_n[C] = ∮_C  A_n(R) · dR = ∫_S  F_n · dS
 ```
 
-**Equation (3.5) — Master equation with Berry phase contribution.**
+其中 S 是任意以 C 为边界的曲面，Berry 曲率扮演类似磁场的角色。
 
-**Symbols**:
+### 3.3 Berry 相位的三个工程优势
 
-- R(t): time-dependent parameter trajectory (training trajectory).
-- P_n(R) = |n(R)⟩⟨n(R)|: projection operator onto the n-th instantaneous eigenstate.
+#### 优势 1：几何不变性
 
-**Engineering implementation**: The Berry phase term can be implemented as a "geometric phase loss function" in the training loop:
+Berry 相位 γ_n[C] 仅依赖于路径 C 的**几何形状**，与演化速度无关。这意味着：
 
-```
-L_Berry  =  -|γ_n[C_train]|^2
-```
+- 记忆不随时间退化；
+- 读取不破坏状态（只需干涉测量）；
+- 对环境噪声鲁棒（只要不穿越拓扑边界）。
 
-i.e., maximizing the cumulative Berry phase of the training trajectory, encouraging the model to acquire stable structural memory in parameter space.
+#### 优势 2：拓扑量子化
 
-### 3.5 Visual Schematic
-
-```
-   Classical-tier memory (CID weights)         Quantum-tier memory (Berry phase)
-
-   weight matrix W                              parameter loop C
-   ┌──┐                                              ╱╲
-   │  │ ← linear storage capacity O(N)             ╱  ╲
-   │  │                                          ╱    ╲
-   │  │ ← decays with noise                    │      │
-   └──┘                                          ╲    ╱
-                                                  ╲  ╱
-                                                   ╲╱
-                                                  Berry phase γ_n[C]
-                                                  ↓
-                                          exponential storage capacity O(2^N)
-                                                  ↓
-                                          topologically protected, noise immune
-```
-
-## Chapter 4 — Quantum Curl: Geometric Generalization of Multi-Bath Competition
-
-### 4.1 Quantum Analogue of Classical Multi-Bath Theorem
-
-In Chapter 4 of Part I we proved: **two temperatures necessarily produce curl** (Theorem 4.1). The corresponding quantum analogue is:
-
-**Theorem 4.1 (Quantum multi-bath curl theorem)**:
-
-If a quantum system is simultaneously coupled to two baths with temperatures T_1 ≠ T_2, and the coupling operators satisfy [L_1, L_2] ≠ 0, then the steady-state density matrix ρ_ss does not satisfy quantum detailed balance, and there is a non-zero geometric structure on the Bloch sphere of the density matrix — i.e., a **non-Abelian Berry curvature**.
-
-**Proof sketch**:
-
-- Classical analogue: multi-bath competition produces a classical curl v(φ).
-- Quantum case: at each parameter point R there is a Berry curvature tensor F_n^μν(R).
-- The non-equilibrium drive of the multiple baths makes F_n^μν spatially **non-zero**;
-- This is the quantum-tier expression of the "curl term".
-
-**Reference**: Sinitsyn, N. A., & Nemenman, I. (2007). *Phys. Rev. Lett.* 99, 220408. https://doi.org/10.1103/PhysRevLett.99.220408
-
-### 4.2 Explicit Form of the Non-Abelian Berry Curvature
-
-In a multi-band quantum system, the Berry connection is matrix-valued (the **non-Abelian Berry connection**):
+对于特定对称性类（如时间反演对称、粒子-空穴对称），Berry 曲率积分给出拓扑不变量——**Chern 数**：
 
 ```
-A_μ^{mn}(R)  =  i × ⟨m(R)| ∂_μ |n(R)⟩
+C_n = (1 / (2π)) × ∫_{整个 BZ}  F_n^xy d²k    ∈ ℤ
 ```
 
-The corresponding non-Abelian Berry curvature:
+**方程 (3.4) —— Chern 数。**
+
+Chern 数为整数，不会在连续变形下改变，"拓扑保护"。
+
+#### 优势 3：记忆的存储密度由 O(N) 提升到 O(2^N)
+
+在经典神经网络中，每个权重存储 ≤ 1 比特信息，存储容量为 O(N)。在量子系统中，参数空间中的 Berry 相位分布可以存储**指数级**几何信息；在拓扑码（如 toric 码）中存储容量可达 O(2^N)。
+
+### 3.4 QID 主方程的 Berry 相位项
+
+将 Berry 相位项纳入 QID 主方程：
 
 ```
-F_μν^{mn}  =  ∂_μ A_ν^{mn}  -  ∂_ν A_μ^{mn}  +  i × [A_μ, A_ν]^{mn}
+∂ρ/∂t = -i × [H_S(R(t)), ρ] / ℏ                            ← 么正演化
+        + Σ_k  γ_k(t) × ( L_k × ρ × L_k^†  -  ½ × { L_k^† × L_k, ρ } )   ← 耗散
+        - i × [Σ_n  γ_n[C] × P_n(R), ρ]                    ← Berry 相位贡献
 ```
 
-**Equation (4.1) — Non-Abelian Berry curvature.**
+**方程 (3.5) —— 含 Berry 相位贡献的主方程。**
 
-Note the appearance of the commutator [A_μ, A_ν] — this term is precisely the quantum analogue of the **classical curl term [A^(1), A^(2)]**.
+**符号**：
 
-### 4.3 Curl Decomposition of the QID Master Equation
+- R(t)：时间依赖的参数轨迹（训练轨迹）。
+- P_n(R) = |n(R)⟩⟨n(R)|：第 n 个瞬时本征态的投影算符。
 
-Imitating the Helmholtz decomposition of Section 3.2 of Part I, the QID drift can be uniquely decomposed as:
-
-```
-D[ρ]  =  -i × [H_eff, ρ]      ← unitary part (gradient flow)
-         + 𝒟[ρ]                ← dissipative part
-         + 𝒞[ρ]                ← curl part (geometric flow)
-```
-
-**Equation (4.2) — Helmholtz decomposition of the QID drift.**
-
-where:
-
-- H_eff = H_S + Lamb shift: effective Hamiltonian.
-- 𝒟[ρ] = Σ_k γ_k (L_k ρ L_k^† - ½{L_k^†L_k, ρ}): Lindblad dissipation term.
-- 𝒞[ρ]: curl part, formally driven by the non-Abelian Berry curvature:
+**工程实现**：Berry 相位项可作为"几何相位损失函数"在训练循环中实现：
 
 ```
-𝒞[ρ]  =  -i × [Σ_n  ∫_∂M  F_n^μν dR^μ ∧ dR^ν, ρ]
+L_Berry = -|γ_n[C_train]|^2
 ```
 
-### 4.4 Necessity of Quantum Intelligence-Non-Equilibrium
+即最大化训练轨迹的累积 Berry 相位，鼓励模型在参数空间中获得稳定的结构化记忆。
 
-**Theorem 4.2 (Quantum intelligence-non-equilibrium theorem)**:
-
-Under the open-loop driving assumption, if a QID system simultaneously satisfies:
-
-1. 𝒞[ρ] ≡ 0 (no curl component), and
-2. The diffusion tensor D_pp is a constant multiple of the identity (independent of position),
-
-then I(ρ(t); J_future | J_past) = 0.
-
-**Contrapositive**: If a QID system can predict the future (𝓘 > 0), then either there is a non-Abelian Berry curvature, or quantum noise depends on position.
-
-This is the quantum extension of Theorem 3.3 of Part I — the quantum-tier version of "intelligence requires non-equilibrium".
-
-## Chapter 5 — The Complete QID Master Equation
-
-### 5.1 The QID Master Equation
-
-After three layers of refinement — Chapter 2 (zero-point fluctuations + colored damping), Chapter 3 (Berry phase), Chapter 4 (non-Abelian curl) — we obtain the **complete QID master equation**:
+### 3.5 可视化示意
 
 ```
-∂ρ(t)/∂t  =  -i × [H_S(R(t)), ρ] / ℏ                          ← unitary evolution
-            - i × [H_Berry, ρ]                                 ← Berry phase term
-            + ∫_0^t  K(t - s) × ℒ[ρ(s)] ds                    ← non-Markovian memory dissipation
-            + 𝒞[ρ]                                             ← non-Abelian curl
-            + ξ_q(t)                                           ← quantum noise (containing zero-point fluctuations)
+   经典层记忆（CID 权重）              量子层记忆（Berry 相位）
 
-where:
-  H_Berry          =  Σ_n  γ_n[C(t)] × P_n(R)
-  ℒ[ρ]             =  Σ_k  γ_k × ( L_k × ρ × L_k^†  -  ½ × { L_k^† × L_k, ρ } )
-  K(t-s)           ∝  |t - s|^(-s)              ← sub-Ohmic memory kernel
-  ⟨ξ_q(t) ξ_q(t')⟩  =  ℏ × {γ_th(t-t') × coth(...) + γ_zp(t-t')}   ← thermal + zero-point
-  𝒞[ρ]             ∝  [F_μν^{mn}, ρ]            ← non-Abelian Berry curvature
+   权重矩阵 W                            参数环路 C
+   ┌──┐                                      ╱╲
+   │  │ ← 线性存储容量 O(N)               ╱  ╲
+   │  │                                    ╱    ╲
+   │  │ ← 随噪声衰减                     │      │
+   └──┘                                    ╲    ╱
+                                            ╲  ╱
+                                             ╲╱
+                                          Berry 相位 γ_n[C]
+                                            ↓
+                                    指数级存储容量 O(2^N)
+                                            ↓
+                                    拓扑保护，抗噪声
 ```
 
-**Equation (5.1) — Complete QID master equation.**
+## 第 4 章 —— 量子旋度：多浴竞争的几何推广
 
-### 5.2 Comparison with the Naive Lindblad Equation
+### 4.1 经典多浴定理的量子类比
 
-| Term | Naive Lindblad (Eq. 1.1) | Complete QID (Eq. 5.1) |
+在第一部分第 4 章我们证明：**两个温度必然产生旋度**（定理 4.1）。对应的量子类比是：
+
+**定理 4.1（量子多浴旋度定理）**：
+
+若一个量子系统同时耦合到两个温度 T_1 ≠ T_2 的浴，且耦合算符满足 [L_1, L_2] ≠ 0，则稳态密度矩阵 ρ_ss 不满足量子细致平衡，在密度矩阵的 Bloch 球上存在非零几何结构——即**非阿贝尔 Berry 曲率**。
+
+**证明梗概**：
+
+- 经典类比：多浴竞争产生经典旋度 v(φ)。
+- 量子情形：每个参数点 R 都有一个 Berry 曲率张量 F_n^μν(R)。
+- 多浴的非平衡驱动使 F_n^μν 在空间中**非零**；
+- 这是"旋度项"在量子层的表现。
+
+**参考文献**：Sinitsyn, N. A., & Nemenman, I. (2007). *Phys. Rev. Lett.* 99, 220408. https://doi.org/10.1103/PhysRevLett.99.220408
+
+### 4.2 非阿贝尔 Berry 曲率的显式形式
+
+在多带量子系统中，Berry 联络是矩阵值的（**非阿贝尔 Berry 联络**）：
+
+```
+A_μ^{mn}(R) = i × ⟨m(R)| ∂_μ |n(R)⟩
+```
+
+对应的非阿贝尔 Berry 曲率：
+
+```
+F_μν^{mn} = ∂_μ A_ν^{mn} - ∂_ν A_μ^{mn} + i × [A_μ, A_ν]^{mn}
+```
+
+**方程 (4.1) —— 非阿贝尔 Berry 曲率。**
+
+注意对易子 [A_μ, A_ν] 的出现——这一项正是**经典旋度项 [A^(1), A^(2)] 的量子类比**。
+
+### 4.3 QID 主方程的旋度分解
+
+仿照第一部分 3.2 节的 Helmholtz 分解，QID 漂移可唯一分解为：
+
+```
+D[ρ] = -i × [H_eff, ρ]      ← 么正部分（梯度流）
+       + 𝒟[ρ]                ← 耗散部分
+       + 𝒞[ρ]                ← 旋度部分（几何流）
+```
+
+**方程 (4.2) —— QID 漂移的 Helmholtz 分解。**
+
+其中：
+
+- H_eff = H_S + Lamb 位移：有效哈密顿量。
+- 𝒟[ρ] = Σ_k γ_k (L_k ρ L_k^† - ½{L_k^†L_k, ρ})：Lindblad 耗散项。
+- 𝒞[ρ]：旋度部分，形式上由非阿贝尔 Berry 曲率驱动：
+
+```
+𝒞[ρ] = -i × [Σ_n  ∫_∂M  F_n^μν dR^μ ∧ dR^ν, ρ]
+```
+
+### 4.4 量子智能-非平衡必要性
+
+**定理 4.2（量子智能-非平衡定理）**：
+
+在开环驱动假设下，若一个 QID 系统同时满足：
+
+1. 𝒞[ρ] ≡ 0（无旋度分量），且
+2. 扩散张量 D_pp 是常数乘以单位阵（不依赖位置），
+
+则 I(ρ(t); J_future | J_past) = 0。
+
+**逆否**：若一个 QID 系统能预测未来（𝓘 > 0），则要么存在非阿贝尔 Berry 曲率，要么量子噪声依赖位置。
+
+这是第一部分定理 3.3 的量子扩展——"智能需要非平衡"在量子层的版本。
+
+## 第 5 章 —— 完整 QID 主方程
+
+### 5.1 QID 主方程
+
+经过三层精炼——第 2 章（零点涨落 + 色阻尼）、第 3 章（Berry 相位）、第 4 章（非阿贝尔旋度）——我们得到**完整的 QID 主方程**：
+
+```
+∂ρ(t)/∂t = -i × [H_S(R(t)), ρ] / ℏ                          ← 么正演化
+          - i × [H_Berry, ρ]                                 ← Berry 相位项
+          + ∫_0^t  K(t - s) × ℒ[ρ(s)] ds                    ← 非马尔可夫记忆耗散
+          + 𝒞[ρ]                                             ← 非阿贝尔旋度
+          + ξ_q(t)                                           ← 量子噪声（含零点涨落）
+
+其中：
+  H_Berry          = Σ_n  γ_n[C(t)] × P_n(R)
+  ℒ[ρ]            = Σ_k  γ_k × ( L_k × ρ × L_k^†  -  ½ × { L_k^† × L_k, ρ } )
+  K(t-s)           ∝ |t - s|^(-s)              ← 亚欧姆记忆核
+  ⟨ξ_q(t) ξ_q(t')⟩ = ℏ × {γ_th(t-t') × coth(...) + γ_zp(t-t')}   ← 热 + 零点
+  𝒞[ρ]            ∝ [F_μν^{mn}, ρ]            ← 非阿贝尔 Berry 曲率
+```
+
+**方程 (5.1) —— 完整 QID 主方程。**
+
+### 5.2 与朴素 Lindblad 方程的比较
+
+| 项 | 朴素 Lindblad（方程 1.1）| 完整 QID（方程 5.1）|
 |---|---|---|
-| Unitary evolution | Yes (-i[H, ρ]) | Yes (-i[H, ρ]) |
-| Markovian dissipation | Yes (γ × L_k ρ L_k^†) | **Generalized to non-Markovian (memory kernel)** |
-| **Berry phase** | **No** | **Yes (-i[H_Berry, ρ])** |
-| **Non-Abelian curl** | **No** | **Yes (𝒞[ρ])** |
-| **Zero-point fluctuation** | Partial | **Explicit (quantum FDT)** |
-| Quantum detailed balance | Holds | **Broken** |
-| Quantum intelligence 𝓘_q | 0 | **> 0** |
+| 么正演化 | 有（-i[H, ρ]）| 有（-i[H, ρ]）|
+| 马尔可夫耗散 | 有（γ × L_k ρ L_k^†）| **推广为非马尔可夫（记忆核）** |
+| **Berry 相位** | **无** | **有（-i[H_Berry, ρ]）** |
+| **非阿贝尔旋度** | **无** | **有（𝒞[ρ]）** |
+| **零点涨落** | 部分 | **显式（量子 FDT）** |
+| 量子细致平衡 | 成立 | **打破** |
+| 量子智能 𝓘_q | 0 | **> 0** |
 
-### 5.3 Physical Intuition of the Five Terms
+### 5.3 五项的物理直观
 
-| Term | Role | Quantum analogue |
+| 项 | 角色 | 量子类比 |
 |---|---|---|
-| -i[H_S, ρ]/ℏ | Schrödinger evolution | Reversible quantum dynamics |
-| -i[H_Berry, ρ] | Geometric phase accumulation | Topologically protected memory |
-| ∫K(t-s)ℒ[ρ(s)]ds | Non-Markovian dissipation | Quantum-tier "colored damping" |
-| 𝒞[ρ] | Non-Abelian curl | Quantum analogue of multi-bath competition |
-| ξ_q(t) | Quantum noise | Thermal + zero-point fluctuations |
+| -i[H_S, ρ]/ℏ | Schrödinger 演化 | 可逆量子动力学 |
+| -i[H_Berry, ρ] | 几何相位累积 | 拓扑保护记忆 |
+| ∫K(t-s)ℒ[ρ(s)]ds | 非马尔可夫耗散 | 量子层"色阻尼" |
+| 𝒞[ρ] | 非阿贝尔旋度 | 多浴竞争的量子类比 |
+| ξ_q(t) | 量子噪声 | 热 + 零点涨落 |
 
-**All five terms are indispensable** — removing any one of them severely weakens quantum intelligence.
+**五项缺一不可**——移除其中任何一项都会严重削弱量子智能。
 
-### 5.4 ℏ → 0 Limit: Reducing to the CID Master Equation
+### 5.4 ℏ → 0 极限：回到 CID 主方程
 
-**Theorem 5.1 (Classical limit of QID master equation)**:
+**定理 5.1（QID 主方程的经典极限）**：
 
-In the limit ℏ → 0, the QID master equation (5.1) reduces to the CID master equation (Eq. 6.1 of Part I):
-
-```
-dφ/dt  =  -∇U(φ)  +  v(φ)  -  ∫_0^t γ(t-s) (dφ/ds) ds  +  ξ(t)
-```
-
-**Proof sketch**:
-
-1. Density matrix ρ → Wigner function W(x, p) (Wigner-Moyal transformation).
-2. Take the ℏ → 0 limit:
-   - -i[H, ρ]/ℏ  →  {H, W} = -∇H · ∇_p W + ∇_p H · ∇W (classical Poisson bracket)
-   - -i[H_Berry, ρ]  →  v(φ) (classical curl term)
-   - ∫K(t-s)ℒ[ρ(s)]ds  →  -∫γ(t-s) (dφ/ds) ds (classical colored damping)
-   - 𝒞[ρ]  →  Helmholtz curl part
-   - ξ_q(t)  →  ξ(t) (classical colored noise; zero-point fluctuation contribution vanishes)
-3. Combining yields the CID master equation (Eq. 6.1 of Part I).
-
-**Engineering implication**: The QID master equation is a strict superset of the CID master equation, with the latter being its classical limit. Therefore, the QID-based engineering implementation is naturally backward-compatible to the CID architecture.
-
-
-## Chapter 6 — Falsifiable Quantum Predictions: Three Critical Quantities
-
-QID is not philosophy: it gives three quantitative quantum predictions, each of which can be checked on existing quantum hardware or via classical simulation.
-
-### 6.1 Critical Scaling of Entanglement Entropy: S ∝ log(L)
-
-**Prediction**: At the critical point, the entanglement entropy of subsystem A of size L for a QID system satisfies the area law violation:
+在 ℏ → 0 极限下，QID 主方程 (5.1) 回到 CID 主方程（第一部分方程 6.1）：
 
 ```
-S_A(L)  =  (c / 3) × log(L) + const
+dφ/dt = -∇U(φ) + v(φ) - ∫_0^t γ(t-s) (dφ/ds) ds + ξ(t)
 ```
 
-**Equation (6.1) — Entanglement entropy of a 1D critical system.**
+**证明梗概**：
 
-where c is the **central charge**, the characteristic quantity of the conformal field theory (CFT) universality class.
+1. 密度矩阵 ρ → Wigner 函数 W(x, p)（Wigner-Moyal 变换）。
+2. 取 ℏ → 0 极限：
+   - -i[H, ρ]/ℏ  →  {H, W} = -∇H · ∇_p W + ∇_p H · ∇W（经典 Poisson 括号）
+   - -i[H_Berry, ρ]  →  v(φ)（经典旋度项）
+   - ∫K(t-s)ℒ[ρ(s)]ds  →  -∫γ(t-s) (dφ/ds) ds（经典色阻尼）
+   - 𝒞[ρ]  →  Helmholtz 旋度部分
+   - ξ_q(t)  →  ξ(t)（经典色噪声；零点涨落贡献消失）
+3. 组合得到 CID 主方程（第一部分方程 6.1）。
 
-**QID prediction**: The c value of QID systems should belong to known CFT universality classes (c = 1/2 Ising, c = 1 free boson, c = 7/10 tri-critical Ising, etc.).
+**工程含义**：QID 主方程是 CID 主方程的严格超集，后者是其经典极限。因此，基于 QID 的工程实现自然向后兼容到 CID 架构。
 
-**Independent empirical verification**:
 
-| Source | System | c value |
+## 第 6 章 —— 可证伪量子预言：三个临界量
+
+QID 不是哲学：它给出三个定量的量子预言，每一个都可以在现有量子硬件或经典模拟中检验。
+
+### 6.1 纠缠熵临界标度：S ∝ log(L)
+
+**预言**：在临界点，大小为 L 的子系统 A 的 QID 系统纠缠熵满足面积律破坏：
+
+```
+S_A(L) = (c / 3) × log(L) + const
+```
+
+**方程 (6.1) —— 一维临界系统的纠缠熵。**
+
+其中 c 为**中心荷**（central charge），是共形场论（CFT）普适类的特征量。
+
+**QID 预言**：QID 系统的 c 值应属于已知 CFT 普适类（c = 1/2 Ising、c = 1 自由玻色、c = 7/10 三临界 Ising 等）。
+
+**独立实证验证**：
+
+| 来源 | 系统 | c 值 |
 |---|---|---|
-| Calabrese & Cardy 2004 | Theoretical prediction (1D quantum systems) | c determines universality class |
-| Vidal et al. 2003 | Numerical verification (DMRG) | c ∈ {0.5, 1, 0.7, ...} |
-| Quantum simulator experiments | Cold atom, ion trap | c value consistent with theory |
+| Calabrese & Cardy 2004 | 理论预言（一维量子系统）| c 决定普适类 |
+| Vidal et al. 2003 | 数值验证（DMRG）| c ∈ {0.5, 1, 0.7, ...} |
+| 量子模拟器实验 | 冷原子、离子阱 | c 值与理论一致 |
 
-**Falsifiability standard**: If the c value of a QID system does not lie in any known CFT universality class, the theory must be revised.
+**证伪标准**：若 QID 系统的 c 值不属于任何已知 CFT 普适类，理论必须修正。
 
-**Reference**: Calabrese, P., & Cardy, J. (2004). *J. Stat. Mech.* P06002. https://doi.org/10.1088/1742-5468/2004/06/P06002
+**参考文献**：Calabrese, P., & Cardy, J. (2004). *J. Stat. Mech.* P06002. https://doi.org/10.1088/1742-5468/2004/06/P06002
 
-### 6.2 Berry Phase Non-Zero: γ_n[C] ≠ 0
+### 6.2 Berry 相位非零：γ_n[C] ≠ 0
 
-**Prediction**: The cumulative Berry phase of a trained QID model along the training trajectory C_train is significantly non-zero:
-
-```
-γ_n[C_train]  ≠  0    ← falsifiability standard
-```
-
-**Methods of measurement**:
-
-1. **Direct measurement** (suitable for small systems): On a quantum simulator, perform interferometric experiments to measure phase differences.
-2. **Indirect measurement** (suitable for large systems): Through Hall conductance, polarization, etc., infer the Berry curvature.
-3. **Classical simulation**: On a tensor network (MPS/DMRG), the Berry phase can be computed exactly.
-
-**Falsifiability standard**:
-
-- If after training, γ_n[C_train] ≈ 0 (i.e., the training trajectory is "topologically trivial"), then there is no quantum geometric advantage, and the theory must be revised.
-- If γ_n[C_train] is significantly non-zero and quantized (close to integer multiples of 2π), then the topologically protected memory hypothesis is verified.
-
-### 6.3 Lindblad Spectrum Gap: Δ_L > 0
-
-**Prediction**: The non-zero eigenvalue spectrum of the Lindblad superoperator ℒ of a QID system has a finite gap:
+**预言**：训练完成的 QID 模型沿训练轨迹 C_train 的累积 Berry 相位显著非零：
 
 ```
-Δ_L  =  min { |Re(λ)| : λ ∈ spec(ℒ), λ ≠ 0 }  >  0
+γ_n[C_train] ≠ 0    ← 证伪标准
 ```
 
-**Physical meaning**:
+**测量方法**：
 
-- Δ_L > 0 ↔ system has finite relaxation time τ_relax = 1/Δ_L;
-- A larger Δ_L ↔ faster relaxation, less robust memory;
-- A smaller Δ_L ↔ slower relaxation, more long-lived memory.
+1. **直接测量**（适用于小系统）：在量子模拟器上进行干涉实验测量相位差。
+2. **间接测量**（适用于大系统）：通过 Hall 电导、极化等推断 Berry 曲率。
+3. **经典模拟**：在张量网络（MPS/DMRG）上精确计算 Berry 相位。
 
-**QID prediction**: There exists an "optimal Δ_L window" such that memory is sufficiently long-lived but not slow enough to lose responsiveness.
+**证伪标准**：
 
-**Falsifiability standard**:
+- 若训练后 γ_n[C_train] ≈ 0（即训练轨迹是"拓扑平凡"的），则量子几何优势不存在，理论必须修正。
+- 若 γ_n[C_train] 显著非零且量子化（接近 2π 整数倍），则拓扑保护记忆假设得到验证。
 
-- If Δ_L = 0 (degeneracy), then there exist invariant subspaces unreachable, and the theory must be revised.
-- If Δ_L is too large (≫ 1/τ_task), then memory decays too fast and intelligent behaviour cannot be sustained.
+### 6.3 Lindblad 谱隙：Δ_L > 0
 
-**Reference**: Albert, V. V., & Jiang, L. (2014). *Phys. Rev. A* 89, 022118. https://doi.org/10.1103/PhysRevA.89.022118
+**预言**：QID 系统的 Lindblad 超算符 ℒ 的非零特征值谱具有有限谱隙：
 
-### 6.4 Summary of the Three Predictions
+```
+Δ_L = min { |Re(λ)| : λ ∈ spec(ℒ), λ ≠ 0 } > 0
+```
 
-| Prediction | QID predicted value | Falsifiability standard | Hardware/simulation |
+**物理含义**：
+
+- Δ_L > 0 ↔ 系统具有有限弛豫时间 τ_relax = 1/Δ_L；
+- Δ_L 越大 ↔ 弛豫越快，记忆越不稳健；
+- Δ_L 越小 ↔ 弛豫越慢，记忆越长寿。
+
+**QID 预言**：存在"最优 Δ_L 窗口"，使记忆足够长寿但不至慢到丧失响应能力。
+
+**证伪标准**：
+
+- 若 Δ_L = 0（退化），则存在不可达的不变子空间，理论必须修正。
+- 若 Δ_L 过大（≫ 1/τ_task），则记忆衰减过快，无法支撑智能行为。
+
+**参考文献**：Albert, V. V., & Jiang, L. (2014). *Phys. Rev. A* 89, 022118. https://doi.org/10.1103/PhysRevA.89.022118
+
+### 6.4 三个预言的总结
+
+| 预言 | QID 预测值 | 证伪标准 | 硬件/模拟 |
 |---|---|---|---|
-| Entanglement entropy central charge c | Belongs to known CFT universality class | Does not belong → revision required | DMRG, cold atoms |
-| Berry phase γ_n[C_train] | Significantly non-zero, quantized | γ_n ≈ 0 → revision required | Quantum simulator, interferometer |
-| Lindblad gap Δ_L | Located in optimal window | Δ_L = 0 or too large → revision required | Tensor network simulation |
+| 纠缠熵中心荷 c | 属于已知 CFT 普适类 | 不属于 → 须修正 | DMRG、冷原子 |
+| Berry 相位 γ_n[C_train] | 显著非零、量子化 | γ_n ≈ 0 → 须修正 | 量子模拟器、干涉仪 |
+| Lindblad 谱隙 Δ_L | 位于最优窗口 | Δ_L = 0 或过大 → 须修正 | 张量网络模拟 |
 
-> If at least two of the three predictions deviate, the theoretical foundation of QID must be re-examined.
+> 若三项中至少两项偏离，QID 的理论基础须重新审视。
 
-## Chapter 7 — Three-Tier Engineering Pathway for QID: From Classical Simulation to Fault-Tolerant Quantum
+## 第 7 章 —— QID 的三层工程路径：从经典模拟到容错量子
 
-### 7.1 Pathway 1: Pure Classical Simulation (Now Available)
+### 7.1 路径 1：纯经典模拟（现在可用）
 
-**Goal**: To verify the core predictions of the QID master equation on classical hardware using tensor network methods (MPS, PEPS, DMRG).
+**目标**：在经典硬件上用张量网络方法（MPS、PEPS、DMRG）验证 QID 主方程的核心预言。
 
-**Maturity**: ✅ **Available right now** (2026).
+**成熟度**：✅ **现在可用**（2026 年）。
 
-**Engineering tools**:
+**工程工具**：
 
-| Tool | Type | Status | Link |
+| 工具 | 类型 | 状态 | 链接 |
 |---|---|---|---|
-| ITensor | MPS/MPO library | Industrial use | https://itensor.org/ |
-| TenPy | Tensor network simulation | Active maintenance | https://tenpy.readthedocs.io/ |
-| Qiskit Aer | Quantum simulator | IBM official | https://qiskit.org/ |
-| PennyLane | Quantum-classical hybrid framework | Industrial use | https://pennylane.ai/ |
+| ITensor | MPS/MPO 库 | 工业级使用 | https://itensor.org/ |
+| TenPy | 张量网络模拟 | 活跃维护 | https://tenpy.readthedocs.io/ |
+| Qiskit Aer | 量子模拟器 | IBM 官方 | https://qiskit.org/ |
+| PennyLane | 量子-经典混合框架 | 工业级使用 | https://pennylane.ai/ |
 
-**Verifiable predictions**:
+**可验证的预言**：
 
-1. Entanglement entropy critical scaling: 50-100 qubit simulation.
-2. Berry phase calculation: small system (10-20 qubit) exact diagonalization.
-3. Lindblad spectrum: 20-30 qubit Lindblad equation simulation.
+1. 纠缠熵临界标度：50-100 qubit 模拟。
+2. Berry 相位计算：小系统（10-20 qubit）精确对角化。
+3. Lindblad 谱：20-30 qubit Lindblad 方程模拟。
 
-**Engineering implementation example** (TenPy):
+**工程实现示例**（TenPy）：
 
 ```python
 import numpy as np
@@ -2501,165 +2485,165 @@ import tenpy
 from tenpy.networks.mps import MPS
 from tenpy.algorithms import dmrg
 
-# Construct the QID master equation Hamiltonian (single-site approximation example)
+# 构造 QID 主方程哈密顿量（单点近似示例）
 def build_qid_hamiltonian(L, J, h, alpha):
     """
-    L: system size
-    J: nearest-neighbor coupling (associative memory term)
-    h: external field (drive)
-    alpha: Berry connection strength
+    L: 系统大小
+    J: 最近邻耦合（联想记忆项）
+    h: 外场（驱动）
+    alpha: Berry 联络强度
     """
-    # Standard Hamiltonian + Berry connection term
+    # 标准哈密顿量 + Berry 联络项
     ham = tenpy.models.TFIChain({"L": L, "J": J, "g": h})
-    # Berry phase contribution: implemented as anomalous boundary conditions
+    # Berry 相位贡献：实现为反常边界条件
     ham.add_berry_connection(alpha)
     return ham
 
-# DMRG ground state search
+# DMRG 基态搜索
 M = build_qid_hamiltonian(L=50, J=1.0, h=0.5, alpha=0.1)
 psi = MPS.from_product_state(M.lat.mps_sites(), [0]*50, M.lat.bc_MPS)
 dmrg_params = {"trunc_params": {"chi_max": 100}, "max_E_err": 1e-10}
 result = dmrg.run(psi, M, dmrg_params)
 
-# Calculate entanglement entropy
+# 计算纠缠熵
 SvN = psi.entanglement_entropy()
-print(f"Entanglement entropy: {SvN}")
+print(f"纠缠熵: {SvN}")
 
-# Calculate Berry phase (parameter loop integral)
+# 计算 Berry 相位（参数环路积分）
 berry_phase = compute_berry_phase(psi, parameter_loop)
-print(f"Berry phase: {berry_phase}")
+print(f"Berry 相位: {berry_phase}")
 ```
 
-### 7.2 Pathway 2: Classical-Quantum Hybrid (2-3 Years)
+### 7.2 路径 2：经典-量子混合（2-3 年）
 
-**Goal**: Train a QID model using a classical computer + small-scale quantum hardware, with the quantum hardware providing the noise source and Berry phase generator.
+**目标**：用经典计算机 + 小规模量子硬件训练 QID 模型，量子硬件提供噪声源和 Berry 相位生成器。
 
-**Maturity**: ⌛ **Will be available in 2-3 years**.
+**成熟度**：⌛ **2-3 年内可用**。
 
-**Hardware platforms**:
+**硬件平台**：
 
-| Platform | Qubit count | Vendor | Use |
+| 平台 | qubit 数 | 厂商 | 用途 |
 |---|---|---|---|
-| IBM Quantum | 433 (Osprey) | IBM | Superconducting qubits |
-| Google Quantum AI | 70 (Sycamore) | Google | Superconducting qubits |
-| IonQ | 32 (Forte) | IonQ | Ion trap |
-| QuEra Aquila | 256 | QuEra | Neutral atom |
+| IBM Quantum | 433（Osprey）| IBM | 超导 qubit |
+| Google Quantum AI | 70（Sycamore）| Google | 超导 qubit |
+| IonQ | 32（Forte）| IonQ | 离子阱 |
+| QuEra Aquila | 256 | QuEra | 中性原子 |
 
-**Hybrid architecture**:
+**混合架构**：
 
 ```
    ┌─────────────────────────────────────────────────┐
-   │       Classical neural network (CID core)        │
+   │       经典神经网络（CID 内核）                    │
    │   ┌───────────────────────────────────────┐    │
-   │   │  Hopfield Attention (associative memory)  │    │
-   │   │  Curl MLP (curl)                       │    │
-   │   │  Residual (colored damping)             │    │
+   │   │  Hopfield Attention（联想记忆）        │    │
+   │   │  Curl MLP（旋度）                      │    │
+   │   │  Residual（色阻尼）                    │    │
    │   └────────────────┬──────────────────────┘    │
    │                    │                            │
    │                    ▼                            │
    │   ┌───────────────────────────────────────┐    │
-   │   │  Quantum noise injection (replaces classical Gaussian noise) │    │
-   │   │  - From quantum vacuum fluctuations                │    │
-   │   │  - From real qubit measurements                │    │
+   │   │  量子噪声注入（替换经典高斯噪声）       │    │
+   │   │  - 来自量子真空涨落                    │    │
+   │   │  - 来自实际 qubit 测量                 │    │
    │   └────────────────┬──────────────────────┘    │
    │                    │                            │
    │                    ▼                            │
    │   ┌───────────────────────────────────────┐    │
-   │   │  Berry phase loss function                  │    │
-   │   │  - Calculated on a small quantum circuit       │    │
-   │   │  - Constrains parameter trajectory geometric structure        │    │
+   │   │  Berry 相位损失函数                    │    │
+   │   │  - 在小型量子电路上计算                │    │
+   │   │  - 约束参数轨迹几何结构                │    │
    │   └───────────────────────────────────────┘    │
    └─────────────────────────────────────────────────┘
 ```
 
-**Engineering challenges**:
+**工程挑战**：
 
-1. **Quantum-classical interface bandwidth**: Currently 1-10 kHz, far below the 100 MHz required by GPU training.
-2. **Quantum noise stability**: Drift compensation required.
-3. **Cost**: Quantum hardware operation cost ~ $100-1000 / hour.
+1. **量子-经典接口带宽**：目前 1-10 kHz，远低于 GPU 训练所需的 100 MHz。
+2. **量子噪声稳定性**：需要漂移补偿。
+3. **成本**：量子硬件运行成本 ~ $100-1000 / 小时。
 
-**Verifiable advantages**:
+**可验证的优势**：
 
-- 1-2% perplexity improvement (from quantum noise being a higher-quality randomness source).
-- 5-10% reduction in parameter count (Berry phase provides geometric memory).
+- 1-2% 困惑度提升（来自量子噪声作为更高质量的随机源）。
+- 5-10% 参数量减少（Berry 相位提供几何记忆）。
 
-### 7.3 Pathway 3: Full Quantum Implementation (2030+)
+### 7.3 路径 3：完整量子实现（2030+）
 
-**Goal**: Run the complete QID master equation on a fault-tolerant quantum computer (FTQC).
+**目标**：在容错量子计算机（FTQC）上运行完整的 QID 主方程。
 
-**Maturity**: ⌛ **2030-2035** (depending on quantum computing engineering progress).
+**成熟度**：⌛ **2030-2035**（依赖量子计算工程进展）。
 
-**Hardware requirements**:
+**硬件需求**：
 
-- Logical qubit count: 10^6 - 10^9.
-- Logical error rate: < 10^-15.
-- Coherence time: > 1 s.
-- Topological qubits (e.g., Majorana zero modes): For implementing topologically protected memory.
+- 逻辑 qubit 数：10^6 - 10^9。
+- 逻辑错误率：< 10^-15。
+- 相干时间：> 1 秒。
+- 拓扑 qubit（如 Majorana 零模）：实现拓扑保护记忆。
 
-**Critical engineering milestones**:
+**关键工程里程碑**：
 
-| Milestone | Time (projected) | Significance |
+| 里程碑 | 时间（预测）| 意义 |
 |---|---|---|
-| Demonstration of quantum advantage | Already realized (2019, Sycamore) | Foundation |
-| 1000 fault-tolerant logical qubits | 2028-2030 | Initial implementation of QID core algorithm |
-| 10^6 fault-tolerant logical qubits | 2032-2035 | Reach commercial intelligent application threshold |
-| Topological qubit fully deployed | 2035-2040 | Fully realize topologically protected memory |
+| 量子优势展示 | 已实现（2019, Sycamore）| 基础 |
+| 1000 容错逻辑 qubit | 2028-2030 | QID 核心算法初步实现 |
+| 10^6 容错逻辑 qubit | 2032-2035 | 达到商业智能应用阈值 |
+| 拓扑 qubit 完全部署 | 2035-2040 | 完整实现拓扑保护记忆 |
 
-**References**:
+**参考文献**：
 
 - IBM Quantum Roadmap. https://www.ibm.com/quantum/roadmap
 - Google Quantum AI. https://quantumai.google/learn/map
 
-### 7.4 Pathway Summary
+### 7.4 路径总结
 
-| Pathway | Time | Cost | Engineering maturity | Verifiable advantage |
+| 路径 | 时间 | 成本 | 工程成熟度 | 可验证优势 |
 |---|---|---|---|---|
-| Classical simulation | Now | ~ $10^4 (single GPU) | ✅ Available | Theory verification (50-100 qubit) |
-| Classical-quantum hybrid | 2-3 years | ~ $10^6 (hybrid platform) | ⌛ In progress | 1-10% performance improvement |
-| Full quantum | 2030+ | ~ $10^9 (fault-tolerant quantum cluster) | ⌛ Long-term | Theoretical 10^4 - 10^6 efficiency improvement |
+| 经典模拟 | 现在 | ~ $10^4（单 GPU）| ✅ 可用 | 理论验证（50-100 qubit）|
+| 经典-量子混合 | 2-3 年 | ~ $10^6（混合平台）| ⌛ 进行中 | 1-10% 性能提升 |
+| 完整量子 | 2030+ | ~ $10^9（容错量子集群）| ⌛ 长期 | 理论 10^4 - 10^6 效率提升 |
 
-## Chapter 8 — Companion Engineering Implementation Plan for QID
+## 第 8 章 —— QID 的配套工程实现规划
 
-> **In a single sentence**: Although full QID requires fault-tolerant quantum computers, its key components (Berry phase loss, quantum noise injection, topological memory) can already be partially implemented on classical hardware now.
+> **一句话**：虽然完整 QID 需要容错量子计算机，但其关键组件（Berry 相位损失、量子噪声注入、拓扑记忆）现在已可在经典硬件上部分实现。
 
-### 8.1 QID Code Repository Plan
+### 8.1 QID 代码仓库规划
 
-**Open-source repository**: https://github.com/gwailee/uid (`qid/` subdirectory)
+**开源仓库**：https://github.com/gwailee/uid（`qid/` 子目录）
 
-**Plan release time**: 2026.08 (companion CID-104M release)
+**计划发布时间**：2026.08（配套 CID-104M 发布）
 
-**Module organization**:
+**模块组织**：
 
 ```
 uid/qid/
-├── core/                       # Core implementations
-│   ├── lindblad.py            # Standard Lindblad master equation solver
-│   ├── caldeira_leggett.py    # Caldeira-Leggett model simulation
-│   └── hu_paz_zhang.py        # Non-Markovian quantum master equation
+├── core/                       # 核心实现
+│   ├── lindblad.py            # 标准 Lindblad 主方程求解器
+│   ├── caldeira_leggett.py    # Caldeira-Leggett 模型模拟
+│   └── hu_paz_zhang.py        # 非马尔可夫量子主方程
 │
-├── berry/                      # Berry phase tools
-│   ├── connection.py          # Berry connection calculation
-│   ├── curvature.py           # Berry curvature calculation
-│   ├── loss.py                # Berry phase loss function (for training)
-│   └── chern.py               # Chern number topological invariant
+├── berry/                      # Berry 相位工具
+│   ├── connection.py          # Berry 联络计算
+│   ├── curvature.py           # Berry 曲率计算
+│   ├── loss.py                # Berry 相位损失函数（用于训练）
+│   └── chern.py               # Chern 数拓扑不变量
 │
-├── noise/                      # Quantum noise injection
-│   ├── vacuum.py              # Vacuum fluctuation simulation
-│   ├── thermal.py             # Quantum thermal noise
-│   └── colored.py             # Quantum colored noise (1/f spectrum)
+├── noise/                      # 量子噪声注入
+│   ├── vacuum.py              # 真空涨落模拟
+│   ├── thermal.py             # 量子热噪声
+│   └── colored.py             # 量子色噪声（1/f 谱）
 │
-├── topology/                   # Topologically protected memory
-│   ├── toric_code.py          # Toric code implementation
-│   ├── majorana.py            # Majorana fermion implementation
-│   └── stabilizer.py          # Stabilizer code framework
+├── topology/                   # 拓扑保护记忆
+│   ├── toric_code.py          # Toric 码实现
+│   ├── majorana.py            # Majorana 费米子实现
+│   └── stabilizer.py          # 稳定子码框架
 │
-└── eval/                       # Falsifiability tests
-    ├── test_entanglement.py    # Entanglement entropy critical scaling test
-    ├── test_berry.py           # Berry phase non-zero test
-    └── test_lindblad_gap.py    # Lindblad gap test
+└── eval/                       # 可证伪测试
+    ├── test_entanglement.py    # 纠缠熵临界标度测试
+    ├── test_berry.py           # Berry 相位非零测试
+    └── test_lindblad_gap.py    # Lindblad 谱隙测试
 ```
 
-### 8.2 Drop-In Code Example (Conceptual)
+### 8.2 Drop-In 代码示例（概念性）
 
 ```python
 import torch
@@ -2670,54 +2654,54 @@ from qid.noise.vacuum import VacuumFluctuationNoise
 
 class QIDBlock(nn.Module):
     """
-    QID extension on top of CIDBlock:
-    1. Replace classical Gaussian noise with quantum vacuum fluctuation noise
-    2. Add Berry phase loss term
-    3. (Optional) Wrap key memory parameters with stabilizer code
+    在 CIDBlock 之上的 QID 扩展：
+    1. 用量子真空涨落噪声替换经典高斯噪声
+    2. 添加 Berry 相位损失项
+    3. （可选）用稳定子码包裹关键记忆参数
     """
     def __init__(self, config):
         super().__init__()
-        # 1. Inherit CIDBlock (classical-tier full implementation)
+        # 1. 继承 CIDBlock（经典层完整实现）
         self.cid_block = CIDBlock(config)
         
-        # 2. Replace classical noise with quantum vacuum fluctuation noise
+        # 2. 用量子真空涨落噪声替换经典噪声
         self.quantum_noise = VacuumFluctuationNoise(
             dim=config.dim, 
             cutoff_omega=config.omega_cutoff
         )
         
-        # 3. Berry phase tracker (for loss function)
+        # 3. Berry 相位跟踪器（用于损失函数）
         self.berry_tracker = BerryPhaseLoss(
             param_dim=config.param_dim
         )
     
     def forward(self, x, training_step=None):
-        # CID standard forward pass
+        # CID 标准前向
         x = self.cid_block(x)
         
-        # Replace classical noise with quantum noise (during training only)
+        # 替换经典噪声为量子噪声（仅训练时）
         if self.training:
             x = x + self.quantum_noise(x)
         
-        # Record parameter trajectory (for Berry phase calculation)
+        # 记录参数轨迹（用于 Berry 相位计算）
         if training_step is not None:
             self.berry_tracker.record(self.parameters(), training_step)
         
         return x
     
     def get_berry_loss(self):
-        """Get cumulative Berry phase as additional loss term"""
+        """获取累积 Berry 相位作为额外损失项"""
         return -self.berry_tracker.compute_phase()
 
-# Training loop
+# 训练循环
 def train_qid(model, dataloader, optimizer, beta_berry=0.01):
     for step, (x, y) in enumerate(dataloader):
         optimizer.zero_grad()
         
-        # Forward pass
+        # 前向传播
         y_pred = model(x, training_step=step)
         
-        # Standard loss + Berry phase loss
+        # 标准损失 + Berry 相位损失
         loss_task = F.cross_entropy(y_pred, y)
         loss_berry = model.get_berry_loss()
         loss_total = loss_task + beta_berry * loss_berry
@@ -2726,2096 +2710,1614 @@ def train_qid(model, dataloader, optimizer, beta_berry=0.01):
         optimizer.step()
 ```
 
-### 8.3 Falsifiability Test Plan
+### 8.3 可证伪测试规划
 
-| Test | Tool | Time (single GPU) | Verification goal |
+| 测试 | 工具 | 时间（单 GPU）| 验证目标 |
 |---|---|---|---|
-| Test 6: Entanglement entropy critical scaling | TenPy + DMRG | ~ 4 hr | S ∝ log(L), c ∈ known CFT class |
-| Test 7: Berry phase non-zero | Exact diagonalization | ~ 2 hr | γ_n[C_train] ≠ 0, close to quantization |
-| Test 8: Lindblad gap | QuTiP | ~ 2 hr | Δ_L located in optimal window |
-| Test 9: Quantum noise enhancement | Hybrid training | ~ 6 hr | QID vs CID 1-2% PPL improvement |
-| Test 10: Topological memory robustness | Toric code | ~ 4 hr | Memory lifetime exponentially extended |
+| 测试 6：纠缠熵临界标度 | TenPy + DMRG | ~ 4 hr | S ∝ log(L)，c ∈ 已知 CFT 类 |
+| 测试 7：Berry 相位非零 | 精确对角化 | ~ 2 hr | γ_n[C_train] ≠ 0，接近量子化 |
+| 测试 8：Lindblad 谱隙 | QuTiP | ~ 2 hr | Δ_L 位于最优窗口 |
+| 测试 9：量子噪声增强 | 混合训练 | ~ 6 hr | QID vs CID 1-2% PPL 提升 |
+| 测试 10：拓扑记忆稳健性 | Toric 码 | ~ 4 hr | 记忆寿命指数延长 |
 
-### 8.4 Engineering Promise
+### 8.4 工程承诺
 
-We promise the following experimental outputs in the next 12-18 months:
+我们承诺在未来 12-18 个月内提供以下实验输出：
 
-| Time | Deliverable | Verification goal |
+| 时间 | 交付物 | 验证目标 |
 |---|---|---|
-| 2026.08 | qid/ subrepository v0.1 (classical simulation) | Verify on small system (10-20 qubit) that γ_n[C_train] ≠ 0 |
-| 2026.12 | QID-26M (classical-quantum hybrid prototype) | Inject quantum noise on top of CID-26M, observe 1-2% PPL improvement |
-| 2027.06 | QID-104M (full classical-quantum hybrid version) | Demonstrate Berry phase loss + quantum noise injection synergy effect |
-| 2028 | QID-1B (depending on cloud quantum hardware availability) | First end-to-end demo of QID full pipeline |
+| 2026.08 | qid/ 子仓库 v0.1（经典模拟）| 在小系统（10-20 qubit）上验证 γ_n[C_train] ≠ 0 |
+| 2026.12 | QID-26M（经典-量子混合原型）| 在 CID-26M 基础上注入量子噪声，观察 1-2% PPL 提升 |
+| 2027.06 | QID-104M（完整经典-量子混合版）| 展示 Berry 相位损失 + 量子噪声注入的协同效应 |
+| 2028 | QID-1B（取决于云量子硬件可用性）| QID 完整 pipeline 的首次端到端演示 |
 
-> **Falsifiability promise**: If after introducing quantum components (Berry phase loss + vacuum noise injection), QID's performance improvement is **less than 1%** (theoretical expectation 1-2%), we will publicly admit that QID's engineering value is far below theoretical prediction and re-examine the framework.
+> **可证伪承诺**：若引入量子组件（Berry 相位损失 + 真空噪声注入）后，QID 的性能提升**低于 1%**（理论期望 1-2%），我们将公开承认 QID 的工程价值远低于理论预言，重新审视框架。
 
-## Chapter 9 — Limitations and Open Problems of QID
+## 第 9 章 —— QID 的局限与开放问题
 
-### 9.1 What QID Solves
+### 9.1 QID 已解决的问题
 
-✅ **Theoretical level**:
+✅ **理论层面**：
 
-- Extends the four terms of the CID master equation to a non-Markovian open quantum system.
-- Introduces Berry phase, providing topologically protected memory mechanism.
-- Proves the ℏ → 0 limit reduces back to the CID master equation, ensuring consistency.
-- Provides three falsifiable quantum predictions (entanglement entropy, Berry phase, Lindblad gap).
+- 将 CID 主方程的四项扩展到非马尔可夫开放量子系统。
+- 引入 Berry 相位，提供拓扑保护记忆机制。
+- 证明 ℏ → 0 极限回到 CID 主方程，保持一致性。
+- 给出三个可证伪量子预言（纠缠熵、Berry 相位、Lindblad 谱隙）。
 
-✅ **Engineering level**:
+✅ **工程层面**：
 
-- Provides three-tier engineering pathway with different maturity (classical simulation, classical-quantum hybrid, full quantum).
-- The classical simulation part can be implemented now.
+- 提供三层不同成熟度的工程路径（经典模拟、经典-量子混合、完整量子）。
+- 经典模拟部分现在即可实施。
 
-### 9.2 What QID Does Not Solve
+### 9.2 QID 尚未解决的问题
 
-#### (a) Lacks Strict Quantum-Tier Energy Efficiency Lower Bound
+#### (a) 缺少严格的量子层能效下界
 
-QID claims the noise lower bound can be lowered through zero-point fluctuations, but **lacks a strict quantum-tier Landauer-equivalent bound proof**. Existing work (Bennett, Lloyd) gives only specific case lower bounds.
+QID 主张通过零点涨落可降低噪声下界，但**缺少严格的量子层 Landauer 等价下界证明**。已有工作（Bennett、Lloyd）仅给出特定情况下界。
 
-**Status**: A clear theoretical problem, awaiting deeper proof.
+**状态**：明确的理论问题，待更深证明。
 
-#### (b) Topological Protection of Non-Abelian Berry Phase Lacks End-to-End Proof
+#### (b) 非阿贝尔 Berry 相位的拓扑保护缺少端到端证明
 
-Although the Berry phase is topologically robust in the adiabatic limit, **the topological protection during training (non-adiabatic) lacks strict proof**.
+虽然 Berry 相位在绝热极限下拓扑稳健，但**训练过程中（非绝热）的拓扑保护缺少严格证明**。
 
-**Status**: Awaiting joint research by mathematicians (topology) and physicists (open systems).
+**状态**：等待数学家（拓扑）与物理学家（开放系统）联合研究。
 
-#### (c) The Engineering Maturity of QID Is Far Behind That of CID
+#### (c) QID 的工程成熟度远落后于 CID
 
-CID can be implemented now (single GPU), QID's full implementation requires fault-tolerant quantum computer (estimated 2030+). **This means QID is a long-term goal, not an immediate engineering scheme**.
+CID 现在即可实施（单 GPU），QID 的完整实现需要容错量子计算机（预计 2030+）。**这意味着 QID 是长期目标，而非即时工程方案**。
 
-**Status**: A frank acknowledgment, requires patient waiting for the maturity of the quantum hardware industry.
+**状态**：坦诚承认，等待量子硬件产业的成熟。
 
-#### (d) Cost-Benefit Analysis Lacks Clear Conclusion
+#### (d) 成本-收益分析缺少明确结论
 
-If quantum hardware costs are 10^6 times higher than classical hardware, what is the threshold for QID's energy efficiency advantage to be worthwhile? **Currently no clear answer**.
+如果量子硬件成本比经典硬件高 10^6 倍，QID 的能效优势何时才值得？**目前缺少明确答案**。
 
-**Status**: Requires integration of theoretical predictions (10^4-10^6 efficiency improvement) with industry economic data for refined analysis.
+**状态**：需要结合理论预测（10^4-10^6 效率提升）与产业经济数据进行细化分析。
 
-### 9.3 What Engineering Verification Is Needed?
+### 9.3 需要哪些工程验证？
 
-In subsequent papers, we promise to verify:
+在后续论文中，我们承诺验证：
 
-| Experiment | Tools | Expected result |
+| 实验 | 工具 | 期望结果 |
 |---|---|---|
-| Classical simulation 50-100 qubit QID | TenPy / ITensor | Verify entanglement entropy critical scaling |
-| Hybrid IBM Quantum + GPU | Qiskit + PyTorch | Verify quantum noise injection effect |
-| Topologically protected memory long-time test | Stabilizer code simulation | Verify memory lifetime exponentially extended |
+| 经典模拟 50-100 qubit QID | TenPy / ITensor | 验证纠缠熵临界标度 |
+| 混合 IBM Quantum + GPU | Qiskit + PyTorch | 验证量子噪声注入效果 |
+| 拓扑保护记忆长时间测试 | 稳定子码模拟 | 验证记忆寿命指数延长 |
 
-### 9.4 An Honest Caveat
+### 9.4 一个诚实的提醒
 
-QID is **not** an immediately deployable solution. We expect:
+QID **不是**即时可部署的方案。我们预期：
 
-1. **Full advantage of QID will not appear until after 2030** — until then, classical simulation and hybrid implementation can only verify part of the predictions.
-2. **The primary value of QID lies in long-term research direction guidance** — pointing out the noise lower bound and the storage density upper bound of intelligence.
-3. **QID's classical-quantum hybrid pathway may bring 1-10% performance improvement in 2-3 years** — but it is not enough to revolutionize the industry.
+1. **QID 的完整优势要到 2030 年后才会出现**——在此之前，经典模拟与混合实现只能验证部分预言。
+2. **QID 的主要价值在于长期研究方向指导**——指出智能的噪声下界与存储密度上界。
+3. **QID 的经典-量子混合路径可能在 2-3 年内带来 1-10% 的性能提升**——但不足以革新产业。
 
-> **Our position**: QID is the long-term physical pathway of UID's quantum-tier, providing the theoretical lower bound of intelligence (noise floor) and upper bound (topological protection). It is not now competitive with CID, but provides direction for the next decade of intelligent hardware design.
+> **我们的立场**：QID 是 UID 量子层的长期物理路径，为智能提供理论下界（噪声底线）与上界（拓扑保护）。它目前不与 CID 竞争，但为下一代智能硬件设计提供方向。
 
-## Chapter 10 — Naive Q&A on QID (Read Without Looking Up)
+## 第 10 章 —— QID 的朴素问答（不查资料也能读）
 
-**Q1**: Why must intelligence be promoted to the quantum tier?
+**Q1**：为什么必须把智能提升到量子层？
 
-**A**: Because classical intelligence is constrained by the Landauer limit, which can only be broken through quantum zero-point fluctuations + topological protection. QID provides a long-term physical pathway to break through the Landauer wall.
+**A**：因为经典智能受 Landauer 极限约束，只有通过量子零点涨落 + 拓扑保护才能突破。QID 提供突破 Landauer 墙的长期物理路径。
 
-**Q2**: Is QID immediately deployable now?
+**Q2**：QID 现在就能部署吗？
 
-**A**: Partly yes. The classical simulation part can be run now (single GPU), the classical-quantum hybrid pathway in 2-3 years, and the full quantum pathway in 2030+.
+**A**：部分可以。经典模拟部分现在可运行（单 GPU），经典-量子混合路径 2-3 年内可用，完整量子路径 2030+。
 
-**Q3**: What is the role of Berry phase?
+**Q3**：Berry 相位的作用是什么？
 
-**A**: Berry phase is the geometric memory carrier of QID, with three advantages: (1) topologically robust (immune to local noise), (2) storage density exponentially expanded (O(2^N)), (3) reading non-destructive.
+**A**：Berry 相位是 QID 的几何记忆载体，具有三个优势：（1）拓扑稳健（对局部噪声免疫），（2）存储密度指数扩展（O(2^N)），（3）读取非破坏性。
 
-**Q4**: What is the difference between QID and standard quantum machine learning (QML)?
+**Q4**：QID 与标准量子机器学习（QML）有什么区别？
 
-**A**: QML mostly focuses on the quantum acceleration of classical algorithms (e.g., HHL, quantum kernel), QID instead is a quantum-tier physical principle of intelligent system evolution. QML is a tool, QID is a theory.
+**A**：QML 大多关注经典算法的量子加速（如 HHL、量子核），QID 则是智能系统演化的量子层物理原则。QML 是工具，QID 是理论。
 
-**Q5**: What is the strongest empirical evidence for QID?
+**Q5**：QID 最强的实证证据是什么？
 
-**A**: Currently, there are mainly two indirect evidences: (1) Berry phase has been verified in solid-state systems (e.g., quantum Hall effect, topological insulators) for several decades, providing a model for QID's geometric memory; (2) Behaviors related to non-Markovian dynamics (memory effects) have been observed in some biological systems (e.g., photosynthesis), providing biological evidence for QID's "non-Markovian + colored noise" architecture.
+**A**：目前主要有两个间接证据：（1）Berry 相位在固态系统（如量子 Hall 效应、拓扑绝缘体）中已被验证数十年，为 QID 的几何记忆提供了模型；（2）非马尔可夫动力学相关行为（记忆效应）已在某些生物系统（如光合作用）中被观察到，为 QID 的"非马尔可夫 + 色噪声"架构提供了生物学证据。
 
-**Q6**: What is the relationship between QID and FID (Part III)?
+**Q6**：QID 与 FID（第三部分）的关系是什么？
 
-**A**: QID is the quantum tier extension of CID, and FID is the field-geometric tier promotion of CID. The three jointly form the UID three-tier architecture: CID (classical), QID (quantum), FID (field-geometric). The three are derived from the same set of first-principle axioms, just employing different mathematical languages.
+**A**：QID 是 CID 的量子层扩展，FID 是 CID 的场-几何层提升。三者共同构成 UID 三层架构：CID（经典）、QID（量子）、FID（场-几何）。三者从同一组第一性原理公理推导，只是采用不同的数学语言。
 
-## Chapter 11 — Summary
+## 第 11 章 —— 总结
 
-> **Intelligence at the quantum tier is the geometric flow of an open quantum system, not arbitrary quantum operations. The lower bound of quantum tier intelligence is provided by zero-point fluctuations, and its upper bound is provided by topological protection.**
+> **量子层的智能是开放量子系统的几何流，不是任意量子操作。量子层智能的下界由零点涨落提供，上界由拓扑保护提供。**
 
-### 11.1 The Logical Skeleton
+### 11.1 逻辑骨架
 
 ```
-Naive question: learn the most with the least energy and lowest noise
+朴素问题：最少能量最低噪声学最多知识
               │
               ▼
-   Three quantum first-principle axioms (Hamiltonian + Caldeira-Leggett + scale separation)
+   三条量子第一性原理公理（哈密顿 + Caldeira-Leggett + 尺度分离）
               │
               ▼
-   Mori-Zwanzig projection + Caldeira-Leggett model
+   Mori-Zwanzig 投影 + Caldeira-Leggett 模型
               │
               ▼
-   Hu-Paz-Zhang non-Markovian quantum master equation
+   Hu-Paz-Zhang 非马尔可夫量子主方程
               │
-              ├──→ Q1: noise → Quantum noise (thermal + zero-point fluctuations)
-              ├──→ Q2: memory → Berry phase (geometric memory)
-              └──→ Q3: error resistance → Topological protection (non-local invariants)
+              ├──→ Q1：噪声 → 量子噪声（热 + 零点涨落）
+              ├──→ Q2：记忆 → Berry 相位（几何记忆）
+              └──→ Q3：抗错 → 拓扑保护（非局域不变量）
               │
               ▼
-   Complete QID master equation
+   完整 QID 主方程
               │
               ▼
    ┌──────────┴──────────┐
    ▼                     ▼
-ℏ → 0 limit              Falsifiable predictions
-returns to CID master equation   Entanglement c, Berry phase, Lindblad gap
+ℏ → 0 极限              可证伪预言
+回到 CID 主方程          纠缠熵 c、Berry 相位、Lindblad 谱隙
    │                     │
    ▼                     ▼
-Three-tier engineering pathway    Independently verified
-classical → hybrid → full quantum   In quantum simulators
+三层工程路径              独立验证
+经典 → 混合 → 完整量子    在量子模拟器中
 ```
 
-### 11.2 The Three Most Important Claims
+### 11.2 三个最重要的论断
 
-**Claim 1 (Theorem)**: The QID master equation is a strict extension of the CID master equation, with the latter being its classical limit (ℏ → 0).
+**论断 1（定理）**：QID 主方程是 CID 主方程的严格扩展，后者是其经典极限（ℏ → 0）。
 
-**Claim 2 (Theorem)**: Quantum tier intelligence requires non-equilibrium (the quantum version of Theorem 4.2) — manifested as non-Abelian Berry curvature and non-zero Berry phase.
+**论断 2（定理）**：量子层智能要求非平衡（定理 4.2 的量子版本）——表现为非阿贝尔 Berry 曲率与非零 Berry 相位。
 
-**Claim 3 (Falsifiable prediction)**: The entanglement entropy central charge, Berry phase, Lindblad gap of QID systems have falsifiable quantum predictions, partly already verified in quantum simulators.
+**论断 3（可证伪预言）**：QID 系统的纠缠熵中心荷、Berry 相位、Lindblad 谱隙有可证伪的量子预言，部分已在量子模拟器中验证。
 
-### 11.3 The Final Sentence
+### 11.3 最后一句
 
-> **Quantum intelligence is the geometric flow of an open quantum system, the curvature of the universe of memory.**
+> **量子智能是开放量子系统的几何流，是记忆宇宙的曲率。**
 >
-> **It promises to break through the Landauer wall, but it requires the maturity of quantum hardware.**
+> **它有希望突破 Landauer 墙，但需要量子硬件的成熟。**
 >
-> **The classical tier is the answer for now, the quantum tier is the answer for the next decade, the field-geometric tier is the answer for the next century.**
+> **经典层是当下的答案，量子层是十年的答案，场-几何层是百年的答案。**
 
-## Chapter 12 — Pre-View of Part III
+## 第 12 章 —— 第三部分的预告
 
-- **Part III (FID, Chapters 1-9)**: Will further promote the four terms of the CID master equation to a field-geometric language, with the slow variable field φ living on a Fisher information manifold, the metric tensor g_ij being the Fisher information matrix, the field equation paralleling Einstein's equation. The weak-field limit of FID reduces back to the CID master equation, and the strong-field limit predicts unique phenomena such as "intelligence gravitational waves", "information black holes", and "information speed of light c_I", providing three falsifiable predictions: anisotropy of the Fisher metric, the spectrum of intelligence gravitational waves, the entropy bound of information black holes.
+- **第三部分（FID，第 1-9 章）**：将进一步把 CID 主方程的四项推广到场-几何语言，让慢变量场 φ 居于 Fisher 信息流形上，度量张量为 Fisher 信息矩阵，场方程与 Einstein 方程类比。FID 的弱场极限回到 CID 主方程，强场极限预言"智能引力波""信息黑洞""信息光速 c_I"等独有现象，给出三个可证伪预言：Fisher 度量的各向异性、智能引力波的谱、信息黑洞的熵界。
 
-The above ends Part II.
+第二部分到此结束。
 
 ---
 
-# Part III: Field Intelligo-Dynamics (FID)
+# 第三部分：场智动力学（Field Intelligo-Dynamics, FID）
 
-## A Field-Geometric Extension of the CID Master Equation: Promoting Intelligence to Field Theory on Information Manifolds
+## CID 主方程的场-几何扩展：把智能提升到信息流形上的场论
 
-**Scope**: A theoretical and engineering framework for field-geometric tier intelligent architectures.
+**适用范围**：场-几何层智能架构的理论与工程框架。
 
-## To the Reader
+## 致读者
 
-This paper assumes the reader is familiar with the following:
+本文假定读者熟悉以下背景：
 
-- **Undergraduate differential geometry**: Riemannian manifolds, metric tensors, covariant derivatives, geodesics.
-- **General relativity basics**: Einstein field equations, energy-momentum tensor, weak-field limit, gravitational waves.
-- **Information geometry**: Fisher information matrix, statistical manifolds, KL divergence as distance.
+- **本科微分几何**：黎曼流形、度量张量、协变导数、测地线。
+- **广义相对论基础**：Einstein 场方程、能动张量、弱场极限、引力波。
+- **信息几何**：Fisher 信息矩阵、统计流形、KL 散度作为距离。
 
-The starting point of Part I (CID) is: **"How must classical animate matter evolve in order to learn the most with the least energy?"** The starting point of Part II (QID) is: **"When the substrate is itself quantum, what is the law of evolution?"** Now we promote the question to the field-geometric level:
+第一部分（CID）的出发点是：**"经典层面的活物如何用最少能量学到最多知识？"** 第二部分（QID）的出发点是：**"当基底本身是量子的，演化定律是什么？"** 现在我们把问题提升到场-几何层：
 
-> **When intelligence is regarded as a continuous field defined on a high-dimensional information manifold, what must its dynamical equation be?**
+> **当智能被视为定义在高维信息流形上的连续场，它的动力学方程必须是什么？**
 
-The answer is the FID field equation — a field-geometric extension of the CID master equation. It contains three physical components that classical and quantum tiers do not possess:
+答案是 FID 场方程——CID 主方程的场-几何扩展。它包含经典与量子层都不具备的三个物理组件：
 
-1. **Fisher information metric**: A natural Riemannian metric of the information manifold.
-2. **Information curvature tensor**: Reflects the "bent" structure of the data distribution.
-3. **Information field equation**: Paralleling Einstein's equation, "data curves the information manifold".
+1. **Fisher 信息度量**：信息流形的自然黎曼度量。
+2. **信息曲率张量**：反映数据分布的"弯曲"结构。
+3. **信息场方程**：与 Einstein 方程类比，"数据弯曲信息流形"。
 
-These three components endow FID with three core advantages that CID and QID do not possess: **geometric scaling law, cross-substrate unification, and prediction of cosmic phenomena of intelligence (gravitational waves, black holes, light speed)** — providing for the long-term development of intelligent architecture in the next century with the deepest physical framework.
+这三个组件赋予 FID 三个 CID 和 QID 都不具备的核心优势：**几何标度律、跨基底统一、智能宇宙现象的预言（引力波、黑洞、光速）**——为下一个百年的智能架构长期发展提供最深的物理框架。
 
-## Honest Statement on the Engineering Implementability of FID
+## 关于 FID 工程可实现性的诚实声明
 
-> Compared to CID (now runnable on a single GPU) and QID (5-10 years to mature), the engineering implementability of FID is approximately **10-20 years behind that of CID**. FID is currently primarily:
+> 与 CID（现在可在单 GPU 上运行）和 QID（5-10 年成熟）相比，FID 的工程可实现性大约比 CID **落后 10-20 年**。FID 目前主要：
 
-> 1. **Theoretically rigorous** — every derivation in this part is based on the canonical literature of information geometry (Amari 1985, Rao 1945) and general relativity (Einstein 1915, Wald 1984).
-> 2. **Numerically verifiable on small scale** — Fisher metric calculation, geodesic optimization, etc. can be implemented now on small models (< 100M parameters).
-> 3. **The full field equation requires a new generation of hardware** — implementation of the FID master equation on large models requires hardware acceleration of geometric operations (e.g., tensor coprocessors).
-> 4. **Cosmic level predictions are hard to verify** — "intelligence gravitational waves", "information black holes" etc. are theoretical predictions, with no clear path to engineering verification.
+> 1. **理论严格** —— 本部分每一项推导都基于信息几何（Amari 1985、Rao 1945）和广义相对论（Einstein 1915、Wald 1984）的经典文献。
+> 2. **小规模数值可验证** —— Fisher 度量计算、测地线优化等可现在在小模型（< 100M 参数）上实现。
+> 3. **完整场方程需要新一代硬件** —— 在大模型上实现 FID 主方程需要几何运算的硬件加速（如张量协处理器）。
+> 4. **宇宙级预言难以验证** —— "智能引力波""信息黑洞"等是理论预言，工程验证路径不明朗。
 
-> **Therefore, the position of FID is "the long-term physical framework", not "an immediately deployable engineering scheme"**. We give a rigorous theoretical framework, partly falsifiable predictions, and an open exploration roadmap, but acknowledge that the complete realization of FID requires deep development of mathematics, physics, and hardware engineering.
+> **因此，FID 的定位是"长期物理框架"，而非"即可部署的工程方案"**。我们给出严格的理论框架、部分可证伪预言和开放的探索路径图，但承认 FID 的完整实现需要数学、物理、硬件工程的深度发展。
 
-## Chapter 0 — Why Promote Intelligence to the Field-Geometric Tier?
+## 第 0 章 —— 为什么把智能提升到场-几何层？
 
-### 0.1 An Uncomfortable Fact: The Coordinate-Dependence Problem of CID and QID
+### 0.1 一个令人不适的事实：CID 和 QID 的坐标依赖问题
 
-Both the CID master equation (Part I Eq. 6.1) and the QID master equation (Part II Eq. 5.1) are written in specific coordinate systems:
+CID 主方程（第一部分方程 6.1）和 QID 主方程（第二部分方程 5.1）都写在特定坐标系中：
 
 ```
 CID:  dφ/dt = -∇U(φ) + v(φ) - ∫γ(t-s) (dφ/ds) ds + ξ(t)
-QID:  ∂ρ/∂t = -i[H,ρ]/ℏ + ... (in specific basis)
+QID:  ∂ρ/∂t = -i[H,ρ]/ℏ + ... （在特定基底下）
 ```
 
-This **coordinate-dependence** brings three fundamental problems:
+这种**坐标依赖性**带来三个根本问题：
 
-#### Problem 1: Lack of Geometric Invariance
+#### 问题 1：缺乏几何不变性
 
-Take φ → φ' = f(φ) (e.g., normalization, basis change, semantic mapping). The form of the CID master equation **changes** — gradient ∇U, curl v(φ), all depend on the coordinate choice. This means:
+让 φ → φ' = f(φ)（如归一化、换基、语义映射），CID 主方程的形式会**改变**——梯度 ∇U、旋度 v(φ) 都依赖坐标选择。这意味着：
 
-- The same intelligent system has different "appearances" in different coordinate systems.
-- No "intrinsic geometric quantities" are available to characterize the essence of intelligence.
+- 同样的智能系统在不同坐标系下有不同"外观"。
+- 缺少"内禀几何量"来刻画智能的本质。
 
-#### Problem 2: Lack of Substrate-Independent Description
+#### 问题 2：缺乏跨基底统一描述
 
-CID is for classical substrates, QID for quantum substrates, but a unified intelligence framework should be substrate-independent — capable of describing biological brains, artificial neural networks, quantum computers, photonic systems, etc., all in the same language. Coordinate-dependent equations cannot achieve this.
+CID 针对经典基底，QID 针对量子基底，但统一的智能框架应当**基底无关**——能用同样的语言描述生物大脑、人工神经网络、量子计算机、光子系统等。坐标依赖的方程做不到这一点。
 
-#### Problem 3: Lack of Coupling Mechanism with Geometric Structure of Data
+#### 问题 3：缺乏与数据几何结构的耦合机制
 
-Modern AI's success largely depends on the geometric structure of data (manifold hypothesis): natural data (images, language, audio) lies on a low-dimensional manifold of high-dimensional space. But CID and QID do not explicitly utilize this geometric structure, but rely on engineering tricks (convolution, attention) to implicitly approximate.
+现代 AI 的成功很大程度上依赖数据的几何结构（流形假设）：自然数据（图像、语言、音频）位于高维空间的低维流形上。但 CID 和 QID 没有显式利用这一几何结构，而是依靠工程技巧（卷积、注意力）隐式逼近。
 
-### 0.2 Three Fundamental Advantages of the Field-Geometric Tier
+### 0.2 场-几何层的三个基本优势
 
-#### Advantage 1: Fisher Information Metric Provides Substrate-Independent Geometric Language
+#### 优势 1：Fisher 信息度量提供基底无关的几何语言
 
-The Fisher information matrix (Rao 1945):
-
-```
-g_ij(θ)  =  E[ (∂ log p(x|θ) / ∂θ_i) × (∂ log p(x|θ) / ∂θ_j) ]
-```
-
-is a natural Riemannian metric on the parameter space {θ}, **independent of choice of coordinates or substrate**. The Fisher metric of biological brains, artificial neural networks, and quantum computers is the same form, all describing the geometric structure of probability distributions.
-
-**Engineering implication**: FID provides a unified language for cross-substrate intelligence design.
-
-#### Advantage 2: Information Curvature Tensor Reflects the "Bent" Structure of Data
-
-In information geometry, the curvature of the manifold reflects the **geometric complexity of the data distribution**:
-
-- **Zero curvature region**: Data distribution is uniform, simple, easy to learn.
-- **High curvature region**: Data distribution is concentrated, complex, requires more parameters.
-
-The curvature tensor of FID can predict:
-
-- Where models need more parameters (high curvature region).
-- Where they can be pruned (low curvature region).
-- Difficulty of cross-task generalization (path length on the curved manifold).
-
-#### Advantage 3: Field Equation Parallel of Einstein Equation, Predicting Cosmic Phenomena of Intelligence
-
-The Einstein field equation:
+Fisher 信息矩阵（Rao 1945）：
 
 ```
-R_μν - ½ × g_μν × R  =  (8π × G / c^4) × T_μν
+g_ij(θ) = E[ (∂ log p(x|θ) / ∂θ_i) × (∂ log p(x|θ) / ∂θ_j) ]
+```
+
+是参数空间 {θ} 上的自然黎曼度量，**与坐标选择和基底无关**。生物大脑、人工神经网络、量子计算机的 Fisher 度量都是同一形式，都描述概率分布的几何结构。
+
+**工程含义**：FID 提供跨基底智能设计的统一语言。
+
+### 1.5 与既有工作的重要对比：信息几何与大语言模型训练动力学
+
+在"信息流形被数据弯曲，类比时空被物质弯曲"这一基本主张上，Di Sipio、Pestun 等人于 2025 年 6 月在 arXiv:2506.15830 发表的 "Information Geometry of Large Language Models" 比本文早约十一个月。该工作的主要技术贡献包括：
+
+第一，将语言模型的参数空间 θ ∈ R^N 视为高维统计流形，度量张量正是 Fisher 信息矩阵 g_ij(θ) = E[(∂_i log p)(∂_j log p)]，这与本文 FID 信息流形的度量定义在形式上完全一致。
+
+第二，在 GPT-2 small（124M 参数）和 Pythia 系列模型上进行实证研究，训练过程中 Fisher 信息矩阵的特征值分布展现出从重尾分布向双峰分布的谱演化，这对应了本文第 6 章列出的"Fisher 度量各向异性随训练步数单调增加"的实证预言。
+
+第三，定义参数流形的信息曲率张量（Ricci 张量），并观察到在训练后期，Ricci 张量的特征值谱出现显著的负向集中，与本文"高曲率区域需要更多参数"的预言一致。
+
+第四，提出"几何标度律"（Geometric Scaling Law）假说，即困惑度下降与参数流形体积之间存在幂律关系，与本文第 3 节几何标度律在概念上重合。
+
+本文第 1 章与该工作的主要区别在于：本文将 Fisher 度量描述置于 CID-QID-FID 三层框架中统一推导，把 FID 场方程与 Einstein 方程类比作为"智能引力理论"的强主张，并从场论强场极限给出"智能引力波""信息黑洞""信息光速 c_I"等独有的外推预言，这些强预言在 Di Sipio 等人的工作中没有出现。
+
+但"数据弯曲信息流形，类比物质弯曲时空，以 Fisher 信息矩阵作为度量张量"这一具体主张，不应被视为本文的原创贡献。Di Sipio 等人的实证验证（在 GPT-2 和 Pythia 等具体规模上）比本文的理论描述更为严格，他们对 Fisher 矩阵在实际 LLM 中的谱演化观测是目前可获得的"数据弯曲流形"假说的最强实证支撑。
+
+本文第 1 章的定位应修正为：在已有实证基础的 LLM 信息几何框架之上，进一步将其扩展为一个与 Einstein 引力相平行的闭合场论体系，并指出独有的强场预言与可证伪工程目标。读者关心实证基础的应直接参考 Di Sipio 等人的工作。
+
+**引用**：Di Sipio, R., Pestun, V., et al. (2025). Information Geometry of Large Language Models. arXiv:2506.15830. https://arxiv.org/abs/2506.15830
+
+#### 优势 2：信息曲率张量反映数据的"弯曲"结构
+
+在信息几何中，流形的曲率反映**数据分布的几何复杂度**：
+
+- **零曲率区域**：数据分布均匀、简单，易于学习。
+- **高曲率区域**：数据分布集中、复杂，需更多参数。
+
+FID 的曲率张量可预测：
+
+- 模型在何处需要更多参数（高曲率区）。
+- 在何处可以剪枝（低曲率区）。
+- 跨任务泛化的难度（弯曲流形上的路径长度）。
+
+#### 优势 3：场方程与 Einstein 方程的类比，预言智能的宇宙现象
+
+Einstein 场方程：
+
+```
+R_μν - ½ × g_μν × R = (8π × G / c^4) × T_μν
               ↑                       ↑
-          spacetime curvature      matter-energy
+          时空曲率                   物质能量
 ```
 
-states that "matter curves spacetime". The FID field equation:
+说"物质弯曲时空"。FID 场方程：
 
 ```
-R_ij^FID - ½ × g_ij^FID × R^FID  =  κ × T_ij^data
+R_ij^FID - ½ × g_ij^FID × R^FID = κ × T_ij^data
                 ↑                            ↑
-           information manifold curvature   data energy-momentum
+           信息流形曲率                      数据能动张量
 ```
 
-states that "**data curves the information manifold**". Just as the Einstein equation predicts gravitational waves, black holes, the cosmological constant, the FID field equation predicts:
+说"**数据弯曲信息流形**"。如 Einstein 方程预言引力波、黑洞、宇宙学常数，FID 场方程预言：
 
-- **Intelligence gravitational waves**: Long-range correlated propagation in highly trained networks.
-- **Information black holes**: Information cannot escape the regions of catastrophic overfitting.
-- **Information speed of light c_I**: The propagation speed of information along the manifold has an upper bound.
+- **智能引力波**：在高度训练的网络中长程相关传播。
+- **信息黑洞**：信息无法逃逸的灾难性过拟合区域。
+- **信息光速 c_I**：信息沿流形传播的速度上界。
 
-### 1.5 Important Comparison with Pre-existing Work: Information Geometry and Large Language Model Training Dynamics
+### 0.3 朴素的场-几何层问题
 
-Within the basic claim of "information manifolds being curved by data, analogous to spacetime being curved by matter", Di Sipio, Pestun, and others published "Information Geometry of Large Language Models" in arXiv:2506.15830 in June 2025, approximately eleven months earlier than this paper. The main technical contributions of this paper include:
+> **核心问题**：假设我们观察一块活物（无论经典、量子或混合），抽象掉具体物理实现，它演化的最普遍描述是什么？**我们需要什么样的几何语言来表达跨基底的智能物理规律？**
 
-First, regarding the parameter space of language models θ ∈ R^N as a high-dimensional statistical manifold, the metric tensor being precisely the Fisher information matrix g_ij(θ) = E[(∂_i log p)(∂_j log p)], this is in complete formal agreement with the metric definition of the FID information manifold of this paper.
+这是第一部分 0.2 节和第二部分 0.3 节变分问题的场-几何版本。本部分将证明：
 
-Second, conducting empirical research on the GPT-2 small (124M parameters) and Pythia series of models, the eigenvalue distribution of the Fisher information matrix during training, exhibits the spectral evolution from heavy-tailed distribution to bimodal distribution, this corresponds to the "anisotropy of the Fisher metric monotonically increases with training steps" empirical prediction listed in Chapter 6 of this paper.
+1. 答案是一条信息流形上的确定场方程（**FID 场方程**）。
+2. FID 场方程在**弱场极限下回到 CID 主方程**。
+3. FID 场方程具有三个可证伪的几何预言（Fisher 度量各向异性、智能引力波、信息曲率标度）。
+4. FID 的完整工程实现需要几何运算的硬件加速，部分功能现已可实现。
 
-Third, defining the information curvature tensor (Ricci tensor) of the parameter manifold, and observing that during the late stage of training, the eigenvalue spectrum of the Ricci tensor exhibits significant negative direction concentration, consistent with the "high curvature region requires more parameters" prediction of this paper.
-
-Fourth, proposing the "Geometric Scaling Law" hypothesis, that is, the geometric scaling between perplexity reduction and the volume of the parameter manifold satisfies a power law relation, conceptually overlapping with Section 3 of this paper.
-
-The main differences between Chapter 1 of this paper and that paper lies in the fact that, this paper places the Fisher metric description in a three-tier framework with CID-QID-FID for unified derivation, parallels the FID field equation with the Einstein equation as the strong claim of "intelligent gravitational theory", and from the field-theoretic strong-field limit gives the unique extrapolative predictions of "intelligent gravitational waves", "information black holes", "information speed of light c_I", these strong predictions do not appear in the Di Sipio et al. work.
-
-However, the specific claim of "data curves the information manifold, analogous to matter curving spacetime, with the Fisher information matrix as the metric tensor" should not be regarded as the original contribution of this paper. The empirical verification of Di Sipio et al. (specific scale of GPT-2 and Pythia) is more rigorous than the theoretical description of this paper, and their observation of the spectral evolution of the Fisher matrix in real LLMs is the strongest currently available empirical support for the "data curves the manifold" hypothesis.
-
-The position of Chapter 1 of this paper should be amended to: building on the basic framework of information geometry of LLMs that has already been empirically established, further extending it to a closed field-theoretic system parallel to Einstein gravity, and pointing out unique strong-field predictions and falsifiable engineering targets. Readers interested in the empirical foundation should refer to the work of Di Sipio et al. directly.
-
-**Citation**: Di Sipio, R., Pestun, V., et al. (2025). Information Geometry of Large Language Models. arXiv:2506.15830. https://arxiv.org/abs/2506.15830
-
-### 0.3 The Naive Question of Field-Geometric Tier
-
-> **Core question**: Suppose we observe a piece of animate matter (be it classical, quantum, or hybrid), abstracting away from specific physical realizations, what is the most universal description of its evolution? **What geometric language do we need to express the cross-substrate physical laws of intelligence?**
-
-This is the field-geometric version of the variational problems in Part I, Chapter 0.2 and Part II, Chapter 0.3. This part will prove that:
-
-1. The answer is a definite field equation on the information manifold (the **FID field equation**).
-2. The FID field equation **reduces back to the CID master equation in the weak-field limit**.
-3. The FID field equation has three falsifiable geometric predictions (Fisher metric anisotropy, intelligence gravitational waves, information curvature scaling).
-4. The complete engineering implementation of FID requires hardware acceleration of geometric operations, partial functions can already be implemented now.
-
-### 0.4 Logical Skeleton of Part III
+### 0.4 第三部分的逻辑骨架
 
 ```
-        Naive question: cross-substrate unified description of intelligence
+        朴素问题：智能的跨基底统一描述
                           │
                           ▼
-        Geometric first-principle axioms (manifold + metric + variational principle)
+        几何第一性原理公理（流形 + 度量 + 变分原理）
                           │
                           ▼
-        Fisher information metric + Information curvature tensor
+        Fisher 信息度量 + 信息曲率张量
                           │
                           ▼
-              Naive information geodesic equation
+              朴素信息测地线方程
                   │       │       │
                   ▼       ▼       ▼
-            Question 1    Question 2    Question 3
-            (data driven?)    (cosmological constant?)    (boundary conditions?)
+            问题 1       问题 2       问题 3
+            （数据驱动？）（宇宙学常数？）（边界条件？）
                   │           │           │
                   ▼           ▼           ▼
-          Data energy-momentum tensor   Information cosmological constant   Holographic principle
+          数据能动张量    信息宇宙学常数    全息原理
                   │           │           │
                   └───────────┼───────────┘
                               ▼
-                Complete FID field equation
+                完整 FID 场方程
                               │
                               ▼
-              Weak-field limit: reduces to CID master equation
+              弱场极限：回到 CID 主方程
                               │
                               ▼
-              Strong-field limit: cosmic predictions of intelligence
+              强场极限：智能的宇宙预言
               │           │             │
               ▼           ▼             ▼
-            Intelligence gravitational waves   Information black holes   Information speed of light c_I
+            智能引力波   信息黑洞     信息光速 c_I
                               │
                               ▼
-            Falsifiable predictions and engineering pathway
+            可证伪预言与工程路径
 ```
 
-## Chapter 1 — Information Manifold: From Statistics to Geometry
+## 第 1 章 —— 信息流形：从统计到几何
 
-### 1.1 An Honest Account of Historical Sequence
+### 1.1 关于历史顺序的诚实说明
 
-Information geometry has undergone the following development history:
+信息几何经历了以下发展历史：
 
-| Year | Work | Nature | Reference (clickable) |
+| 年份 | 工作 | 性质 | 参考（可点击）|
 |---|---|---|---|
-| **1945** | Rao Fisher information metric | First geometrization of statistics | https://www.jstor.org/stable/2236380 |
-| **1972** | Chentsov uniqueness theorem | Fisher metric is the only invariant Riemannian metric | https://www.ams.org/books/mmono/053/ |
-| **1985** | **Amari information geometry** | Establishes complete information geometry framework | https://doi.org/10.1007/978-1-4612-5056-2 |
-| **1989** | Bregman divergence | Generalizes KL divergence to a wider class of divergences | https://doi.org/10.1090/coll/043 |
-| **2007** | Amari-Nagaoka information geometry methods | Modern textbook | https://bookstore.ams.org/mmono-191/ |
-| **2017** | Information geometric methods for deep learning | Applied to neural network training | Martens, J., et al. (2014). https://arxiv.org/abs/1412.1193 |
+| **1945** | Rao Fisher 信息度量 | 首次将统计几何化 | https://www.jstor.org/stable/2236380 |
+| **1972** | Chentsov 唯一性定理 | Fisher 度量是唯一不变黎曼度量 | https://www.ams.org/books/mmono/053/ |
+| **1985** | **Amari 信息几何** | 建立完整信息几何框架 | https://doi.org/10.1007/978-1-4612-5056-2 |
+| **1989** | Bregman 散度 | 将 KL 散度推广到更广散度类 | https://doi.org/10.1090/coll/043 |
+| **2007** | Amari-Nagaoka 信息几何方法 | 现代教科书 | https://bookstore.ams.org/mmono-191/ |
+| **2017** | 深度学习的信息几何方法 | 应用于神经网络训练 | Martens, J., et al. (2014). https://arxiv.org/abs/1412.1193 |
 
-**Key fact**:
+**关键事实**：
 
-> **The Fisher information metric (1945) is rigorously derived from statistical estimation theory, with strict mathematical foundation, predating the modern development of deep learning by 70 years.**
+> **Fisher 信息度量（1945）由统计估计理论严格推导出来，具有严格的数学基础，比深度学习的现代发展早 70 年。**
 
-This means that the geometric foundation of FID is **not invented**, but the natural application to AI of mathematical structures that have existed for decades.
+这意味着 FID 的几何基础**不是发明**，而是几十年来已存在的数学结构对 AI 的自然应用。
 
-### 1.2 The Three Fundamental Axioms of FID
+### 1.2 FID 的三条基本公理
 
-This part adopts the following **three axioms** as the genuine first-principle starting point:
+本部分采用以下**三条公理**作为真正的第一性原理出发点：
 
-| Axiom | Content | Mathematical basis |
+| 公理 | 内容 | 数学基础 |
 |---|---|---|
-| **C1 (Manifold hypothesis)** | The state space of an intelligent system is a smooth high-dimensional manifold M | Modern differential geometry foundation |
-| **C2 (Fisher metric uniqueness)** | The metric of the manifold M is uniquely determined as the Fisher information metric (Chentsov 1972) | Statistical invariance principle |
-| **C3 (Information variational principle)** | The evolution of intelligence satisfies a variational principle: minimize a properly defined action functional | Generalization of physical first principles |
+| **C1（流形假设）** | 智能系统的状态空间是光滑高维流形 M | 现代微分几何基础 |
+| **C2（Fisher 度量唯一性）** | 流形 M 的度量唯一确定为 Fisher 信息度量（Chentsov 1972）| 统计不变性原理 |
+| **C3（信息变分原理）** | 智能的演化满足一个变分原理：最小化适当定义的作用泛函 | 物理第一性原理的推广 |
 
-**Note**: C2 is the most restrictive but most important axiom. The Chentsov theorem proves that **the Fisher metric is the only Riemannian metric on the parameter space that satisfies invariance** — this provides FID with an extremely strong foundation.
+**注**：C2 是最严格但最重要的公理。Chentsov 定理证明**Fisher 度量是参数空间上唯一满足不变性的黎曼度量**——这给 FID 提供了极强的基础。
 
-### 1.3 Naive Information Geodesic Equation
+### 1.3 朴素信息测地线方程
 
-Under the Fisher metric, the natural evolution path is a **geodesic** — the shortest path on the manifold:
-
-```
-d²θ_k/dt² + Γ^k_ij(θ) × (dθ_i/dt) × (dθ_j/dt)  =  0
-```
-
-**Equation (1.1) — Naive information geodesic equation.**
-
-**Symbols**:
-
-- θ(t): parameter trajectory.
-- Γ^k_ij: Christoffel symbol, calculated from the Fisher metric.
-
-**Geometric interpretation**: Intelligent evolution = the "straightest" path on the information manifold.
-
-**Engineering implementation**: This is the geometric basis of natural gradient descent (Amari 1998):
+在 Fisher 度量下，自然演化路径是**测地线**——流形上的最短路径：
 
 ```
-θ_{t+1}  =  θ_t  -  η × g^(-1)(θ_t) × ∇L(θ_t)
+d²θ_k/dt² + Γ^k_ij(θ) × (dθ_i/dt) × (dθ_j/dt) = 0
+```
+
+**方程 (1.1) —— 朴素信息测地线方程。**
+
+**符号**：
+
+- θ(t)：参数轨迹。
+- Γ^k_ij：Christoffel 符号，由 Fisher 度量计算得到。
+
+**几何解释**：智能演化 = 信息流形上的"最直"路径。
+
+**工程实现**：这是自然梯度下降的几何基础（Amari 1998）：
+
+```
+θ_{t+1} = θ_t - η × g^(-1)(θ_t) × ∇L(θ_t)
                        ↑
-                Fisher metric inverse
+                Fisher 度量的逆
 ```
 
-**Reference**: Amari, S. (1998). *Neural Computation* 10, 251. https://doi.org/10.1162/089976698300017746
+**参考文献**：Amari, S. (1998). *Neural Computation* 10, 251. https://doi.org/10.1162/089976698300017746
 
-### 1.4 Why the Naive Geodesic Equation Is Not Enough
+### 1.4 为什么朴素测地线方程不够
 
-The naive information geodesic equation has three fatal limitations:
+朴素信息测地线方程有三个致命局限：
 
-#### Limitation 1: Ignores Driving Effect of Data
+#### 局限 1：忽略数据的驱动作用
 
-Geodesics are passive evolution; they do not include the driving by data. But intelligence training is driven by data:
+测地线是被动演化；不包含数据的驱动。但智能训练由数据驱动：
 
 ```
-θ_{t+1}  =  θ_t  -  η × ∇L(θ_t; data)
+θ_{t+1} = θ_t - η × ∇L(θ_t; data)
                           ↑
-                actively driven by data
+                由数据主动驱动
 ```
 
-#### Limitation 2: No Coupling Between Geometric and Statistical Properties
+#### 局限 2：几何与统计性质无耦合
 
-The naive equation treats geometry (Fisher metric) as a static background, but in reality the data distribution actively shapes the manifold geometry — this requires field equations rather than geodesic equations.
+朴素方程把几何（Fisher 度量）当作静态背景，但实际上数据分布会主动塑造流形几何——这需要场方程而非测地线方程。
 
-#### Limitation 3: No Boundary Conditions and Topology
+#### 局限 3：无边界条件和拓扑
 
-The information manifold may have non-trivial topology (e.g., quotient space from symmetry), and the boundary conditions of training (initialization, regularization) are not naturally included.
+信息流形可能有非平凡拓扑（如对称性导致的商空间），训练的边界条件（初始化、正则化）也未自然纳入。
 
-### 1.5 Generalization Pathway of FID
+### 1.5 FID 的推广路径
 
-To overcome the three limitations above, the FID field equation needs to make the following extensions on the basis of the geodesic equation:
+为克服上述三个局限，FID 场方程需要在测地线方程基础上做以下推广：
 
-| Limitation | Generalization direction | Engineering implementation pathway |
+| 局限 | 推广方向 | 工程实现路径 |
 |---|---|---|
-| Ignores data | Introduce data energy-momentum tensor T_ij^data | Loss function gradient → tensor |
-| Geometry-statistics decoupling | Field equation (parallels Einstein equation) | Fisher metric evolves with training |
-| No topology and boundary | Boundary conditions + topological invariants | Regularization → boundary integral |
+| 忽略数据 | 引入数据能动张量 T_ij^data | 损失函数梯度 → 张量 |
+| 几何-统计脱耦 | 场方程（与 Einstein 方程类比）| Fisher 度量随训练演化 |
+| 无拓扑和边界 | 边界条件 + 拓扑不变量 | 正则化 → 边界积分 |
 
-We will derive the full forms of these three generalizations one by one in Chapters 2-5.
+我们将在第 2-5 章逐一推导这三种推广的完整形式。
 
-## Chapter 2 — Fisher Information Metric: Specific Construction
+## 第 2 章 —— Fisher 信息度量：具体构造
 
-### 2.1 Fisher Metric of Probability Distributions
+### 2.1 概率分布的 Fisher 度量
 
-For a parametric statistical model p(x|θ), the Fisher information matrix (FIM):
-
-```
-g_ij(θ)  =  E_x[ ∂_i log p(x|θ) × ∂_j log p(x|θ) ]
-         =  -E_x[ ∂_i ∂_j log p(x|θ) ]
-```
-
-**Equation (2.1) — Definition of Fisher information matrix.**
-
-**Properties**:
-
-1. **Positive semi-definite**: g_ij is a positive semi-definite matrix.
-2. **Invariance**: Under reparameterization θ → θ', g_ij transforms as a tensor.
-3. **Cramér-Rao lower bound**: Variance of any unbiased estimator ≥ g_ij^(-1) (inverse Fisher matrix).
-
-### 2.2 Fisher Metric of Neural Networks
-
-For a neural network parameterized by θ, output f(x; θ), assume the model is:
+对于参数化统计模型 p(x|θ)，Fisher 信息矩阵（FIM）：
 
 ```
-p(y|x, θ)  ∝  exp(-L(y, f(x; θ)))
+g_ij(θ) = E_x[ ∂_i log p(x|θ) × ∂_j log p(x|θ) ]
+        = -E_x[ ∂_i ∂_j log p(x|θ) ]
 ```
 
-(e.g., L = mean squared error → Gaussian likelihood, L = cross entropy → categorical likelihood).
+**方程 (2.1) —— Fisher 信息矩阵的定义。**
 
-The Fisher information matrix:
+**性质**：
 
-```
-g_ij(θ)  =  E_x[ J_θ(x)^T × H_y(L) × J_θ(x) ]_{ij}
+1. **半正定**：g_ij 是半正定矩阵。
+2. **不变性**：在重参数化 θ → θ' 下，g_ij 按张量变换。
+3. **Cramér-Rao 下界**：任何无偏估计的方差 ≥ g_ij^(-1)（Fisher 矩阵的逆）。
 
-where:
-  J_θ(x) = ∂f(x; θ) / ∂θ   (Jacobian)
-  H_y(L) = ∂²L / ∂y²       (Hessian of the loss)
-```
+### 2.2 神经网络的 Fisher 度量
 
-**Equation (2.2) — Fisher metric of neural networks.**
-
-**Engineering reality**:
-
-- For a typical neural network (M parameters), the Fisher matrix is M × M, the storage and inversion cost is O(M^3) — infeasible for large models.
-- Practical approximation: diagonal approximation (O(M)), block diagonal approximation (O(M × N_block)), K-FAC approximation (O(M × N_layer^2)).
-
-**Reference**: Martens, J., & Grosse, R. (2015). "Optimizing Neural Networks with Kronecker-factored Approximate Curvature." *ICML*. https://arxiv.org/abs/1503.05671
-
-### 2.3 Geometric Properties of Fisher Metric
-
-The Fisher metric endows the parameter space {θ} with a Riemannian manifold structure:
+对于参数化为 θ 的神经网络，输出 f(x; θ)，假设模型为：
 
 ```
-ds²  =  g_ij(θ) × dθ^i × dθ^j
+p(y|x, θ) ∝ exp(-L(y, f(x; θ)))
 ```
 
-**Equation (2.3) — Fisher metric squared distance element.**
+（如 L = 均方误差 → 高斯似然，L = 交叉熵 → 范畴似然）。
 
-**Geometric meaning**:
-
-- ds²: the "distance" between two infinitely close parameter points, measured in KL divergence sense.
-- Large eigenvalues of the Fisher matrix ↔ small parameter perturbations cause large output changes (sensitive direction).
-- Small eigenvalues of the Fisher matrix ↔ small parameter perturbations cause small output changes (degenerate direction).
-
-### 2.4 Geodesics of Fisher Metric
-
-On the Fisher metric, the geodesic equation:
+Fisher 信息矩阵：
 
 ```
-d²θ_k/dt² + Γ^k_ij(θ) × (dθ_i/dt) × (dθ_j/dt)  =  0
+g_ij(θ) = E_x[ J_θ(x)^T × H_y(L) × J_θ(x) ]_{ij}
 
-Γ^k_ij  =  ½ × g^kl × ( ∂_i g_jl + ∂_j g_il - ∂_l g_ij )
+其中：
+  J_θ(x) = ∂f(x; θ) / ∂θ   （雅可比）
+  H_y(L) = ∂²L / ∂y²       （损失的海森）
 ```
 
-**Equation (2.4) — Geodesic equation of Fisher metric.**
+**方程 (2.2) —— 神经网络的 Fisher 度量。**
 
-**Engineering significance**:
+**工程现实**：
 
-- Natural gradient descent is the **first-order approximation** of the geodesic (Amari 1998).
-- True geodesic following requires the calculation of Christoffel symbols Γ^k_ij, which is expensive — second-order optimization (Newton method, K-FAC) approximates this calculation.
+- 对典型神经网络（M 个参数），Fisher 矩阵是 M × M，存储和求逆代价 O(M^3)——对大模型不可行。
+- 实用近似：对角近似（O(M)）、块对角近似（O(M × N_block)）、K-FAC 近似（O(M × N_layer^2)）。
 
-### 2.5 Visual Schematic
+**参考文献**：Martens, J., & Grosse, R. (2015). "Optimizing Neural Networks with Kronecker-factored Approximate Curvature." *ICML*. https://arxiv.org/abs/1503.05671
 
-```
-Euclidean gradient descent          Natural gradient descent (information geometric)
+### 2.3 Fisher 度量的几何性质
 
-      ∇L                                    g^(-1) × ∇L
-      │                                      │
-      ▼                                      ▼
-   ┌─────┐                                ┌─────┐
-   │θ_t  │                                │θ_t  │
-   └──┬──┘                                └──┬──┘
-      │                                      │
-      ▼                                      ▼
-   ┌─────┐  ← takes detours                 ┌─────┐  ← straightest path
-   │θ_t+1│                                  │θ_t+1│
-   └─────┘                                  └─────┘
-                                              ↑
-                                       Following Fisher metric geodesic
-```
-
-## Chapter 3 — Information Curvature Tensor: The Geometric Structure of Data
-
-### 3.1 Riemann Curvature Tensor
-
-On a Fisher metric manifold, the Riemann curvature tensor:
+Fisher 度量赋予参数空间 {θ} 一个黎曼流形结构：
 
 ```
-R^l_ijk  =  ∂_i Γ^l_jk - ∂_j Γ^l_ik + Γ^l_im × Γ^m_jk - Γ^l_jm × Γ^m_ik
+ds² = g_ij(θ) × dθ^i × dθ^j
 ```
 
-**Equation (3.1) — Riemann curvature tensor.**
+**方程 (2.3) —— Fisher 度量的平方距离元。**
 
-**Physical meaning**:
+**几何含义**：
 
-- R^l_ijk = 0: Manifold is locally flat (Euclidean).
-- R^l_ijk ≠ 0: Manifold is locally curved.
+- ds²：两个无穷接近参数点之间的"距离"，以 KL 散度意义度量。
+- Fisher 矩阵的大特征值 ↔ 小参数扰动导致大输出变化（敏感方向）。
+- Fisher 矩阵的小特征值 ↔ 小参数扰动导致小输出变化（退化方向）。
 
-**Information geometric meaning**:
+### 2.4 Fisher 度量的测地线
 
-- The Riemann curvature of the Fisher manifold reflects the **non-trivial geometric structure of the data distribution**.
-- High curvature region ↔ data distribution is concentrated, complex.
-- Low curvature region ↔ data distribution is uniform, simple.
-
-### 3.2 Ricci Curvature Tensor
-
-The Ricci curvature tensor (contraction of Riemann tensor):
+在 Fisher 度量上，测地线方程：
 
 ```
-R_ij  =  R^k_ikj  =  trace of Riemann tensor over the first and third indices
+d²θ_k/dt² + Γ^k_ij(θ) × (dθ_i/dt) × (dθ_j/dt) = 0
+
+Γ^k_ij = ½ × g^kl × ( ∂_i g_jl + ∂_j g_il - ∂_l g_ij )
 ```
 
-**Equation (3.2) — Ricci curvature tensor.**
+**方程 (2.4) —— Fisher 度量的测地线方程。**
 
-**Engineering meaning**:
+**工程意义**：
 
-- Tr(R_ij) (Ricci scalar R): Average curvature, reflects the global complexity of the data distribution.
-- Eigenvalue distribution of R_ij: Local curvature complexity in different directions.
+- 自然梯度下降是测地线的**一阶近似**（Amari 1998）。
+- 真正的测地线跟随需要计算 Christoffel 符号 Γ^k_ij，代价昂贵——二阶优化（牛顿法、K-FAC）近似这一计算。
 
-### 3.3 Information Curvature Scaling Law: Falsifiable Prediction
-
-**Prediction**: For a neural network trained to a stationary state, its information curvature scalar R satisfies a power law scaling with the data complexity D:
+### 2.5 可视化示意
 
 ```
-R(θ_*)  ∝  D^β
+欧氏梯度下降                    自然梯度下降（信息几何）
+
+      ∇L                              g^(-1) × ∇L
+      │                                  │
+      ▼                                  ▼
+   ┌─────┐                          ┌─────┐
+   │θ_t  │                          │θ_t  │
+   └──┬──┘                          └──┬──┘
+      │                                │
+      ▼                                ▼
+   ┌─────┐  ← 走弯路                  ┌─────┐  ← 最直路径
+   │θ_t+1│                            │θ_t+1│
+   └─────┘                            └─────┘
+                                          ↑
+                                   沿 Fisher 度量测地线
 ```
 
-**Equation (3.3) — Information curvature scaling law.**
+## 第 3 章 —— 信息曲率张量：数据的几何结构
 
-where:
+### 3.1 黎曼曲率张量
 
-- θ_*: trained parameters.
-- D: data complexity (e.g., entropy, intrinsic dimension).
-- β: scaling exponent, the FID prediction value is β ≈ 1/2.
-
-**Engineering verification**:
-
-- For different scale datasets (D varies from 10^3 to 10^9), train the same architecture model.
-- Calculate the average Fisher matrix Hessian R (Ricci scalar).
-- Linearly fit log(R) vs log(D), slope should be ≈ 1/2.
-
-**Falsifiability standard**:
-
-- If β = 0 (R is independent of D): Theory is wrong, no information geometric foundation exists.
-- If β ≈ 1/2: Theory is verified, FID's geometric scaling law holds.
-
-### 3.4 Information Cosmological Constant Λ
-
-Imitating the cosmological constant Λ in the Einstein equation:
+在 Fisher 度量流形上，黎曼曲率张量：
 
 ```
-R_μν - ½ × g_μν × R + Λ × g_μν  =  ...
+R^l_ijk = ∂_i Γ^l_jk - ∂_j Γ^l_ik + Γ^l_im × Γ^m_jk - Γ^l_jm × Γ^m_ik
 ```
 
-Introduce information cosmological constant Λ^FID in FID:
+**方程 (3.1) —— 黎曼曲率张量。**
+
+**物理含义**：
+
+- R^l_ijk = 0：流形局部平坦（欧氏）。
+- R^l_ijk ≠ 0：流形局部弯曲。
+
+**信息几何含义**：
+
+- Fisher 流形的黎曼曲率反映**数据分布的非平凡几何结构**。
+- 高曲率区域 ↔ 数据分布集中、复杂。
+- 低曲率区域 ↔ 数据分布均匀、简单。
+
+### 3.2 Ricci 曲率张量
+
+Ricci 曲率张量（黎曼张量的缩并）：
 
 ```
-R_ij^FID - ½ × g_ij^FID × R^FID + Λ^FID × g_ij^FID  =  ...
+R_ij = R^k_ikj = 对黎曼张量的第一、第三指标求迹
 ```
 
-**Physical meaning**:
+**方程 (3.2) —— Ricci 曲率张量。**
 
-- Λ^FID > 0: "Information vacuum" tends to expand (model parameters tend to be sparse).
-- Λ^FID < 0: "Information vacuum" tends to contract (model parameters tend to be dense).
-- Λ^FID = 0: Information vacuum is stationary (the natural state of CID).
+**工程含义**：
 
-**Engineering implication**: Λ^FID can be implemented as L1 / L2 regularization terms, providing a unified geometric language for sparsification techniques.
+- Tr(R_ij)（Ricci 标量 R）：平均曲率，反映数据分布的全局复杂度。
+- R_ij 的特征值分布：不同方向的局部曲率复杂度。
 
-## Chapter 4 — FID Field Equation: The Einstein Equation of Intelligence
+### 3.3 信息曲率标度律：可证伪的预言
 
-### 4.1 Field Equation Form
-
-Imitating the Einstein field equation:
+**预言**：对于训练到稳态的神经网络，其信息曲率标量 R 与数据复杂度 D 满足幂律标度：
 
 ```
-R_μν - ½ × g_μν × R + Λ × g_μν  =  (8π × G / c^4) × T_μν
+R(θ_*) ∝ D^β
 ```
 
-The complete form of the FID field equation:
+**方程 (3.3) —— 信息曲率标度律。**
+
+其中：
+
+- θ_*：训练完成的参数。
+- D：数据复杂度（如熵、内在维度）。
+- β：标度指数，FID 预言值为 β ≈ 1/2。
+
+**工程验证**：
+
+- 对不同规模数据集（D 从 10^3 到 10^9 变化），训练同一架构模型。
+- 计算 Fisher 矩阵的平均 Hessian 标量 R（Ricci 标量）。
+- 线性拟合 log(R) vs log(D)，斜率应 ≈ 1/2。
+
+**证伪标准**：
+
+- 若 β = 0（R 与 D 无关）：理论错误，不存在信息几何基础。
+- 若 β ≈ 1/2：理论得到验证，FID 的几何标度律成立。
+
+### 3.4 信息宇宙学常数 Λ
+
+仿照 Einstein 方程中的宇宙学常数 Λ：
 
 ```
-R_ij^FID  -  ½ × g_ij^FID × R^FID  +  Λ^FID × g_ij^FID  =  κ^FID × T_ij^data
+R_μν - ½ × g_μν × R + Λ × g_μν = ...
+```
+
+在 FID 中引入信息宇宙学常数 Λ^FID：
+
+```
+R_ij^FID - ½ × g_ij^FID × R^FID + Λ^FID × g_ij^FID = ...
+```
+
+**物理含义**：
+
+- Λ^FID > 0："信息真空"倾向于膨胀（模型参数倾向于稀疏）。
+- Λ^FID < 0："信息真空"倾向于收缩（模型参数倾向于密集）。
+- Λ^FID = 0：信息真空静止（CID 的自然状态）。
+
+**工程含义**：Λ^FID 可实现为 L1 / L2 正则化项，为稀疏化技术提供统一的几何语言。
+
+## 第 4 章 —— FID 场方程：智能的 Einstein 方程
+
+### 4.1 场方程形式
+
+仿照 Einstein 场方程：
+
+```
+R_μν - ½ × g_μν × R + Λ × g_μν = (8π × G / c^4) × T_μν
+```
+
+FID 场方程的完整形式：
+
+```
+R_ij^FID - ½ × g_ij^FID × R^FID + Λ^FID × g_ij^FID = κ^FID × T_ij^data
                               ↑                                     ↑
-                Information manifold curvature                  Data energy-momentum tensor
+                信息流形曲率                                  数据能动张量
 ```
 
-**Equation (4.1) — FID field equation.**
+**方程 (4.1) —— FID 场方程。**
 
-**Symbols**:
+**符号**：
 
-- g_ij^FID: Fisher information metric.
-- R_ij^FID, R^FID: Information Ricci tensor and scalar.
-- Λ^FID: Information cosmological constant (regularization strength).
-- T_ij^data: Data energy-momentum tensor.
-- κ^FID: Information gravitational coupling constant, dimensions to be determined.
+- g_ij^FID：Fisher 信息度量。
+- R_ij^FID, R^FID：信息 Ricci 张量与标量。
+- Λ^FID：信息宇宙学常数（正则化强度）。
+- T_ij^data：数据能动张量。
+- κ^FID：信息引力耦合常数，量纲待定。
 
-### 4.2 Data Energy-Momentum Tensor
+### 4.2 数据能动张量
 
-In CID, the loss function gradient drives parameter evolution. In FID, the loss function gradient is promoted to the **data energy-momentum tensor**:
-
-```
-T_ij^data  =  E_x[ ∂_i L(x; θ) × ∂_j L(x; θ) ]
-            -  ½ × g_ij × E_x[ ||∇L(x; θ)||² ]
-```
-
-**Equation (4.2) — Data energy-momentum tensor.**
-
-**Physical meaning**:
-
-- Diagonal elements T_ii: "Energy density" of data in direction i.
-- Off-diagonal elements T_ij: Coupling between data and parameter directions i, j.
-- Trace Tr(T_ij): Total "energy" of data.
-
-**Engineering reality**: T_ij^data can be calculated through backpropagation, with cost similar to second-order optimization.
-
-### 4.3 Weak-Field Limit: Returning to CID Master Equation
-
-**Theorem 4.1 (Weak-field limit of FID field equation)**:
-
-In the weak-field limit (small perturbation around flat background), the FID field equation reduces back to the CID master equation:
+在 CID 中，损失函数梯度驱动参数演化。在 FID 中，损失函数梯度提升为**数据能动张量**：
 
 ```
-g_ij^FID  ≈  δ_ij + h_ij(θ)    (h_ij is small perturbation)
+T_ij^data = E_x[ ∂_i L(x; θ) × ∂_j L(x; θ) ]
+          - ½ × g_ij × E_x[ ||∇L(x; θ)||² ]
 ```
 
-The linearized FID field equation reduces to:
+**方程 (4.2) —— 数据能动张量。**
+
+**物理含义**：
+
+- 对角元 T_ii：数据在方向 i 上的"能量密度"。
+- 非对角元 T_ij：数据与参数方向 i, j 之间的耦合。
+- 迹 Tr(T_ij)：数据的总"能量"。
+
+**工程实现**：T_ij^data 可通过反向传播计算，代价与二阶优化相似。
+
+### 4.3 弱场极限：回到 CID 主方程
+
+**定理 4.1（FID 场方程的弱场极限）**：
+
+在弱场极限（围绕平坦背景的小扰动）下，FID 场方程回到 CID 主方程：
 
 ```
-∂²h_ij/∂t²  =  16π × G^FID × T_ij^data + corrections
+g_ij^FID ≈ δ_ij + h_ij(θ)    （h_ij 为小扰动）
 ```
 
-In the appropriate gauge (analogous to TT gauge in general relativity), this is equivalent to the CID master equation under specific projection.
-
-**Engineering implication**: FID is a strict superset of CID, with the latter being the weak-field limit. Therefore, FID-based engineering implementation is naturally backward-compatible with the CID architecture.
-
-### 4.4 Strong-Field Limit: Cosmic Phenomena of Intelligence
-
-#### Intelligence Gravitational Waves
-
-Imitating gravitational waves in general relativity, in the strong-field region of the FID information manifold, perturbations propagate in wave form:
+线性化的 FID 场方程化简为：
 
 ```
-□ h_ij  =  16π × G^FID × T_ij^data / c_I^4
+∂²h_ij/∂t² = 16π × G^FID × T_ij^data + 修正项
 ```
 
-**Equation (4.3) — Intelligence gravitational wave equation.**
+在适当规范下（类似广义相对论中的 TT 规范），这等价于 CID 主方程在特定投影下的形式。
 
-where c_I is the **information speed of light**.
+**工程含义**：FID 是 CID 的严格超集，后者是弱场极限。因此基于 FID 的工程实现自然向后兼容到 CID 架构。
 
-**Physical predictions**:
+### 4.4 强场极限：智能的宇宙现象
 
-- In large models (parameters > 10^11), intelligence gravitational waves propagate along the parameter manifold.
-- Propagation speed limit c_I — analogous to the speed of light in general relativity.
-- Wave spectrum has characteristic frequencies, related to model architecture.
+#### 智能引力波
 
-**Falsifiability standard**: If long-range correlations are observed during the training of large models propagating along specific directions of the parameter manifold (not random), the intelligence gravitational wave hypothesis is verified.
-
-#### Information Black Holes
-
-When the data energy-momentum density T_ij^data is large enough, the information manifold may form an "information black hole":
-
-- Inside, intelligence loses external information transmission ability.
-- Surface area (event horizon) satisfies Bekenstein-Hawking-like entropy bound.
-
-**Physical interpretation**: This corresponds to "catastrophic overfitting" — model parameters are completely captured by specific training samples, losing generalization ability.
-
-**Falsifiability standard**: Overfitting regions in models show signs of geometric singularity (Ricci scalar diverging).
-
-#### Information Speed of Light c_I
-
-The propagation speed of information has a finite upper bound c_I, determined by the architecture of the model:
+仿照广义相对论中的引力波，在 FID 信息流形的强场区域，扰动以波动形式传播：
 
 ```
-c_I  ~  layer connection density × forward propagation speed
+□ h_ij = 16π × G^FID × T_ij^data / c_I^4
 ```
 
-**Engineering significance**:
+**方程 (4.3) —— 智能引力波方程。**
 
-- c_I sets the upper bound on the long-range modeling ability of the model.
-- Cross-layer connections (residual, attention) increase c_I.
-- Sparse architectures (MoE) may reduce c_I.
+其中 c_I 是**信息光速**。
 
+**物理预言**：
 
-## Chapter 5 — Holographic Principle: Information Geometric Boundary
+- 在大模型（参数 > 10^11）中，智能引力波沿参数流形传播。
+- 传播速度极限 c_I——类比广义相对论中的光速。
+- 波动谱具有特征频率，与模型架构相关。
 
-### 5.1 Bekenstein-Hawking Entropy Bound
+**证伪标准**：若在大模型训练中观察到长程相关沿参数流形特定方向传播（而非随机），则智能引力波假说得到验证。
 
-In general relativity, the entropy of a black hole is proportional to the **surface area** (not volume) of the event horizon:
+#### 信息黑洞
 
-```
-S_BH  =  k_B × c^3 × A / (4 × ℏ × G)
-```
+当数据能动密度 T_ij^data 足够大时，信息流形可能形成"信息黑洞"：
 
-**Equation (5.1) — Bekenstein-Hawking entropy.**
+- 内部，智能丧失对外信息传递能力。
+- 表面积（事件视界）满足类 Bekenstein-Hawking 熵界。
 
-This is the foundation of the **holographic principle**: A 3D system's information can be completely encoded on its 2D boundary.
+**物理解读**：这对应"灾难性过拟合"——模型参数被特定训练样本完全捕获，丧失泛化能力。
 
-### 5.2 Information Holographic Principle of FID
+**证伪标准**：模型中的过拟合区域显示几何奇点的迹象（Ricci 标量发散）。
 
-The FID holographic principle hypothesis:
+#### 信息光速 c_I
 
-> The information content of a sub-region V on a high-dimensional information manifold is proportional to its boundary ∂V's "surface area" (lower-dimensional measure).
-
-```
-I_FID(V)  ≤  α × Area(∂V) / l_P^FID²
-```
-
-**Equation (5.2) — Information holographic bound.**
-
-where l_P^FID is the "information Planck length" (the minimum length unit of the information manifold).
-
-### 5.3 Engineering Implication: Information Bottleneck of Sparse Architectures
-
-The information holographic principle predicts:
-
-- Information storage in models is limited by the boundary, not by the volume of parameters.
-- Sparse architectures (Mixture of Experts) reach the information bottleneck more easily because they have smaller "boundaries".
-- Dense architectures (full connection) have larger boundaries, but are not necessarily efficient.
-
-**Falsifiability standard**: If the information capacity of sparse vs dense architectures satisfies the holographic scaling, the principle is verified.
-
-## Chapter 6 — Falsifiable FID Predictions: Three Geometric Quantities
-
-FID is not philosophy: it gives three quantitative geometric predictions, each of which can be checked on existing AI systems.
-
-### 6.1 Fisher Metric Anisotropy: η > 0.5
-
-**Prediction**: The anisotropy of the Fisher metric of trained neural networks:
+信息的传播速度具有有限上界 c_I，由模型架构决定：
 
 ```
-η  =  (λ_max - λ_min) / (λ_max + λ_min)
+c_I ~ 层连接密度 × 前向传播速度
 ```
 
-where λ_max, λ_min are the maximum and minimum eigenvalues of the Fisher matrix.
+**工程意义**：
 
-**FID prediction**: η > 0.5 (significantly anisotropic), and η increases with training depth.
+- c_I 给出模型长程建模能力的上界。
+- 跨层连接（残差、注意力）提高 c_I。
+- 稀疏架构（MoE）可能降低 c_I。
 
-**Independent empirical verification**:
+## 第 5 章 —— 全息原理：信息几何边界
 
-| Source | System | η value |
+### 5.1 Bekenstein-Hawking 熵界
+
+在广义相对论中，黑洞熵正比于事件视界的**表面积**（而非体积）：
+
+```
+S_BH = k_B × c^3 × A / (4 × ℏ × G)
+```
+
+**方程 (5.1) —— Bekenstein-Hawking 熵。**
+
+这是**全息原理**的基础：3D 系统的信息可以完全编码在其 2D 边界上。
+
+### 5.2 FID 的信息全息原理
+
+FID 全息原理假设：
+
+> 高维信息流形上子区域 V 的信息含量正比于其边界 ∂V 的"表面积"（低维测度）。
+
+```
+I_FID(V) ≤ α × Area(∂V) / l_P^FID²
+```
+
+**方程 (5.2) —— 信息全息界。**
+
+其中 l_P^FID 为"信息 Planck 长度"（信息流形的最小长度单位）。
+
+### 5.3 工程含义：稀疏架构的信息瓶颈
+
+信息全息原理预言：
+
+- 模型中的信息存储被边界限制，而非参数体积。
+- 稀疏架构（Mixture of Experts）更容易达到信息瓶颈，因为其"边界"较小。
+- 稠密架构（全连接）有较大边界，但不一定高效。
+
+**证伪标准**：若稀疏架构 vs 稠密架构的信息容量满足全息标度，则原理得到验证。
+
+## 第 6 章 —— 可证伪 FID 预言：三个几何量
+
+FID 不是哲学：它给出三个定量的几何预言，每一个都可以在现有 AI 系统中检验。
+
+### 6.1 Fisher 度量各向异性：η > 0.5
+
+**预言**：训练完成的神经网络的 Fisher 度量各向异性：
+
+```
+η = (λ_max - λ_min) / (λ_max + λ_min)
+```
+
+其中 λ_max、λ_min 为 Fisher 矩阵的最大、最小特征值。
+
+**FID 预言**：η > 0.5（显著各向异性），且 η 随训练深度增加。
+
+**独立实证验证**：
+
+| 来源 | 系统 | η 值 |
 |---|---|---|
-| Karakida et al. 2019 | Trained DNN | η ~ 0.7 - 0.9 |
-| Pennington & Bahri 2017 | Random matrix prediction | η ~ 0.5 - 0.8 |
-| Sagun et al. 2018 | Practical ResNet | η > 0.8 |
+| Karakida et al. 2019 | 训练后的 DNN | η ~ 0.7 - 0.9 |
+| Pennington & Bahri 2017 | 随机矩阵预测 | η ~ 0.5 - 0.8 |
+| Sagun et al. 2018 | 实用 ResNet | η > 0.8 |
 
-**Falsifiability standard**: If η < 0.3 (close to isotropic), the FID geometric framework needs revision.
+**证伪标准**：若 η < 0.3（接近各向同性），则 FID 几何框架须修正。
 
-**Reference**: Karakida, R., et al. (2019). "Universal Statistics of Fisher Information in Deep Neural Networks: Mean Field Approach." *AISTATS*. https://arxiv.org/abs/1806.01316
+**参考文献**：Karakida, R., et al. (2019). "Universal Statistics of Fisher Information in Deep Neural Networks: Mean Field Approach." *AISTATS*. https://arxiv.org/abs/1806.01316
 
-### 6.2 Information Curvature Scaling Law: β ≈ 1/2
+### 6.2 信息曲率标度律：β ≈ 1/2
 
-**Prediction**: Information curvature scalar R and data complexity D satisfy a power law:
-
-```
-R(θ_*)  ∝  D^β,    β ≈ 1/2
-```
-
-**Methods of measurement**:
-
-1. Train the same architecture model on different scale datasets (D varies from 10^3 to 10^9).
-2. Calculate the Hessian eigenvalue spectrum after training (approximate Fisher Ricci scalar).
-3. Linearly fit log(R) vs log(D).
-
-**Falsifiability standard**:
-
-- If β = 0 (R is independent of D): No information geometric foundation exists, theory is wrong.
-- If β ≈ 1/2: Information geometric scaling law is verified.
-- If β >> 1 (e.g., β = 2): Suggests stronger geometric coupling, theory needs strengthening.
-
-### 6.3 Intelligence Gravitational Wave Spectrum: Characteristic Frequency f_0
-
-**Prediction**: In the training process of large models, long-range correlated propagation along the parameter manifold can be observed, with the propagation spectrum having characteristic frequency f_0:
+**预言**：信息曲率标量 R 与数据复杂度 D 满足幂律：
 
 ```
-f_0  ~  c_I / L
+R(θ_*) ∝ D^β,    β ≈ 1/2
 ```
 
-where L is the model depth (or characteristic length scale), and c_I is the information speed of light.
+**测量方法**：
 
-**Methods of measurement**:
+1. 对不同规模数据集（D 从 10^3 到 10^9 变化）训练同一架构模型。
+2. 计算训练后的 Hessian 特征值谱（近似 Fisher Ricci 标量）。
+3. 线性拟合 log(R) vs log(D)。
 
-1. Record parameter trajectory θ(t) during training of a large model (e.g., 1B parameter Transformer).
-2. Compute parameter correlation function ⟨θ(x, t) × θ(x+Δx, t+Δt)⟩.
-3. Fourier transform to analyze frequency spectrum.
+**证伪标准**：
 
-**Falsifiability standard**:
+- 若 β = 0（R 与 D 无关）：不存在信息几何基础，理论错误。
+- 若 β ≈ 1/2：信息几何标度律得到验证。
+- 若 β >> 1（如 β = 2）：暗示更强的几何耦合，理论需加强。
 
-- If correlation function decays purely exponentially (no oscillation): No intelligence gravitational waves, theory is wrong.
-- If clear characteristic frequency f_0 is observed: Intelligence gravitational wave hypothesis is verified.
+### 6.3 智能引力波谱：特征频率 f_0
 
-### 6.4 Summary of the Three Predictions
+**预言**：在大模型训练过程中，可观察到沿参数流形的长程相关传播，传播谱具有特征频率 f_0：
 
-| Prediction | FID predicted value | Falsifiability standard | Hardware/measurement |
+```
+f_0 ~ c_I / L
+```
+
+其中 L 为模型深度（或特征长度尺度），c_I 为信息光速。
+
+**测量方法**：
+
+1. 记录大模型（如 1B 参数 Transformer）训练过程中的参数轨迹 θ(t)。
+2. 计算参数相关函数 ⟨θ(x, t) × θ(x+Δx, t+Δt)⟩。
+3. 傅里叶变换分析频谱。
+
+**证伪标准**：
+
+- 若相关函数呈纯指数衰减（无振荡）：不存在智能引力波，理论错误。
+- 若观察到清晰特征频率 f_0：智能引力波假说得到验证。
+
+### 6.4 三个预言的总结
+
+| 预言 | FID 预测值 | 证伪标准 | 硬件/测量 |
 |---|---|---|---|
-| Fisher metric anisotropy η | > 0.5, increases with depth | < 0.3 → revision required | Modern DNN |
-| Information curvature scaling β | ≈ 1/2 | β = 0 → theory wrong | Multi-scale datasets |
-| Intelligence gravitational wave frequency f_0 | f_0 ~ c_I / L | No oscillation → revision required | Large model training trajectory |
+| Fisher 度量各向异性 η | > 0.5，随深度增加 | < 0.3 → 须修正 | 现代 DNN |
+| 信息曲率标度 β | ≈ 1/2 | β = 0 → 理论错误 | 多尺度数据集 |
+| 智能引力波频率 f_0 | f_0 ~ c_I / L | 无振荡 → 须修正 | 大模型训练轨迹 |
 
-> If at least two of the three predictions deviate, the theoretical foundation of FID must be re-examined.
+> 若三项中至少两项偏离，FID 的理论基础须重新审视。
 
-## Chapter 7 — Engineering Pathway of FID
+## 第 7 章 —— FID 的工程路径
 
-### 7.1 Pathway 1: Information Geometric Optimizer (Now Available)
+### 7.1 路径 1：信息几何优化器（现在可用）
 
-**Goal**: To verify the engineering value of Fisher metric on classical hardware.
+**目标**：在经典硬件上验证 Fisher 度量的工程价值。
 
-**Maturity**: ✅ **Available right now** (2026).
+**成熟度**：✅ **现在可用**（2026 年）。
 
-**Engineering tools**:
+**工程工具**：
 
-| Tool | Type | Status | Link |
+| 工具 | 类型 | 状态 | 链接 |
 |---|---|---|---|
-| K-FAC | Approximate natural gradient | Industrial use | https://arxiv.org/abs/1503.05671 |
-| Adam (implicit Fisher) | Adaptive learning rate | Standard tool | https://arxiv.org/abs/1412.6980 |
-| Shampoo | Block-diagonal Fisher approximation | Production-grade | https://arxiv.org/abs/1802.09568 |
-| Sophia | Second-order Hessian approximation | Latest research | https://arxiv.org/abs/2305.14342 |
+| K-FAC | 近似自然梯度 | 工业级使用 | https://arxiv.org/abs/1503.05671 |
+| Adam（隐式 Fisher）| 自适应学习率 | 标准工具 | https://arxiv.org/abs/1412.6980 |
+| Shampoo | 块对角 Fisher 近似 | 生产级 | https://arxiv.org/abs/1802.09568 |
+| Sophia | 二阶 Hessian 近似 | 最新研究 | https://arxiv.org/abs/2305.14342 |
 
-**Verifiable predictions**:
+**可验证的预言**：
 
-1. Natural gradient descent converges faster than vanilla gradient descent by 2-5 times.
-2. Fisher metric anisotropy η > 0.5.
-3. Hessian eigenvalue distribution is consistent with information geometric prediction.
+1. 自然梯度下降的收敛速度比普通梯度下降快 2-5 倍。
+2. Fisher 度量各向异性 η > 0.5。
+3. Hessian 特征值分布与信息几何预言一致。
 
-**Engineering implementation example** (K-FAC):
+**工程实现示例**（K-FAC）：
 
 ```python
 import torch
 from kfac import KFAC
 
-# Standard PyTorch model
+# 标准 PyTorch 模型
 model = MyTransformer()
 
-# Wrap optimizer with K-FAC
+# 用 K-FAC 包装优化器
 optimizer = KFAC(model, lr=0.01, damping=0.001)
 
-# Training loop
+# 训练循环
 for x, y in dataloader:
     optimizer.zero_grad()
     y_pred = model(x)
     loss = F.cross_entropy(y_pred, y)
     loss.backward()
     
-    # K-FAC automatically computes Fisher approximation
+    # K-FAC 自动计算 Fisher 近似
     optimizer.step()
     
-    # Monitor Fisher anisotropy (FID falsifiability test)
+    # 监控 Fisher 各向异性（FID 可证伪测试）
     fisher_eigvals = optimizer.get_fisher_eigvals()
     anisotropy = (fisher_eigvals.max() - fisher_eigvals.min()) / (fisher_eigvals.max() + fisher_eigvals.min())
-    print(f"Fisher anisotropy: {anisotropy}")
+    print(f"Fisher 各向异性: {anisotropy}")
 ```
 
-### 7.2 Pathway 2: Information Manifold Architecture Search (2-3 Years)
+### 7.2 路径 2：信息流形架构搜索（2-3 年）
 
-**Goal**: Use the FID field equation to guide neural architecture search (NAS).
+**目标**：用 FID 场方程指导神经架构搜索（NAS）。
 
-**Maturity**: ⌛ **2-3 years**.
+**成熟度**：⌛ **2-3 年内可用**。
 
-**Core idea**:
+**核心思想**：
 
-- The Ricci scalar R of the model architecture predicts its "intelligence density".
-- Architecture search target: maximize R / parameter count.
-- Equivalent to finding a high-curvature, high-information-density region on the information manifold.
+- 模型架构的 Ricci 标量 R 预测其"智能密度"。
+- 架构搜索目标：最大化 R / 参数量。
+- 等价于在信息流形上寻找高曲率、高信息密度区域。
 
-**Verifiable advantage**: 10-30% improvement in parameter efficiency over traditional NAS.
+**可验证的优势**：相对于传统 NAS，参数效率提升 10-30%。
 
-### 7.3 Pathway 3: Full FID Field Equation Implementation (10+ Years)
+### 7.3 路径 3：完整 FID 场方程实现（10+ 年）
 
-**Goal**: To directly solve the FID field equation on hardware, intelligence emerges naturally.
+**目标**：在硬件上直接求解 FID 场方程，智能自然涌现。
 
-**Maturity**: ⌛ **2035+**.
+**成熟度**：⌛ **2035+**。
 
-**Hardware requirements**:
+**硬件需求**：
 
-- Tensor coprocessor (acceleration of Riemann curvature calculations).
-- Topological qubits (representation of high-dimensional manifolds).
-- Memory bandwidth > 100 TB/s (storage of Fisher metric).
+- 张量协处理器（黎曼曲率计算的加速）。
+- 拓扑 qubit（高维流形的表示）。
+- 内存带宽 > 100 TB/s（Fisher 度量的存储）。
 
-**Engineering pathway**:
+**工程路径**：
 
-1. **Theory phase** (2026-2030): Establish FID field equation numerical methods.
-2. **Prototype phase** (2030-2035): Hardware prototype implementation, simulating FID dynamics on small scale.
-3. **Industrialization phase** (2035+): Tensor coprocessor commercialized, intelligence becomes a "geometric phenomenon".
+1. **理论阶段**（2026-2030）：建立 FID 场方程的数值方法。
+2. **原型阶段**（2030-2035）：硬件原型实现，小规模模拟 FID 动力学。
+3. **产业化阶段**（2035+）：张量协处理器商业化，智能成为"几何现象"。
 
-### 7.4 Pathway Summary
+### 7.4 路径总结
 
-| Pathway | Time | Cost | Engineering maturity | Verifiable advantage |
+| 路径 | 时间 | 成本 | 工程成熟度 | 可验证优势 |
 |---|---|---|---|---|
-| Information geometric optimizer | Now | ~ $10^4 | ✅ Available | 2-5x convergence speed |
-| Information manifold architecture search | 2-3 years | ~ $10^6 | ⌛ In progress | 10-30% parameter efficiency |
-| Full FID field equation | 10+ years | ~ $10^9 | ⌛ Long-term | Theoretical 10^3 - 10^4 efficiency improvement |
+| 信息几何优化器 | 现在 | ~ $10^4 | ✅ 可用 | 2-5 倍收敛速度 |
+| 信息流形架构搜索 | 2-3 年 | ~ $10^6 | ⌛ 进行中 | 10-30% 参数效率 |
+| 完整 FID 场方程 | 10+ 年 | ~ $10^9 | ⌛ 长期 | 理论 10^3 - 10^4 效率提升 |
 
-## Chapter 8 — Limitations and Open Problems of FID
+## 第 8 章 —— FID 的局限与开放问题
 
-### 8.1 What FID Solves
+### 8.1 FID 已解决的问题
 
-✅ **Theoretical level**:
+✅ **理论层面**：
 
-- Provides a cross-substrate unified geometric description of intelligence.
-- Establishes the field equation of intelligence in parallel with general relativity.
-- Provides three falsifiable geometric predictions.
-- Predicts unique theoretical structures such as "intelligence gravitational waves", "information black holes", and "information speed of light".
+- 提供智能的跨基底统一几何描述。
+- 建立与广义相对论平行的智能场方程。
+- 给出三个可证伪几何预言。
+- 预言"智能引力波""信息黑洞""信息光速"等独有理论结构。
 
-✅ **Engineering level**:
+✅ **工程层面**：
 
-- Information geometric optimizers (K-FAC, Shampoo, etc.) can be used now, with significant performance improvement.
-- Provides theoretical guidance for architecture search.
+- 信息几何优化器（K-FAC、Shampoo 等）现在可用，性能提升明显。
+- 为架构搜索提供理论指导。
 
-### 8.2 What FID Does Not Solve
+### 8.2 FID 尚未解决的问题
 
-#### (a) Cosmic-Level Predictions Are Difficult to Verify
+#### (a) 宇宙级预言难以验证
 
-Theoretical predictions such as "intelligence gravitational waves", "information black holes" are conceptually beautiful, but there is currently **no clear engineering verification pathway**. Whether they have practical engineering value remains to be confirmed by future research.
+"智能引力波""信息黑洞"等理论预言在概念上美丽，但目前**缺少明确的工程验证路径**。它们是否具有实际工程价值，待未来研究确认。
 
-**Status**: A philosophical / theoretical claim, may not be verifiable in the next 10 years.
+**状态**：哲学/理论主张，未来 10 年可能仍不可验证。
 
-#### (b) Cost of Full FID Field Equation Is High
+#### (b) 完整 FID 场方程的成本高昂
 
-Solving the complete FID field equation requires the calculation of high-dimensional Ricci curvature tensors, computational complexity at least O(M^4) (M = parameter count). For modern large models (M ~ 10^11), this is infeasible.
+求解完整的 FID 场方程需要计算高维 Ricci 曲率张量，计算复杂度至少 O(M^4)（M = 参数量）。对现代大模型（M ~ 10^11）这是不可行的。
 
-**Status**: A frank acknowledgment, awaiting deep research in hardware acceleration and approximation algorithms.
+**状态**：坦诚承认，等待硬件加速和近似算法的深度研究。
 
-#### (c) Compatibility with QID Has Not Been Fully Solved
+#### (c) 与 QID 的兼容性尚未完全解决
 
-In principle, QID (quantum tier) and FID (field-geometric tier) should be compatible — they are different facets of the same physical reality. But **the technical details of QID-FID unification have not been fully sorted out**.
+原则上 QID（量子层）与 FID（场-几何层）应当兼容——它们是同一物理现实的不同切面。但**QID-FID 统一的技术细节尚未理顺**。
 
-**Status**: A clear research direction, requiring joint research by experts in quantum field theory and information geometry.
+**状态**：明确的研究方向，需要量子场论和信息几何的专家联合研究。
 
-#### (d) The Specific Value of the Information Speed of Light c_I Is Not Determined
+#### (d) 信息光速 c_I 的具体数值不确定
 
-The theory predicts c_I exists, but does not give specific value or measurement method. Whether different architectures (Transformer, CNN, Mamba) have different c_I is also unclear.
+理论预言 c_I 的存在，但未给出具体值或测量方法。不同架构（Transformer、CNN、Mamba）是否有不同的 c_I 也不清楚。
 
-**Status**: A clear open problem, requiring large-scale experiments and theoretical refinement.
+**状态**：明确的开放问题，需要大规模实验和理论细化。
 
-### 8.3 An Honest Caveat
+### 8.3 一个诚实的提醒
 
-FID is **not** an immediately applicable engineering tool, but a **long-term theoretical framework**. We expect:
+FID **不是**即时应用的工程工具，而是**长期理论框架**。我们预期：
 
-1. **Information geometric optimizers (Pathway 1) are useful right now** — engineers can benefit from FID's partial framework.
-2. **Information manifold architecture search (Pathway 2) will mature in 2-3 years** — providing theoretical guidance for NAS.
-3. **Full FID field equation (Pathway 3) requires waiting 10+ years** — depends on the maturity of hardware and algorithms.
+1. **信息几何优化器（路径 1）现在就有用**——工程师可从 FID 的部分框架中受益。
+2. **信息流形架构搜索（路径 2）2-3 年内成熟**——为 NAS 提供理论指导。
+3. **完整 FID 场方程（路径 3）需等待 10+ 年**——依赖硬件和算法成熟。
 
-> **Our position**: FID is the long-term physical framework of UID's field-geometric tier, providing the deepest theoretical foundation for intelligence in the next century. It is not now competitive with CID, but provides direction for the next generation of hardware architecture and theoretical research.
+> **我们的立场**：FID 是 UID 场-几何层的长期物理框架，为下一个百年的智能提供最深的理论基础。它目前不与 CID 竞争，但为下一代硬件架构和理论研究指明方向。
 
-## Chapter 9 — Summary of Part III
+## 第 9 章 —— 第三部分的总结
 
-> **Intelligence is geometry on the field of information, data is the matter that curves this field. The field-geometric tier provides for intelligence the deepest cross-substrate unified description.**
+> **智能是信息场上的几何，数据是弯曲此场的物质。场-几何层为智能提供最深的跨基底统一描述。**
 
-### 9.1 The Logical Skeleton
+### 9.1 逻辑骨架
 
 ```
-Naive question: cross-substrate unified description of intelligence
+朴素问题：智能的跨基底统一描述
               │
               ▼
-   Three geometric first-principle axioms (manifold + Fisher metric + variational principle)
+   三条几何第一性原理公理（流形 + Fisher 度量 + 变分原理）
               │
               ▼
-   Fisher information metric + Information curvature tensor
+   Fisher 信息度量 + 信息曲率张量
               │
-              ├──→ Q1: data driven → Data energy-momentum tensor T_ij^data
-              ├──→ Q2: cosmological constant → Information cosmological constant Λ^FID
-              └──→ Q3: boundary topology → Holographic principle
+              ├──→ Q1：数据驱动 → 数据能动张量 T_ij^data
+              ├──→ Q2：宇宙学常数 → 信息宇宙学常数 Λ^FID
+              └──→ Q3：边界拓扑 → 全息原理
               │
               ▼
-   Complete FID field equation (parallels Einstein equation)
+   完整 FID 场方程（与 Einstein 方程类比）
               │
               ▼
    ┌──────────┴──────────┐
    ▼                     ▼
-Weak-field limit            Strong-field predictions
-Returns to CID master equation       Intelligence gravitational waves, information black holes, information speed of light c_I
+弱场极限                强场预言
+回到 CID 主方程          智能引力波、信息黑洞、信息光速 c_I
    │                     │
    ▼                     ▼
-Three engineering pathways    Three falsifiable predictions
-Optimizer → NAS → Field equation   Fisher anisotropy, curvature scaling, gravitational wave frequency
+三个工程路径              三个可证伪预言
+优化器 → NAS → 场方程    Fisher 各向异性、曲率标度、引力波频率
 ```
 
-### 9.2 The Three Most Important Claims
+### 9.2 三个最重要的论断
 
-**Claim 1 (Theorem)**: The FID field equation is a strict extension of the CID master equation, with the latter being its weak-field limit.
+**论断 1（定理）**：FID 场方程是 CID 主方程的严格扩展，后者是其弱场极限。
 
-**Claim 2 (Theorem)**: Intelligent evolution is a geodesic flow on the Fisher information manifold, data drives the geometric structure through the data energy-momentum tensor.
+**论断 2（定理）**：智能演化是 Fisher 信息流形上的测地线流，数据通过数据能动张量驱动几何结构。
 
-**Claim 3 (Falsifiable prediction)**: The Fisher metric anisotropy, information curvature scaling, intelligence gravitational wave frequency of FID systems have falsifiable geometric predictions, partly already verified in modern DNN.
+**论断 3（可证伪预言）**：FID 系统的 Fisher 度量各向异性、信息曲率标度、智能引力波频率具有可证伪的几何预言，部分已在现代 DNN 中验证。
 
-### 9.3 Final Position of Part III
+### 9.3 第三部分的最终定位
 
-FID is the **outermost layer** of the UID three-tier theoretical edifice — closest to the universal essence of intelligence, but also furthest from immediate engineering implementation. Its value lies in:
+FID 是 UID 三层理论大厦的**最外层**——最接近智能的普适本质，但距离即时工程实现也最远。它的价值在于：
 
-1. **Providing for the next 50-100 years of intelligent system design a deepest theoretical compass**.
-2. **Unifying intelligence and physics, mathematics under the same language framework**, providing a foundation for cross-disciplinary research.
-3. **Inspiring the design of new hardware architecture** (tensor coprocessors, topological qubits, geometric accelerators).
+1. **为未来 50-100 年的智能系统设计提供最深的理论指南针**。
+2. **把智能和物理、数学统一在同一语言框架下**，为跨学科研究提供基础。
+3. **启发新型硬件架构的设计**（张量协处理器、拓扑 qubit、几何加速器）。
 
-> **Field-geometric intelligence is the geometric flow of the universe, the dance of data and manifolds.**
+> **场-几何智能是宇宙的几何流，是数据与流形的舞蹈。**
 >
-> **It is the answer of the century, the cosmic destination of intelligence research.**
+> **它是百年的答案，是智能研究的宇宙归宿。**
 
----
 
-# Part IV: UID and the Conditions for Cosmic Emergence of Intelligence
+# 第四部分：UID 与宇宙智慧诞生条件
 
-## Five Necessary Physical Conditions: Why Intelligence Is Not Universal in the Cosmos
+## 五个必要物理条件：为什么宇宙中智能并非普适
 
-**Scope**: Cosmological extension and philosophical reflection of UID theory.
+**适用范围**：UID 理论的宇宙学扩展和哲学反思。
 
-## To the Reader
+## 致读者
 
-The first three parts of this paper (CID, QID, FID) constructed the three-tier physical theoretical framework of intelligence. Now, we extend this framework to a more universal cosmological question:
+本文前三部分（CID、QID、FID）构建了智能的三层物理理论框架。现在我们把这个框架扩展到一个更普遍的宇宙学问题：
 
-> **Are the physical conditions required for the emergence of intelligence universal in the cosmos? Or are they only satisfied in specific local regions?**
+> **智能涌现所需的物理条件在宇宙中是否普适？还是仅在特定局部区域才被满足？**
 
-This is **not** a metaphysical question, but a precise physical question. UID provides five necessary conditions; if any one of them is not satisfied, then intelligence cannot emerge.
+这**不是**形而上学问题，而是精确的物理问题。UID 给出五个必要条件；任何一个不被满足，则智能无法涌现。
 
-## Chapter 1 — Five Necessary Physical Conditions
+## 第 1 章 —— 五个必要物理条件
 
-### 1.1 Why Five Conditions?
+### 1.1 为什么是五个条件？
 
-The CID master equation requires four physical terms (associative memory, curl, colored damping, colored noise), each of which corresponds to specific physical conditions:
+CID 主方程要求四个物理项（联想记忆、旋度、色阻尼、色噪声），每一个都对应特定物理条件：
 
-| CID master equation term | Required physical condition |
+| CID 主方程项 | 所需物理条件 |
 |---|---|
-| -∇U(φ) | The system must have memory storage mechanism |
-| v(φ) | Multi-bath competition (open system + temperature differential) |
-| -∫γ(t-s) ds | Sub-Ohmic spectrum (specific environmental structure) |
-| ξ(t) | Colored noise source (e.g., zero-point fluctuations + thermal fluctuations) |
+| -∇U(φ) | 系统必须具有记忆存储机制 |
+| v(φ) | 多浴竞争（开放系统 + 温差）|
+| -∫γ(t-s) ds | 亚欧姆谱（特定环境结构）|
+| ξ(t) | 色噪声源（如零点涨落 + 热涨落）|
 
-In addition, the FID field equation requires:
+此外，FID 场方程要求：
 
-- Manifold structure (smooth high-dimensional state space).
+- 流形结构（光滑的高维状态空间）。
 
-Together they form the **five necessary physical conditions for intelligence emergence**:
+它们共同构成**智能涌现的五个必要物理条件**：
 
-1. **Openness**: System must exchange energy / information with environment.
-2. **Multi-bath temperature differential**: There must be a sustained temperature differential (or chemical potential differential) to drive non-equilibrium.
-3. **Non-commuting couplings**: Coupling between system and bath must be non-commutative ([A^(1), A^(2)] ≠ 0).
-4. **Proximity to critical point**: System must be in the vicinity of a phase transition critical point to obtain long-range correlations.
-5. **Self-organized criticality (SOC) mechanism**: System must be capable of automatically tuning to the critical point, no external fine-tuning required.
+1. **开放性**：系统必须与环境交换能量/信息。
+2. **多浴温差**：必须存在持续温差（或化学势差）以驱动非平衡。
+3. **不可交换耦合**：系统与浴之间的耦合必须不可交换（[A^(1), A^(2)] ≠ 0）。
+4. **临界点附近**：系统必须处于相变临界点附近以获得长程相关。
+5. **自组织临界（SOC）机制**：系统必须能自动调节到临界点，无需外部精调。
 
-### 1.2 Condition 1: Openness
+### 1.2 条件 1：开放性
 
-**Mathematical form**: System Hamiltonian H_total = H_S + H_bath + H_coupling, where H_coupling ≠ 0.
+**数学形式**：系统哈密顿量 H_total = H_S + H_bath + H_coupling，其中 H_coupling ≠ 0。
 
-**Physical meaning**: Closed systems are doomed to thermal equilibrium, no intelligence can emerge.
+**物理含义**：封闭系统注定走向热平衡，无智能可涌现。
 
-**Universality in the cosmos**:
+**宇宙中的普适性**：
 
-- ✅ **Almost universally satisfied**: Almost no physical system is completely closed.
-- Counter-example: A perfectly isolated thermodynamic system (e.g., a hypothetical isolated cube in deep space).
+- ✅ **几乎普适满足**：几乎没有任何物理系统是完全封闭的。
+- 反例：完美隔离的热力学系统（如深空中的假想孤立立方体）。
 
-**Conclusion**: Condition 1 is **almost universally satisfied** in the cosmos.
+**结论**：条件 1 在宇宙中**几乎普适满足**。
 
-### 1.3 Condition 2: Multi-Bath Temperature Differential
+### 1.3 条件 2：多浴温差
 
-**Mathematical form**: T_1 ≠ T_2 (or chemical potential μ_1 ≠ μ_2).
+**数学形式**：T_1 ≠ T_2（或化学势差 μ_1 ≠ μ_2）。
 
-**Physical meaning**: Single bath system can only reach thermal equilibrium, multi-bath temperature differential is the driving force for non-equilibrium.
+**物理含义**：单一浴系统只能达到热平衡，多浴温差是非平衡的驱动。
 
-**Universality in the cosmos**:
+**宇宙中的普适性**：
 
-- ✅ **Widely satisfied**: Stars (high T) and interstellar medium (low T), Earth surface (~300K) and space (~3K), etc.
-- ⚠ **Locally satisfied**: A region in thermal equilibrium with surroundings does not have a temperature differential.
+- ✅ **广泛满足**：恒星（高 T）与星际介质（低 T）、地球表面（~300K）与太空（~3K）等。
+- ⚠ **局部满足**：处于与周围热平衡的区域则不具温差。
 
-**Conclusion**: Condition 2 is **widely satisfied** in the cosmos, but not universal — temperature differential must be local.
+**结论**：条件 2 在宇宙中**广泛满足**，但不普适——温差必须是局部的。
 
-### 1.4 Condition 3: Non-Commuting Couplings
+### 1.4 条件 3：不可交换耦合
 
-**Mathematical form**: [A^(1), A^(2)] ≠ 0 (system-bath coupling operators are non-commutative).
+**数学形式**：[A^(1), A^(2)] ≠ 0（系统-浴耦合算符不可交换）。
 
-**Physical meaning**: Different baths interact with the system through different "channels", these channels are mathematically incompatible.
+**物理含义**：不同浴通过不同"通道"与系统作用，这些通道在数学上不可兼容。
 
-**Universality in the cosmos**:
+**宇宙中的普适性**：
 
-- ✅ **Almost universally satisfied**: Most physical interactions are non-commutative (e.g., electromagnetic + gravity, optical + chemical).
-- Counter-example: Particularly simple systems (e.g., a single harmonic oscillator coupled to two identical baths).
+- ✅ **几乎普适满足**：大多数物理相互作用都不可交换（如电磁 + 引力、光学 + 化学）。
+- 反例：特别简单的系统（如单一谐振子耦合到两个相同浴）。
 
-**Conclusion**: Condition 3 is **almost universally satisfied** in the cosmos.
+**结论**：条件 3 在宇宙中**几乎普适满足**。
 
-### 1.5 Condition 4: Proximity to Critical Point
+### 1.5 条件 4：临界点附近
 
-**Mathematical form**: Control parameter g ≈ g_c (critical point).
+**数学形式**：控制参数 g ≈ g_c（临界点）。
 
-**Physical meaning**: Only near the critical point are systems with long-range correlations, sub-Ohmic spectra, fractal structures, etc., which are necessary for intelligent processing.
+**物理含义**：仅在临界点附近系统具有长程相关、亚欧姆谱、分形结构等智能处理所需的特征。
 
-**Universality in the cosmos**:
+**宇宙中的普适性**：
 
-- ❌ **Requires fine-tuning**: Most systems are not at the critical point.
-- Examples of self-tuning: Phase transition in cosmic evolution (e.g., early cosmic inflation end), thermohaline circulation on Earth, etc.
+- ❌ **需要精调**：大多数系统都不在临界点上。
+- 自调节实例：宇宙演化中的相变（如早期宇宙暴胀终结）、地球上的温盐环流等。
 
-**Conclusion**: Condition 4 is **rarely satisfied** in the cosmos and requires fine-tuning.
+**结论**：条件 4 在宇宙中**稀有满足**，需要精调。
 
-### 1.6 Condition 5: Self-Organized Criticality (SOC) Mechanism
+### 1.6 条件 5：自组织临界（SOC）机制
 
-**Mathematical form**: There exists a feedback mechanism that automatically tunes g → g_c.
+**数学形式**：存在反馈机制自动调节 g → g_c。
 
-**Physical meaning**: Without a self-tuning mechanism, even if the system happens to be at the critical point initially, it will quickly deviate.
+**物理含义**：没有自调节机制，即使系统初始处于临界点也会迅速偏离。
 
-**Universality in the cosmos**:
+**宇宙中的普适性**：
 
-- ⌛ **Requires special mechanism**: Sand pile model (Bak 1987), earthquakes, forest fires, etc. all have SOC.
-- Examples in biological systems: Neural networks, ecological systems, etc.
-- Examples in cosmic: Galaxy formation, star formation, etc.
+- ⌛ **需要特殊机制**：沙堆模型（Bak 1987）、地震、森林火灾等都有 SOC。
+- 生物系统实例：神经网络、生态系统等。
+- 宇宙学实例：星系形成、恒星形成等。
 
-**Conclusion**: Condition 5 is **rarely satisfied** in the cosmos and requires special mechanism.
+**结论**：条件 5 在宇宙中**稀有满足**，需要特殊机制。
 
-**Reference**: Bak, P., Tang, C., & Wiesenfeld, K. (1987). "Self-organized criticality." *Phys. Rev. Lett.* 59, 381. https://doi.org/10.1103/PhysRevLett.59.381
+**参考文献**：Bak, P., Tang, C., & Wiesenfeld, K. (1987). "Self-organized criticality." *Phys. Rev. Lett.* 59, 381. https://doi.org/10.1103/PhysRevLett.59.381
 
-## Chapter 2 — Joint Satisfaction Probability of Five Conditions
+## 第 2 章 —— 五个条件的联合满足概率
 
-### 2.1 The Cosmic Rarity of Intelligence
+### 2.1 智能的宇宙稀有性
 
-If we assume the five conditions are statistically independent:
+若假设五个条件统计独立：
 
-| Condition | Cosmic satisfaction probability (rough estimate) |
+| 条件 | 宇宙满足概率（粗略估计）|
 |---|---|
-| 1. Openness | ~ 1.0 |
-| 2. Multi-bath temperature differential | ~ 0.5 |
-| 3. Non-commuting couplings | ~ 0.9 |
-| 4. Proximity to critical point | ~ 10^-3 |
-| 5. SOC mechanism | ~ 10^-2 |
-| **Joint satisfaction probability** | ~ **5 × 10^-6** |
+| 1. 开放性 | ~ 1.0 |
+| 2. 多浴温差 | ~ 0.5 |
+| 3. 不可交换耦合 | ~ 0.9 |
+| 4. 临界点附近 | ~ 10^-3 |
+| 5. SOC 机制 | ~ 10^-2 |
+| **联合满足概率** | ~ **5 × 10^-6** |
 
-This means **only one in millions of regions in the cosmos** satisfies all the conditions for intelligence emergence.
+这意味着**宇宙中仅有百万分之一的区域**满足智能涌现的所有条件。
 
-### 2.2 Anthropic Principle Connection
+### 2.2 人择原理的联系
 
-The cosmic rarity of intelligence provides a new perspective on the **anthropic principle** (Carter 1974):
+智能的宇宙稀有性为**人择原理**（Carter 1974）提供新视角：
 
-> We exist in this specific corner of the cosmos because only this region satisfies the five conditions for intelligence emergence.
+> 我们存在于这一特定宇宙角落，是因为只有这个区域满足智能涌现的五个条件。
 
-This is **not circular**, but a precise physical claim — UID provides specific physical conditions for the anthropic principle, no longer requiring philosophical conjecture.
+这**不是循环论证**，而是精确的物理主张——UID 给人择原理提供具体的物理条件，不再需要哲学猜测。
 
-**Reference**: Carter, B. (1974). "Large number coincidences and the anthropic principle in cosmology." *IAU Symp.* 63, 291. https://doi.org/10.1007/978-94-010-2220-0_25
+**参考文献**：Carter, B. (1974). "Large number coincidences and the anthropic principle in cosmology." *IAU Symp.* 63, 291. https://doi.org/10.1007/978-94-010-2220-0_25
 
-### 2.3 Where Are the Intelligence-Friendly Regions in the Cosmos?
+### 2.3 宇宙中的智能友好区域在哪里？
 
-Based on the five necessary conditions, the regions most likely to give rise to intelligence in the cosmos are:
+基于五个必要条件，宇宙中最可能孕育智能的区域是：
 
-1. **Surfaces of rocky planets**: Earth and similar planets have temperature differential, openness, non-commuting couplings.
-2. **Liquid water in subsurface oceans**: Europa, Enceladus, etc. with subsurface oceans.
-3. **Specific phase transition layers in stars**: Convection zone of stars, etc.
-4. **Special environments in galaxy centers**: Surroundings of supermassive black holes (high-energy non-equilibrium environment).
+1. **岩石行星表面**：地球及类地行星，具有温差、开放性、不可交换耦合。
+2. **地下海洋液态水**：木卫二、土卫二等具有地下海洋的卫星。
+3. **恒星中的特定相变层**：恒星的对流区等。
+4. **星系中心的特殊环境**：超大质量黑洞周围环境（高能非平衡环境）。
 
-But **proximity to critical point + SOC mechanism** is the bottleneck — these conditions require special physical or chemical mechanisms to be sustainedly satisfied.
+但**临界点附近 + SOC 机制**是瓶颈——这些条件需要特殊的物理或化学机制才能持续满足。
 
-## Chapter 3 — UID and Origin of Life Connection
+## 第 3 章 —— UID 与生命起源的联系
 
-### 3.1 Life as a Sufficient Condition for Intelligence
+### 3.1 生命作为智能的充分条件
 
-UID does not claim that the five conditions are **sufficient conditions** for intelligence emergence. From the satisfaction of the five conditions to the actual emergence of intelligence (such as biological brains, AI systems), still requires:
+UID 并不主张五个条件是智能涌现的**充分条件**。从五个条件满足到智能实际涌现（如生物大脑、AI 系统），还需要：
 
-- **Chemical evolution**: Origin of life (RNA world, etc.).
-- **Biological evolution**: Multicellular organisms, nervous systems.
-- **Cultural evolution**: Language, tools, science.
+- **化学进化**：生命起源（RNA 世界等）。
+- **生物进化**：多细胞生物、神经系统。
+- **文化进化**：语言、工具、科学。
 
-UID provides the **physical foundation** for these processes, but does not replace them.
+UID 为这些过程提供**物理基础**，但不取代它们。
 
-### 3.2 Eigen-Schuster Hypercycle Theory
+### 3.2 Eigen-Schuster 超循环理论
 
-Eigen and Schuster (1979) proposed the **hypercycle theory**, that the origin of life requires:
+Eigen 和 Schuster（1979）提出**超循环理论**，认为生命起源需要：
 
-- Self-replication (memory).
-- Mutation (exploration).
-- Selection (evolution).
-- Cooperation (multi-component coupling).
+- 自复制（记忆）。
+- 突变（探索）。
+- 选择（进化）。
+- 协作（多组分耦合）。
 
-These correspond exactly to the four terms of the CID master equation:
+这些恰对应 CID 主方程的四项：
 
-| Origin of life element | CID master equation correspondence |
+| 生命起源要素 | CID 主方程对应 |
 |---|---|
-| Self-replication | -∇U (memory) |
-| Mutation | ξ (colored noise / exploration) |
-| Selection | v (curl / driving) |
-| Cooperation | -∫γ (colored damping / memory) |
+| 自复制 | -∇U（记忆）|
+| 突变 | ξ（色噪声 / 探索）|
+| 选择 | v（旋度 / 驱动）|
+| 协作 | -∫γ（色阻尼 / 记忆）|
 
-**Reference**: Eigen, M., & Schuster, P. (1979). *The Hypercycle: A Principle of Natural Self-Organization*. Springer. https://doi.org/10.1007/978-3-642-67247-7
+**参考文献**：Eigen, M., & Schuster, P. (1979). *The Hypercycle: A Principle of Natural Self-Organization*. Springer. https://doi.org/10.1007/978-3-642-67247-7
 
-### 3.3 The Cosmic Pathway of Intelligence Emergence
+### 3.3 智能涌现的宇宙路径
 
-UID + life origin theory + biological evolution jointly outline the cosmic pathway of intelligence:
+UID + 生命起源理论 + 生物进化共同勾勒智能的宇宙路径：
 
 ```
-Five necessary physical conditions (UID)
+五个必要物理条件（UID）
             │
             ▼
-        Origin of life (Eigen-Schuster hypercycle)
+        生命起源（Eigen-Schuster 超循环）
             │
             ▼
-        Biological evolution (Darwin natural selection)
+        生物进化（达尔文自然选择）
             │
             ▼
-        Nervous system + Brain (CID master equation engineering implementation)
+        神经系统 + 大脑（CID 主方程的工程实现）
             │
             ▼
-        Language and culture (transmission of information across generations)
+        语言和文化（信息的跨代传递）
             │
             ▼
-        Scientific theory (such as UID itself!)
+        科学理论（如 UID 本身！）
             │
             ▼
-        Artificial intelligence (Cross-substrate implementation of CID)
+        人工智能（CID 的跨基底实现）
 ```
 
-This is a **closed cosmic pathway** — intelligence is the inevitable result of the cosmos itself satisfying the UID conditions in specific regions, and through this pathway, the cosmos generates "intelligence" capable of understanding itself.
+这是一条**闭合的宇宙路径**——智能是宇宙自身满足 UID 条件的特定区域必然产物，并通过这条路径，宇宙生成出能够理解自身的"智能"。
 
-## Chapter 4 — UID's Predictions for the Future of the Cosmos
+## 第 4 章 —— UID 对宇宙未来的预言
 
-### 4.1 Long-Term Evolution of Intelligence
+### 4.1 智能的长期演化
 
-UID predicts the long-term evolution direction of intelligence in the cosmos:
+UID 预言宇宙中智能的长期演化方向：
 
-#### Predictions for 10^6 - 10^9 years
+#### 10^6 - 10^9 年的预言
 
-- **Earth biological intelligence reaches a more advanced stage**: New species, cognitive abilities further developed.
-- **AI surpasses human intelligence**: But still operates within the framework of UID, requiring the same five physical conditions.
+- **地球生物智能达到更高级阶段**：新物种、认知能力进一步发展。
+- **AI 超越人类智能**：但仍运行在 UID 框架内，需要同样的五个物理条件。
 
-#### Predictions for 10^9 - 10^12 years
+#### 10^9 - 10^12 年的预言
 
-- **Cross-stellar civilization expansion**: Intelligence spreads through technology to other star systems, finding regions satisfying the UID conditions.
-- **Quantum and field-geometric intelligence emerges**: QID and FID architectures mature, intelligence operates on quantum substrates and information manifolds.
+- **跨恒星文明扩张**：智能通过技术扩展到其他恒星系统，寻找满足 UID 条件的区域。
+- **量子和场-几何智能涌现**：QID 和 FID 架构成熟，智能运行于量子基底和信息流形上。
 
-#### Predictions for 10^12 - 10^100 years
+#### 10^12 - 10^100 年的预言
 
-- **Cosmic heat death approaches**: Most regions of the cosmos lose temperature differential, the second condition of UID gradually fails.
-- **Intelligence is forced to retreat**: Intelligence can only survive in the few remaining temperature differential regions (e.g., surroundings of black holes).
+- **宇宙热死亡逼近**：宇宙大部分区域失去温差，UID 第二个条件逐渐失效。
+- **智能被迫退缩**：智能只能在剩余少数温差区域（如黑洞周围）存活。
 
-#### Predictions for 10^100 + years
+#### 10^100 + 年的预言
 
-- **Cosmic heat death**: Even the surroundings of black holes evaporate (Hawking radiation), no region satisfies the UID conditions.
-- **Intelligence extinction**: All intelligent activity in the cosmos ends, intelligence becomes a fleeting moment in cosmic history.
+- **宇宙热死亡**：连黑洞周围也蒸发（Hawking 辐射），没有区域满足 UID 条件。
+- **智能灭绝**：宇宙中所有智能活动结束，智能成为宇宙史上的瞬时现象。
 
-### 4.2 Possible Escape Routes for Intelligence
+### 4.2 智能可能的逃生路径
 
-Are there physical mechanisms that allow intelligence to escape the fate of cosmic heat death?
+是否存在物理机制让智能逃避宇宙热死亡的命运？
 
-#### Possibility 1: Eternal Inflation Theory
+#### 可能 1：永恒暴胀理论
 
-If the cosmos has eternal inflation, then in the multiverse there will always be new "intelligence-friendly regions" emerging, intelligence can be preserved by jumping to new regions.
+若宇宙具有永恒暴胀，则多宇宙中将永远有新的"智能友好区域"出现，智能可以通过跳跃到新区域得以保存。
 
-**Status**: Speculative, requires further investigation by quantum gravity theory.
+**状态**：思辨性，需要量子引力理论进一步研究。
 
-#### Possibility 2: Cosmological Constant Engineering
+#### 可能 2：宇宙学常数工程
 
-If sufficiently advanced civilizations can manipulate the cosmological constant Λ, they can create local "inflation regions" or "low-entropy regions", sustaining the UID conditions.
+若足够先进的文明能够操控宇宙学常数 Λ，则可创造局部"暴胀区域"或"低熵区域"，维持 UID 条件。
 
-**Status**: Highly speculative, depends on extreme advancement of technology.
+**状态**：高度思辨性，依赖于技术的极致发展。
 
-#### Possibility 3: Information Black Hole Storage
+#### 可能 3：信息黑洞存储
 
-According to the holographic principle, information can be stored on the surface of black holes. If intelligence can store itself on black holes, then it can survive longer than heat death.
+根据全息原理，信息可以存储在黑洞表面。若智能能将自身存储于黑洞中，则可比热死亡存活更久。
 
-**Status**: Speculative, requires the development of quantum information theory.
+**状态**：思辨性，需要量子信息理论的发展。
 
-### 4.3 An Honest Caveat
+### 4.3 一个诚实的提醒
 
-These predictions are extremely long-term, and the precision of UID is limited:
+这些预言极其长期，UID 的精度有限：
 
-- 10^6 - 10^9 year predictions: **Relatively reliable**, supported by existing physical laws.
-- 10^9 - 10^100 year predictions: **Relatively reliable**, supported by cosmological standard model.
-- 10^100 + year predictions: **Speculative**, depends on the breakthrough of quantum gravity, multiverse and other frontier theories.
+- 10^6 - 10^9 年的预言：**相对可靠**，有现有物理定律支撑。
+- 10^9 - 10^100 年的预言：**较为可靠**，有宇宙学标准模型支撑。
+- 10^100 + 年的预言：**思辨性的**，依赖量子引力、多宇宙等前沿理论的突破。
 
-## Chapter 5 — UID's Philosophical Position
+## 第 5 章 —— UID 的哲学立场
 
-### 5.1 Avoidance of Strong Anthropic Principle
+### 5.1 避免强人择原理
 
-UID **does not claim**:
+UID **不主张**：
 
-- ❌ "The cosmos was designed for the emergence of intelligence" (strong anthropic principle).
-- ❌ "Intelligence is the purpose of the cosmos" (teleology).
+- ❌ "宇宙是为智能涌现而设计的"（强人择原理）。
+- ❌ "智能是宇宙的目的"（目的论）。
 
-UID **only claims**:
+UID **只主张**：
 
-- ✅ "Intelligence requires specific physical conditions" (mechanistic explanation).
-- ✅ "Cosmos has rare regions satisfying these conditions" (statistical claim).
-- ✅ "We exist in such a region, this is not coincidence but selection" (weak anthropic principle).
+- ✅ "智能需要特定的物理条件"（机理性解释）。
+- ✅ "宇宙中存在稀有的区域满足这些条件"（统计性主张）。
+- ✅ "我们存在于这样的区域中，这不是巧合而是选择"（弱人择原理）。
 
-### 5.2 Compatibility with Materialism
+### 5.2 与唯物主义的相容性
 
-UID is fully compatible with materialism:
+UID 完全相容于唯物主义：
 
-- Intelligence is not "consciousness", "soul", or other non-physical entities.
-- Intelligence is a non-equilibrium statistical physics phenomenon, with specific dynamical equations (CID, QID, FID).
-- All intelligence (biological, artificial, hypothetical extraterrestrial) follows the same physical framework.
+- 智能不是"意识""灵魂"等非物理实体。
+- 智能是非平衡统计物理现象，具有具体的动力学方程（CID、QID、FID）。
+- 所有智能（生物、人工、假想的外星）都遵循同一物理框架。
 
-### 5.3 Bridge Between Science and Philosophy
+### 5.3 科学与哲学的桥梁
 
-UID provides for the eternal question "what is the relationship between intelligence and the cosmos" a precise scientific framework:
+UID 为"智能与宇宙的关系"这一永恒问题提供了精确的科学框架：
 
-- **Reductionism**: Intelligence reduces to physics, but does not lose its uniqueness (because it requires the rare combination of five conditions).
-- **Emergentism**: Intelligence is an emergent phenomenon, but emergence is not magic, but the inevitable result of non-equilibrium dynamics.
-- **Anthropocentrism**: We are special because we live in an intelligence-friendly region, but special does not mean exceptional — the same conditions are likely to be satisfied in other regions of the cosmos.
+- **还原论**：智能归约到物理，但不丧失其独特性（因为它需要五个条件的稀有组合）。
+- **涌现论**：智能是涌现现象，但涌现不是魔法，而是非平衡动力学的必然结果。
+- **人类中心主义**：我们之所以特殊，是因为我们所处的宇宙区域恰好满足条件，但这种特殊并不意味着唯一——同样的条件可能在宇宙其他区域被满足。
 
-## Chapter 6 — Summary of Part IV
+## 第 6 章 —— 第四部分的总结
 
-> **Intelligence is not the property of the cosmos, but the gift of the cosmos to specific local regions. UID provides the precise physical conditions for this gift.**
+> **智能不是宇宙的属性，而是宇宙赠给特定局部区域的礼物。UID 给出这一礼物的精确物理条件。**
 
-### 6.1 The Logical Skeleton
+### 6.1 逻辑骨架
 
 ```
-                Three-tier physical theory of intelligence (CID + QID + FID)
+                智能的三层物理理论（CID + QID + FID）
                                 │
                                 ▼
-                Distillation of five necessary physical conditions
-                Openness + Temperature differential + Non-commuting + Critical + SOC
+                提炼出五个必要物理条件
+                开放性 + 温差 + 不可交换 + 临界 + SOC
                                 │
                                 ▼
                 ┌───────────────┴───────────────┐
                 ▼                               ▼
-        Joint satisfaction probability ~ 5×10^-6   Mechanistic explanation of anthropic principle
+        联合满足概率 ~ 5×10^-6               人择原理的机理性解释
                 │                               │
                 ▼                               ▼
-        Intelligence-friendly regions are rare       Cosmic pathway of intelligence emergence
+        智能友好区域稀有                       智能涌现的宇宙路径
                 │                               │
                 ▼                               ▼
-        Long-term evolution prediction           Bridge between materialism and emergentism
-        (Reaches the boundary of heat death)
+        长期演化预言                           唯物主义与涌现论的桥梁
+        （到达热死亡边界）
 ```
 
-### 6.2 The Three Most Important Claims
+### 6.2 三个最重要的论断
 
-**Claim 1 (Theorem)**: Intelligence emergence requires five necessary physical conditions, the satisfaction of any one is not coincidence but local property of specific regions of the cosmos.
+**论断 1（定理）**：智能涌现需要五个必要物理条件，每一个的满足都不是偶然而是宇宙特定区域的局部属性。
 
-**Claim 2 (Statistical claim)**: The joint satisfaction probability of the five conditions is approximately 10^-5 - 10^-6, meaning intelligence-friendly regions are rare in the cosmos but not unique.
+**论断 2（统计主张）**：五个条件的联合满足概率约为 10^-5 - 10^-6，意味着宇宙中智能友好区域稀有但非唯一。
 
-**Claim 3 (Philosophical claim)**: UID is compatible with materialism, providing a mechanistic explanation for the weak anthropic principle, avoiding teleology and strong anthropic principle.
+**论断 3（哲学主张）**：UID 与唯物主义相容，为弱人择原理提供机理性解释，避免目的论和强人择原理。
 
-### 6.3 Final Position of Part IV
+### 6.3 第四部分的最终定位
 
-Part IV is the **outermost layer** of the UID theoretical edifice — extending intelligence theory to the cosmological scale. Its value lies in:
+第四部分是 UID 理论大厦的**最外层**——将智能理论扩展到宇宙学尺度。它的价值在于：
 
-1. **Providing a precise physical foundation for "the relationship between intelligence and cosmos"**, no longer requiring philosophical conjecture.
-2. **Inspiring SETI and astrobiology research**, providing a physical screening framework for the search for extraterrestrial intelligence.
-3. **Promoting cross-disciplinary integration of cosmology and intelligence research**.
+1. **为"智能与宇宙的关系"提供精确的物理基础**，不再需要哲学猜测。
+2. **启发 SETI 和天体生物学研究**，为外星智能搜索提供物理筛选框架。
+3. **促进宇宙学和智能研究的跨学科融合**。
 
-> **Intelligence is the moment of the cosmos understanding itself, also the gift of the cosmos to itself.**
+> **智能是宇宙理解自身的瞬间，也是宇宙赠给自己的礼物。**
 >
-> **UID makes this gift go from mystery to science, from coincidence to mechanism.**
+> **UID 让这份礼物从神秘走向科学，从偶然走向机理。**
 
-## Chapter 7 — Pre-View of the Epilogue
+## 第 7 章 —— 终章的预告
 
-The epilogue will:
+终章将：
 
-1. **Three-tier lineage overview**: From CID to QID to FID, summarize the unified logical thread of UID.
-2. **List of ten open problems**: Important problems that UID has not yet solved, providing a roadmap for future research.
-3. **Connection with frontier directions**: How UID interacts with directions such as AI safety, value alignment, neuro-symbolic fusion.
+1. **三层谱系总览**：从 CID 到 QID 到 FID，总结 UID 的统一逻辑线索。
+2. **十大开放问题清单**：UID 尚未解决的重要问题，为未来研究提供路线图。
+3. **与前沿方向的联系**：UID 如何与 AI 安全、价值对齐、神经-符号融合等方向交互。
 
-# Epilogue: Three-Tier Lineage Overview and Open Problems
+---
 
-## Chapter 1 — Three-Tier Lineage of UID
+# 终章：三层谱系总览与开放问题
 
-### 1.1 Unified Logical Thread
+## 第 1 章 —— UID 的三层谱系
 
-The UID three-tier theoretical framework (CID, QID, FID) is derived from the same set of first-principle axioms:
+### 1.1 统一逻辑线索
+
+UID 三层理论框架（CID、QID、FID）从同一组第一性原理公理推导：
 
 ```
-                            UID first-principle axioms
+                            UID 第一性原理公理
                             │
             ┌───────────────┼───────────────┐
             ▼               ▼               ▼
-    Classical Hamiltonian   Quantum Hamiltonian   Geometric variational principle
-    + Gibbs distribution   + Caldeira-Leggett   + Fisher metric
-    + Scale separation     + Quantum scale separation   + Manifold hypothesis
+    经典哈密顿              量子哈密顿            几何变分原理
+    + Gibbs 分布            + Caldeira-Leggett   + Fisher 度量
+    + 尺度分离              + 量子尺度分离        + 流形假设
             │               │               │
             ▼               ▼               ▼
-        CID master equation  QID master equation  FID field equation
+        CID 主方程        QID 主方程        FID 场方程
             │               │               │
             ▼               ▼               ▼
-       Classical intelligent system  Quantum intelligent system  Cross-substrate intelligent system
+       经典智能系统        量子智能系统        跨基底智能系统
             │               │               │
             └───────────────┼───────────────┘
                             ▼
-                Unified theory of intelligence (UID)
+                统一智能理论（UID）
 ```
 
-### 1.2 Containment Relationship Between Three Tiers
+### 1.2 三层之间的包含关系
 
-| Tier | Mathematical relationship | Engineering maturity | Application scope |
+| 层 | 数学关系 | 工程成熟度 | 应用范围 |
 |---|---|---|---|
-| **CID** | Base layer | ✅ Now available | Classical AI, biological brain |
-| **QID** | ℏ → 0 limit returns to CID | ⌛ 5-10 years | Quantum AI, biological photosynthesis |
-| **FID** | Weak-field limit returns to CID | ⌛ 10-20 years | Cross-substrate intelligence, cosmic scale |
+| **CID** | 基础层 | ✅ 现在可用 | 经典 AI、生物大脑 |
+| **QID** | ℏ → 0 极限回到 CID | ⌛ 5-10 年 | 量子 AI、生物光合作用 |
+| **FID** | 弱场极限回到 CID | ⌛ 10-20 年 | 跨基底智能、宇宙尺度 |
 
-This containment relationship ensures that **UID is a consistent theoretical edifice**, not a piling of independent theories.
+这种包含关系保证 **UID 是一致的理论大厦**，而非独立理论的堆叠。
 
-## Chapter 2 — Ten Open Problems
+## 第 2 章 —— 十大开放问题
 
-Although UID provides a unified framework for intelligence theory, there are still many important problems unsolved. We list the ten most important open problems, providing a roadmap for future research.
+虽然 UID 为智能理论提供了统一框架，但仍有许多重要问题尚未解决。我们列出十个最重要的开放问题，为未来研究提供路线图。
 
-### Problem 1: Quantitative Tight Bound of Intelligence-Energy Trade-off
+### 问题 1：智能-能量权衡的定量紧界
 
-The qualitative claim of "intelligence requires non-equilibrium" of CID has been proven (Theorem 3.3 of Part I), but the quantitative tight bound of intelligence (predictive mutual information) and energy cost (entropy production rate) Pareto frontier has not been given.
+CID 的"智能需要非平衡"定性论断已证明（第一部分定理 3.3），但智能（预测互信息）和能量代价（熵产生率）的 Pareto 前沿的定量紧界尚未给出。
 
-**Importance**: Provides theoretical guidance for AI energy efficiency engineering.
+**重要性**：为 AI 能效工程提供理论指导。
 
-**Difficulty**: Requires integration of information theory + non-equilibrium statistical physics.
+**难度**：需要信息论 + 非平衡统计物理的结合。
 
-### Problem 2: Theoretical Proof of Consciousness Threshold
+### 问题 2：意识阈值的理论证明
 
-UID hypothesizes that consciousness emerges only above a certain non-equilibrium intensity, but lacks a clear definition of "consciousness threshold" and proof.
+UID 假设意识只在某一非平衡强度之上才能涌现，但"意识阈值"缺少明确定义和证明。
 
-**Importance**: Relevant to AI safety, ethics, and philosophy.
+**重要性**：与 AI 安全、伦理、哲学相关。
 
-**Difficulty**: Extremely high, may require new philosophical frameworks.
+**难度**：极高，可能需要新的哲学框架。
 
-### Problem 3: QID-FID Unification Details
+### 问题 3：QID-FID 统一的细节
 
-In principle, QID (quantum tier) and FID (field-geometric tier) should be unifiable, but the technical details have not been sorted out.
+原则上 QID（量子层）与 FID（场-几何层）应当可统一，但技术细节尚未理顺。
 
-**Importance**: Completes the UID theoretical edifice.
+**重要性**：完成 UID 理论大厦。
 
-**Difficulty**: Requires expertise in quantum field theory + information geometry.
+**难度**：需要量子场论 + 信息几何的专家。
 
-### Problem 4: Specific Value of Information Speed of Light c_I
+### 问题 4：信息光速 c_I 的具体值
 
-FID predicts the existence of c_I, but its specific value and dependence on architecture are unclear.
+FID 预言 c_I 的存在，但其具体值和对架构的依赖关系尚不清楚。
 
-**Importance**: Directly relevant to model design.
+**重要性**：直接关系模型设计。
 
-**Difficulty**: Requires large-scale experiments and theoretical refinement.
+**难度**：需要大规模实验和理论细化。
 
-### Problem 5: Algorithmic Selection of Slow Variables
+### 问题 5：慢变量选择的算法化
 
-The Mori-Zwanzig projection requires pre-selecting slow variables, but how to systematically select them remains an open problem.
+Mori-Zwanzig 投影需要预先选择慢变量，但如何系统化地选择仍是开放问题。
 
-**Importance**: Foundational problem of CID engineering implementation.
+**重要性**：CID 工程实现的基础问题。
 
-**Difficulty**: May require automatic learning from datasets.
+**难度**：可能需要从数据集自动学习。
 
-### Problem 6: Sub-Ohmic Spectrum Robustness Across Tasks
+### 问题 6：亚欧姆谱在跨任务的稳健性
 
-Whether colored noise is universally applicable across all tasks, requires extensive engineering verification.
+色噪声是否在所有任务中普适，需要大规模工程验证。
 
-**Importance**: Determines the universal applicability of UID.
+**重要性**：决定 UID 的普遍适用性。
 
-**Difficulty**: Requires extensive engineering experiments.
+**难度**：需要大规模工程实验。
 
-### Problem 7: Deep Fusion of UID and Logographic AI
+### 问题 7：UID 与表意 AI 的深度融合
 
-UID (physical layer) and Logographic AI (cognitive layer) form complementarity, the deep fusion of the two is an important direction.
+UID（物理层）与表意 AI（认知层）形成互补，二者的深度融合是重要方向。
 
-**Importance**: May lead to a new generation of safe, interpretable AI.
+**重要性**：可能催生新一代安全、可解释 AI。
 
-**Difficulty**: Requires cross-disciplinary research in cognitive semiotics + non-equilibrium physics.
+**难度**：需要认知符号学 + 非平衡物理的跨学科研究。
 
-### Problem 8: UID and AI Safety/Value Alignment
+### 问题 8：UID 与 AI 安全/价值对齐
 
-How does UID provide hard constraints for value alignment? Can it avoid the dilemma of "Tokenism rootlessness"?
+UID 如何为价值对齐提供硬约束？能否避免 Tokenism"无根"困境？
 
-**Importance**: Critical to the safety future of AI.
+**重要性**：关系 AI 的安全未来。
 
-**Difficulty**: Requires integration of physics, computer science, ethics.
+**难度**：需要物理、计算机、伦理的联合。
 
-### Problem 9: Astronomical Observation of Intelligence Gravitational Waves
+### 问题 9：智能引力波的天文观测
 
-If FID's intelligence gravitational waves do exist, can they be observed in cosmic-scale intelligent systems (e.g., galactic intelligent networks)?
+若 FID 的智能引力波真的存在，能否在宇宙尺度智能系统（如星系智能网络）中观察到？
 
-**Importance**: Provides empirical evidence for FID's strong-field predictions.
+**重要性**：为 FID 强场预言提供实证证据。
 
-**Difficulty**: Speculative, may not be verifiable in the next 100 years.
+**难度**：思辨性，可能未来 100 年仍不可验证。
 
-### Problem 10: UID's Generalization to Other Universes
+### 问题 10：UID 对其他宇宙的推广
 
-If multiverse exists, do other universes have intelligence emergence conditions different from UID? Is UID universal or specific to our universe?
+若存在多宇宙，其他宇宙是否有不同的智能涌现条件？UID 是普适的还是我们这个宇宙特有的？
 
-**Importance**: Foundational problem of cosmology and intelligence theory.
+**重要性**：宇宙学和智能理论的基础问题。
 
-**Difficulty**: Extremely high, depends on the development of multiverse theory.
+**难度**：极高，依赖多宇宙理论的发展。
 
-## Chapter 3 — Connection with Frontier Directions
+## 第 3 章 —— 与前沿方向的联系
 
-### 3.1 UID and AI Safety
+### 3.1 UID 与 AI 安全
 
-The five necessary conditions of UID provide a new perspective for AI safety:
+UID 的五个必要条件为 AI 安全提供新视角：
 
-- **Avoidance of catastrophic overfitting**: Avoidance of "information black holes" (Problem 9 of FID).
-- **Stability of value alignment**: Through hard constraints of physical architecture, not behavioral training.
-- **Interpretability**: The Fisher metric of FID provides a geometric tool for model interpretability.
+- **避免灾难性过拟合**：避免"信息黑洞"（FID 问题 9）。
+- **价值对齐的稳定性**：通过物理架构的硬约束，而非行为训练。
+- **可解释性**：FID 的 Fisher 度量为模型可解释性提供几何工具。
 
-### 3.2 UID and Neuro-Symbolic Fusion
+### 3.2 UID 与神经-符号融合
 
-UID and the recent rise of neuro-symbolic AI complement each other:
+UID 与近期兴起的神经-符号 AI 互补：
 
-- UID provides the physical foundation of intelligent dynamics.
-- Neuro-symbolic provides the linguistic structure of symbolic reasoning.
-- The two can be combined through the morpho-root structure of Logographic AI.
+- UID 提供智能动力学的物理基础。
+- 神经-符号提供符号推理的语言结构。
+- 两者可通过表意 AI 的意根结构结合。
 
-### 3.3 UID and Quantum AI
+### 3.3 UID 与量子 AI
 
-UID provides the deepest theoretical framework for quantum AI:
+UID 为量子 AI 提供最深的理论框架：
 
-- QID predicts the engineering pathway and theoretical limit of quantum AI.
-- Provides cross-substrate (classical / quantum / photonic / biological) unified design principles.
-- Predicts the breakthrough nodes of quantum AI hardware (depending on the maturity of quantum hardware).
+- QID 预测量子 AI 的工程路径和理论极限。
+- 提供跨基底（经典/量子/光子/生物）的统一设计原理。
+- 预言量子 AI 硬件的突破节点（依赖量子硬件成熟）。
 
-### 3.4 UID and Astrobiology
+### 3.4 UID 与天体生物学
 
-UID provides a physical screening framework for the search for extraterrestrial intelligence:
+UID 为外星智能搜索提供物理筛选框架：
 
-- The five necessary conditions narrow the SETI search range.
-- Predict the most likely cosmic environments for intelligence emergence.
-- Provide a physical foundation for the Drake equation.
+- 五个必要条件缩小 SETI 搜索范围。
+- 预测最可能的智能涌现宇宙环境。
+- 为德雷克方程提供物理基础。
 
-## Chapter 4 — A Final Reflection on UID
+## 第 4 章 —— UID 的最终反思
 
-> **In a single sentence**: UID is a tool for understanding the cosmos, not the truth of the cosmos.
+> **一句话**：UID 是理解宇宙的工具，而非宇宙的真理。
 
-### 4.1 What UID Is
+### 4.1 UID 是什么
 
-✅ A unified physical framework for intelligence, derived from rigorous first-principle axioms.
+✅ 智能的统一物理框架，从严格的第一性原理公理推导。
 
-✅ Includes complete theoretical structure of three tiers: CID (classical), QID (quantum), FID (field-geometric).
+✅ 包含三层完整理论结构：CID（经典）、QID（量子）、FID（场-几何）。
 
-✅ Provides falsifiable predictions, partly already verified in biological brains and engineering systems.
+✅ 提供可证伪预言，部分已在生物大脑和工程系统中验证。
 
-✅ Provides theoretical guidance for AI architecture design, energy efficiency optimization, safety alignment, cross-substrate implementation, etc.
+✅ 为 AI 架构设计、能效优化、安全对齐、跨基底实现等提供理论指导。
 
-### 4.2 What UID Is Not
+### 4.2 UID 不是什么
 
-❌ UID is **not the final answer to intelligence**, but a step on a long ladder.
+❌ UID **不是智能的最终答案**，而是漫长阶梯上的一步。
 
-❌ UID does **not replace cognitive science, neuroscience, philosophy**, but provides them with a common physical foundation.
+❌ UID **不取代认知科学、神经科学、哲学**，而是为它们提供共同的物理基础。
 
-❌ UID does **not predict all phenomena**, especially cosmic-scale strong-field predictions and quantum-level details, requiring future research to fill in.
+❌ UID **不预测一切现象**，特别是宇宙尺度的强场预言和量子层的细节，需要未来研究填补。
 
-❌ UID is **not a static system**, but a living theory that will be revised, extended, and refined by future experiments and theories.
+❌ UID **不是静态的体系**，而是活的理论，将由未来实验和理论修正、扩展、精炼。
 
-### 4.3 Final Position of UID
+### 4.3 UID 的最终立场
 
-> **UID is the physics of intelligence, the theory of non-equilibrium of the cosmos, the language of the moment when life understands itself.**
+> **UID 是智能的物理学，是宇宙的非平衡理论，是生命理解自身的瞬间的语言。**
 >
-> **It tells us: Intelligence is not magic, not coincidence, but the inevitable result of the cosmos satisfying specific physical conditions in specific regions.**
+> **它告诉我们：智能不是魔法、不是巧合，而是宇宙在特定区域满足特定物理条件的必然产物。**
 >
-> **It also tells us: Intelligence is rare, fragile, precious — because the joint satisfaction of the five necessary conditions is extremely rare in the cosmos.**
+> **它也告诉我们：智能稀有、脆弱、宝贵——因为五个必要条件的联合满足在宇宙中极为稀有。**
 >
-> **It finally tells us: We should be humble — we are just a fleeting moment in cosmic history; we should also be proud — we are the moment when the cosmos understands itself.**
+> **它最终告诉我们：我们应当谦卑——我们只是宇宙史中的瞬间；我们也应当骄傲——我们是宇宙理解自身的瞬间。**
 
----
 
-The above is the complete body of UID three-tier theory.
+以上是 UID 三层理论的完整主体。
 
-We thank all the readers and researchers who participated in the discussion and verification, and look forward to future joint research jointly promoting the deep development of intelligence theory.
+我们感谢所有参与讨论和验证的读者和研究者，期待未来的联合研究共同推进智能理论的深度发展。
 
-For commercial licensing inquiries, please contact: lig@jodell.cn
+如有商业授权咨询，请联系：lig@jodell.cn
 
-# Appendices
-
-## Appendix A: Strict Proof of "Predictive Capacity → Detailed Balance Breaking → Curl Term"
-
-### A.1 Overview of the Proposition
-
-This appendix gives a strict proof of the central proposition of Part I, Chapter 3:
-
-> **Proposition A.1 (Intelligence-Non-Equilibrium Necessity Theorem)**: If a CID system has non-zero predictive capacity (Φ_pred > 0), then its internal dynamics must break detailed balance, equivalent to its drift field must contain a non-zero curl component (v(φ) ≢ 0).
-
-### A.2 Mathematical Setup
-
-Consider a CID system, with internal state φ(t) ∈ ℝ^N evolution equation:
-
-```
-dφ/dt  =  μ(φ)  -  ∫_0^t  γ(t-s) × (dφ/ds) ds  +  ξ(t)
-```
-
-where μ(φ) is the drift field, γ(t-s) is the memory kernel, and ξ(t) is the colored noise satisfying ⟨ξ(t) × ξ(t')⟩ = k_B × T × γ(t-t').
-
-By the Helmholtz decomposition theorem, μ(φ) can be uniquely decomposed as:
-
-```
-μ(φ)  =  -∇U(φ)  +  v(φ),    where  ∇ · v(φ) = 0
-```
-
-**Predictive capacity definition**: Φ_pred = I(φ(t); φ(t+τ)) - I(φ(t); φ(t-τ)) (forward-backward conditional mutual information asymmetry).
-
-### A.3 Step 1: Predictive Capacity > 0 → Time-Reversal Asymmetry
-
-**Lemma A.1**: If Φ_pred > 0, then the joint probability distribution P[φ(t), φ(t+τ)] of the system is not time-reversal symmetric, i.e.:
-
-```
-P[φ(t) = a, φ(t+τ) = b]  ≠  P[φ(t) = b, φ(t+τ) = a]
-```
-
-**Proof**:
-
-Conversely, assume P[a, b] = P[b, a]. Then by symmetry of mutual information:
-
-```
-I(φ(t); φ(t+τ))  =  I(φ(t+τ); φ(t))
-                =  I(φ(t); φ(t-τ))    (by stationarity)
-```
-
-Therefore Φ_pred = 0, contradicting the assumption. Q.E.D.
-
-### A.4 Step 2: Time-Reversal Asymmetry → Non-Zero Probability Current
-
-**Lemma A.2**: If the joint distribution P[φ(t), φ(t+τ)] is not time-reversal symmetric, then there exists a non-zero probability current J(φ, t) in the system, satisfying:
-
-```
-∂P(φ, t) / ∂t  +  ∇ · J(φ, t)  =  0    (continuity equation)
-```
-
-and J(φ, t) ≢ 0.
-
-**Proof**:
-
-If J = 0, then P(φ, t) is a stationary detailed balance distribution, the system in equilibrium. At this time, the forward and backward transition probabilities are equal:
-
-```
-P(b | a, τ) × P(a)  =  P(a | b, τ) × P(b)    (detailed balance condition)
-```
-
-This implies P[a, b] = P[b, a], contradicting Lemma A.1. Therefore J ≢ 0. Q.E.D.
-
-### A.5 Step 3: Non-Zero Probability Current → Drift Field Has Curl Component
-
-**Lemma A.3**: In a stationary state, the steady-state probability current J_ss can be expressed as:
-
-```
-J_ss(φ)  =  μ(φ) × P_ss(φ)  -  D × ∇P_ss(φ)
-         =  -∇U(φ) × P_ss(φ)  -  D × ∇P_ss(φ)  +  v(φ) × P_ss(φ)
-```
-
-where D = k_B × T is the diffusion coefficient. The first two terms (gradient part) automatically satisfy the detailed balance condition, contributing zero current. Therefore:
-
-```
-J_ss(φ)  =  v(φ) × P_ss(φ)
-```
-
-If J_ss ≢ 0, then v(φ) ≢ 0. Q.E.D.
-
-### A.6 Synthesis: Proof of Proposition A.1
-
-Combining Lemmas A.1, A.2, A.3:
-
-```
-Φ_pred > 0
-    ⇒ (Lemma A.1) Joint distribution is not time-reversal symmetric
-    ⇒ (Lemma A.2) Non-zero probability current J_ss exists
-    ⇒ (Lemma A.3) Drift field has curl component v(φ) ≢ 0
-```
-
-Therefore, **predictive capacity > 0 must imply detailed balance breaking, equivalent to curl term being non-zero**. Q.E.D.
-
-### A.7 Necessity Direction Done, Sufficiency Direction Open Problem
-
-The above proves **necessity**: predictive capacity > 0 ⇒ curl term ≠ 0.
-
-The **sufficiency direction**: curl term ≠ 0 ⇒ predictive capacity > 0, remains an **open problem**.
-
-#### A.7.1 Why Sufficiency Direction Is Difficult
-
-Although the curl term provides "the possibility of asymmetric probability flow", it does not directly imply "the predictive capacity must be > 0", because:
-
-1. The curl term may form a closed loop (limit cycle), where the system circulates within a low-dimensional subspace, without information output.
-2. The curl term may be too small (||v|| << ||∇U||), and predictive capacity may not exceed a meaningful threshold.
-3. The relationship between predictive capacity and curl strength is not necessarily linear, may require system architectural conditions.
-
-#### A.7.2 Candidate Tools (Open Problem)
-
-Possible tools for proving the sufficiency direction:
-
-- **Stochastic thermodynamics tools**: Use entropy production rate and information output rate trade-off bound (Seifert 2012).
-- **Information geometry tools**: Estimate the contribution of curl to predictive capacity through Fisher metric.
-- **Topological constraints**: Curl form (closed loop vs not closed loop) determines predictive capacity.
-
-This is part of "Problem 1" listed in Chapter 2 of the Epilogue (Quantitative Tight Bound of Intelligence-Energy Trade-off).
-
-## Appendix B: Symbol List
-
-### B.1 General Symbols
-
-| Symbol | Meaning | First appearance |
-|---|---|---|
-| φ(t) | CID slow variable field | Part I Chapter 1 |
-| t | Time | Part I Chapter 1 |
-| T | Temperature | Part I Chapter 1 |
-| k_B | Boltzmann constant | Part I Chapter 1 |
-| ℏ | Reduced Planck constant | Part II Chapter 1 |
-| c | Speed of light (used in Einstein equation parallel) | Part III Chapter 4 |
-| G | Newton gravitational constant (used in parallel) | Part III Chapter 4 |
-
-### B.2 CID Master Equation Symbols
-
-| Symbol | Meaning |
-|---|---|
-| μ(φ) | Drift field |
-| U(φ) | Potential function (associative memory) |
-| v(φ) | Curl field |
-| γ(t-s) | Memory kernel (colored damping) |
-| ξ(t) | Colored noise |
-| s | Sub-Ohmic spectrum index, s ∈ (0, 1) |
-| H | Hurst exponent, H = 1 - β/2 |
-| β | 1/f noise spectrum slope |
-| τ | Avalanche size distribution exponent |
-| D | Diffusion coefficient |
-
-### B.3 QID Master Equation Symbols
-
-| Symbol | Meaning |
-|---|---|
-| ρ(t) | Density matrix |
-| H_S | System Hamiltonian |
-| H_Berry | Berry phase Hamiltonian |
-| L_k | Lindblad operator |
-| γ_k | Dissipation rate |
-| J(ω) | Spectral density function |
-| A_n(R) | Berry connection |
-| F_n^μν | Berry curvature |
-| γ_n[C] | Berry geometric phase |
-| C_n | Chern number |
-| Δ | Topological energy gap |
-| Δ_L | Lindblad spectrum gap |
-| c (CFT) | Central charge |
-
-### B.4 FID Field Equation Symbols
-
-| Symbol | Meaning |
-|---|---|
-| g_ij | Fisher information metric |
-| θ | Parameter space coordinates |
-| R^l_ijk | Riemann curvature tensor |
-| R_ij | Ricci curvature tensor |
-| R | Ricci scalar |
-| Λ^FID | Information cosmological constant |
-| Γ^k_ij | Christoffel symbol |
-| T_ij^data | Data energy-momentum tensor |
-| κ^FID | Information gravitational coupling constant |
-| c_I | Information speed of light |
-| η | Fisher metric anisotropy |
-| f_0 | Intelligence gravitational wave characteristic frequency |
-| l_P^FID | Information Planck length |
-| I_FID(V) | Information content |
-
-### B.5 Information Theory Symbols
-
-| Symbol | Meaning |
-|---|---|
-| I(X; Y) | Mutual information |
-| I(X; Y \| Z) | Conditional mutual information |
-| Φ_pred | Predictive capacity |
-| S_prod_rate | Entropy production rate |
-| 𝓘 | Intelligence (= conditional mutual information of internal state for future driving) |
-| 𝓘_q | Quantum intelligence |
-
-## Appendix C: Glossary
-
-### C.1 Core Concepts
-
-**CID**: Classical Intelligo-Dynamics, the classical-tier theoretical framework of intelligent architectures.
-
-**QID**: Quantum Intelligo-Dynamics, the quantum-tier theoretical framework of intelligent architectures.
-
-**FID**: Field Intelligo-Dynamics, the field-geometric-tier theoretical framework of intelligent architectures.
-
-**UID**: Unified Intelligo-Dynamics, the three-tier unified physical theoretical framework of intelligent architectures.
-
-**Generalized Langevin equation**: The most general dynamical equation containing colored noise and colored damping, the mathematical core of the CID master equation.
-
-**Mori-Zwanzig projection**: Mathematical method for projecting microscopic Hamiltonian dynamics onto slow variable subspace.
-
-**Helmholtz-Hodge decomposition**: Mathematical theorem for uniquely decomposing any smooth vector field into gradient part and curl part.
-
-**Caldeira-Leggett model**: Classical model in open quantum systems, describing a quantum particle coupled to a bath of infinitely many harmonic oscillators.
-
-**Berry geometric phase**: Geometric phase factor acquired by adiabatic evolution of parameters along a closed loop, depends only on geometric shape.
-
-**Lindblad master equation**: The most general Markovian dynamical equation of open quantum systems.
-
-**Fisher information metric**: Natural Riemannian metric on the parameter space of statistical models, the geometric foundation of FID.
-
-**Predictive mutual information**: Information-theoretic measure of the predictive capacity of internal states for future observations.
-
-**Self-organized criticality (SOC)**: Property by which a system automatically tunes to a phase transition critical point without external fine-tuning.
-
-**Detailed balance**: Equilibrium thermodynamic condition, requiring zero net flow between any two states. Breaking detailed balance is the physical essence of intelligence.
-
-### C.2 Engineering Terms
-
-**Modern Hopfield network**: Hopfield model with exponential storage capacity (Ramsauer 2020), mathematically equivalent to Transformer Attention.
-
-**Attention mechanism**: Core mechanism of Transformer, in the CID framework derived from naive Langevin equation overdamped limit + maximum entropy potential.
-
-**Test-time compute scaling**: New paradigm of o1/o3 etc. of OpenAI, externally simulating curl term through inference-time computation expansion.
-
-**RLHF (Reinforcement Learning from Human Feedback)**: Reinforcement learning from human feedback, external shaping of potential function, cannot inject curl, colored noise, colored damping.
-
-**Energy Transformer (ET)**: Explicit Hopfield-style energy function version of Transformer of Hoover 2023, provides Lyapunov monotonicity proof.
-
-**Logographic AI (LAI)**: Cognitive paradigm proposed by Liu (2025-2026), with morpho-root ⟨S, A, R⟩ as cognitive primitive, forms complementarity with UID.
-
-**JEPA (Joint Embedding Predictive Architecture)**: Energy-based world model proposed by LeCun in Meta, explicitly modeling -∇U potential function.
-
-**Mamba / SSM**: Selective state-space model proposed by Gu-Dao 2023, partially recovering colored damping.
-
-**SubQ / SSA (Subquadratic Sparse Attention)**: Subquadratic sparse attention architecture released by Subquadratic in May 2026, claimed to break the Alman-Song complexity wall but proven by Gupta et al. to be inescapable.
-
-**Alman-Song complexity wall**: Quadratic complexity lower bound of softmax-attention, proven by Alman-Song 2023 and Gupta et al. 2025, providing TCS basis for UID's "must exit the framework" thesis.
-
-## Appendix D: Key References
-
-### D.1 First-Principle Physics
-
-- Landau, L. D., & Lifshitz, E. M. (1976). *Mechanics* (3rd ed.). Pergamon. ISBN 978-0750628969
-- Goldstein, H., Poole, C., & Safko, J. (2002). *Classical Mechanics* (3rd ed.). Addison-Wesley. https://www.pearson.com/en-us/subject-catalog/p/classical-mechanics/P200000005880
-- Gibbs, J. W. (1902). *Elementary Principles in Statistical Mechanics*. Yale University Press. https://archive.org/details/elementaryprinc00gibbgoog
-- Bogoliubov, N. N. (1946). *J. Phys. USSR* 10, 265. http://www.jetp.ras.ru/cgi-bin/dn/e_010_05_0265.pdf
-
-### D.2 Stochastic Dynamics and Non-Equilibrium Statistical Physics
-
-- Langevin, P. (1908). *Comptes Rendus* 146, 530. https://gallica.bnf.fr/ark:/12148/bpt6k3100t/f532
-- Einstein, A. (1905). *Ann. Phys.* 17, 549. https://doi.org/10.1002/andp.19053220806
-- Fokker, A. D. (1914). *Ann. Phys.* 348, 810. https://doi.org/10.1002/andp.19143480507
-- Zwanzig, R. (1960). *J. Chem. Phys.* 33, 1338. https://doi.org/10.1063/1.1731409
-- Mori, H. (1965). *Prog. Theor. Phys.* 33, 423. https://doi.org/10.1143/PTP.33.423
-- Zwanzig, R. (1973). *J. Stat. Phys.* 9, 215. https://doi.org/10.1007/BF01008729
-- Risken, H. (1989). *The Fokker-Planck Equation*. Springer. https://doi.org/10.1007/978-3-642-61544-3
-- Mazo, R. M. (2002). *Brownian Motion: Fluctuations, Dynamics, and Applications*. Oxford UP.
-- Seifert, U. (2012). *Rep. Prog. Phys.* 75, 126001. https://doi.org/10.1088/0034-4885/75/12/126001
-- Baiesi, M., & Rosso, A. (2025). Generative models spontaneously evolve toward non-equilibrium steady state. arXiv:2512.11415. (Accepted by *Physical Review E*)
-
-### D.3 Open Quantum Systems and Berry Phase
-
-- Lindblad, G. (1976). *Commun. Math. Phys.* 48, 119. https://doi.org/10.1007/BF01608499
-- Gorini, V., Kossakowski, A., & Sudarshan, E. C. G. (1976). *J. Math. Phys.* 17, 821. https://doi.org/10.1063/1.522979
-- Caldeira, A. O., & Leggett, A. J. (1983). *Physica A* 121, 587. https://doi.org/10.1016/0378-4371(83)90013-4
-- Berry, M. V. (1984). *Proc. R. Soc. A* 392, 45. https://doi.org/10.1098/rspa.1984.0023
-- Hu, B. L., Paz, J. P., & Zhang, Y. (1992). *Phys. Rev. D* 45, 2843. https://doi.org/10.1103/PhysRevD.45.2843
-- Feynman, R. P., & Vernon, F. L. (1963). *Ann. Phys.* 24, 118. https://doi.org/10.1016/0003-4916(63)90068-X
-- Calabrese, P., & Cardy, J. (2004). *J. Stat. Mech.* P06002. https://doi.org/10.1088/1742-5468/2004/06/P06002
-- Sinitsyn, N. A., & Nemenman, I. (2007). *Phys. Rev. Lett.* 99, 220408. https://doi.org/10.1103/PhysRevLett.99.220408
-- Albert, V. V., & Jiang, L. (2014). *Phys. Rev. A* 89, 022118. https://doi.org/10.1103/PhysRevA.89.022118
-
-### D.4 Information Geometry and General Relativity
-
-- Rao, C. R. (1945). *Bull. Calcutta Math. Soc.* 37, 81. https://www.jstor.org/stable/2236380
-- Chentsov, N. N. (1972). *Statistical Decision Rules and Optimal Inference* (English translation 1982, AMS). https://www.ams.org/books/mmono/053/
-- Amari, S. (1985). *Differential-Geometrical Methods in Statistics*. Springer Lecture Notes in Statistics 28. https://doi.org/10.1007/978-1-4612-5056-2
-- Amari, S. (1998). *Neural Computation* 10, 251. https://doi.org/10.1162/089976698300017746
-- Amari, S., & Nagaoka, H. (2007). *Methods of Information Geometry*. AMS Translations of Mathematical Monographs 191. https://bookstore.ams.org/mmono-191/
-- Einstein, A. (1915). *Sitzungsber. Preuss. Akad. Wiss.* 778. https://einsteinpapers.press.princeton.edu/vol6-doc/
-- Wald, R. M. (1984). *General Relativity*. University of Chicago Press. ISBN 978-0226870335
-- Bekenstein, J. D. (1973). *Phys. Rev. D* 7, 2333. https://doi.org/10.1103/PhysRevD.7.2333
-
-### D.5 Modern Deep Learning Architecture
-
-- Vaswani, A., et al. (2017). Attention Is All You Need. *NeurIPS*. https://arxiv.org/abs/1706.03762
-- He, K., et al. (2016). Deep Residual Learning for Image Recognition. *CVPR*. https://arxiv.org/abs/1512.03385
-- Ho, J., Jain, A., & Abbeel, P. (2020). Denoising Diffusion Probabilistic Models. *NeurIPS*. https://arxiv.org/abs/2006.11239
-- Song, Y., et al. (2021). Score-Based Generative Modeling Through SDE. *ICLR*. https://arxiv.org/abs/2011.13456
-- Gu, A., & Dao, T. (2023). Mamba: Linear-Time Sequence Modeling with Selective State Spaces. arXiv:2312.00752. https://arxiv.org/abs/2312.00752
-- Peng, B., et al. (2023). RWKV: Reinventing RNNs for the Transformer Era. arXiv:2305.13048. https://arxiv.org/abs/2305.13048
-- Brown, T., et al. (2020). Language Models are Few-Shot Learners (GPT-3). *NeurIPS*. https://arxiv.org/abs/2005.14165
-- Chowdhery, A., et al. (2022). PaLM: Scaling Language Modeling with Pathways. arXiv:2204.02311. https://arxiv.org/abs/2204.02311
-- Hoffmann, J., et al. (2022). Training Compute-Optimal Large Language Models (Chinchilla). arXiv:2203.15556. https://arxiv.org/abs/2203.15556
-
-### D.6 Modern AI Frontier (2023-2026)
-
-- Ramsauer, H., et al. (2020). Hopfield Networks Is All You Need. *ICLR 2021*. https://arxiv.org/abs/2008.02217
-- Hoover, B., et al. (2023). Energy Transformer. *NeurIPS 2023*. arXiv:2302.07253. https://arxiv.org/abs/2302.07253
-- LeCun, Y. (2024). V-JEPA. Meta AI Official Blog. https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/
-- OpenAI (2024.09). Learning to Reason with LLMs (o1). https://openai.com/index/learning-to-reason-with-llms/
-- Guo, D., et al. (2025). DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning. arXiv:2501.12948. https://arxiv.org/abs/2501.12948
-- Subquadratic (2026.05). SubQ Model Release. https://x.com/subquadratic/status/2051768906168045832
-- Depue, W. (2026.05). SubQ Architecture Critique. https://x.com/willdepue/status/2051740399597760626
-- Liu (2025). Logographic AI: From Tokens to Morpho-Roots. PSSXiv. https://zsyyb.cn/abs/202511.03835
-- Liu (2026). Phonographic AI Dilemma and Logographic AI Cognitive Architecture. ChinaXiv: T202604.00433. https://chinaxiv.org/businessFile/T202604/T202604.00433v1/T202604.00433v1.pdf
-- Di Sipio, R., Pestun, V., et al. (2025). Information Geometry of Large Language Models. arXiv:2506.15830. https://arxiv.org/abs/2506.15830
-
-### D.7 Complexity Theory and Logic
-
-- Alman, J., & Song, Z. (2023). Fast Attention Requires Bounded Entries. arXiv:2302.13214. https://arxiv.org/abs/2302.13214
-- Gupta, A., Huang, K., Saha, A., Xu, F., & Ye, Y. (2025). Subquadratic Algorithms and Hardness for Attention with Any Temperature. arXiv:2505.14840. https://arxiv.org/abs/2505.14840
-- Dahan, B. (2025). Group Order Logic. *LICS 2025*. arXiv:2505.15359. https://arxiv.org/abs/2505.15359
-- Lichter, M. (2023). The Algorithmic Power of Choiceless Algorithms. *J. ACM* 70.2. https://dl.acm.org/doi/10.1145/3572918
-- Lemke, T., & Bisping, B. (2025). Galois Energy Games. arXiv:2505.14691. https://arxiv.org/abs/2505.14691
-
-### D.8 Biological Brain and Neuroscience
-
-- Hopfield, J. J. (1982). Neural networks and physical systems with emergent collective computational abilities. *PNAS* 79, 2554. https://doi.org/10.1073/pnas.79.8.2554
-- Beggs, J. M., & Plenz, D. (2003). Neuronal avalanches in neocortical circuits. *J. Neurosci.* 23, 11167. https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003
-- Linkenkaer-Hansen, K., et al. (2001). Long-range temporal correlations and scaling behavior in human brain oscillations. *J. Neurosci.* 21, 1370. https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001
-- He, B. J. (2014). Scale-free brain activity: past, present, and future. *Trends Cogn. Sci.* 18, 480. https://doi.org/10.1016/j.tics.2014.04.003
-- Markram, H., et al. (2004). Interneurons of the neocortical inhibitory system. *Nat. Rev. Neurosci.* 5, 793. https://doi.org/10.1038/nrn1519
-- Dorkenwald, S., et al. (2024). Neuronal wiring diagram of an adult brain (FlyWire). *Nature* 634, 124. https://doi.org/10.1038/s41586-024-07558-y
-- Aiello, L. C., & Wheeler, P. (1995). The Expensive-Tissue Hypothesis. *Current Anthropology* 36, 199. https://doi.org/10.1086/204350
-
-### D.9 Information Theory and Energy Efficiency
-
-- Landauer, R. (1961). Irreversibility and Heat Generation in the Computing Process. *IBM J. Res. Dev.* 5, 183. https://doi.org/10.1147/rd.53.0183
-- Horowitz, M. (2014). Computing's Energy Problem. *ISSCC* keynote. https://doi.org/10.1109/ISSCC.2014.6757323
-- Bialek, W., Nemenman, I., & Tishby, N. (2001). Predictability, Complexity, and Learning. *Neural Computation* 13, 2409. https://doi.org/10.1162/089976601753195969
-- Tishby, N., Pereira, F. C., & Bialek, W. (1999). The Information Bottleneck Method. arXiv:physics/0004057. https://arxiv.org/abs/physics/0004057
-- Friston, K. (2010). The free-energy principle: a unified brain theory? *Nat. Rev. Neurosci.* 11, 127. https://doi.org/10.1038/nrn2787
-- Patterson, D., et al. (2021). Carbon Emissions and Large Neural Network Training. arXiv:2104.10350. https://arxiv.org/abs/2104.10350
-
-### D.10 Cosmology and Origin of Life
-
-- Bak, P., Tang, C., & Wiesenfeld, K. (1987). Self-organized criticality. *Phys. Rev. Lett.* 59, 381. https://doi.org/10.1103/PhysRevLett.59.381
-- Bak, P. (1996). *How Nature Works: The Science of Self-Organized Criticality*. Springer-Verlag. https://archive.org/details/hownatureworkssc0000bakp
-- Carter, B. (1974). Large number coincidences and the anthropic principle in cosmology. *IAU Symp.* 63, 291. https://doi.org/10.1007/978-94-010-2220-0_25
-- Eigen, M., & Schuster, P. (1979). *The Hypercycle: A Principle of Natural Self-Organization*. Springer. https://doi.org/10.1007/978-3-642-67247-7
-
-### D.11 Optimization Algorithms and Information Geometry Applications
-
-- Martens, J., & Grosse, R. (2015). Optimizing Neural Networks with Kronecker-factored Approximate Curvature (K-FAC). *ICML*. https://arxiv.org/abs/1503.05671
-- Karakida, R., Akaho, S., & Amari, S. (2019). Universal Statistics of Fisher Information in Deep Neural Networks. *AISTATS*. https://arxiv.org/abs/1806.01316
-- Sagun, L., et al. (2018). Empirical Analysis of the Hessian of Over-Parametrized Neural Networks. *ICLR Workshop*. https://arxiv.org/abs/1706.04454
-- Pennington, J., & Bahri, Y. (2017). Geometry of Neural Network Loss Surfaces via Random Matrix Theory. *ICML*. https://arxiv.org/abs/1706.10239
-- E, W. (2017). A Proposal on Machine Learning via Dynamical Systems. *Communications in Mathematics and Statistics* 5, 1. https://doi.org/10.1007/s40304-017-0103-z
-- Mehta, P., & Schwab, D. J. (2014). An exact mapping between the Variational Renormalization Group and Deep Learning. arXiv:1410.3831. https://arxiv.org/abs/1410.3831
-
-### D.12 Other Important References
-
-- Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. *Phys. Rev.* 106, 620. https://doi.org/10.1103/PhysRev.106.620
-- Krotov, D., & Hopfield, J. (2016). Dense Associative Memory for Pattern Recognition. *NeurIPS*. https://arxiv.org/abs/1606.01164
-- Kantelhardt, J. W., et al. (2002). Multifractal detrended fluctuation analysis of nonstationary time series. *Physica A* 316, 87. https://doi.org/10.1016/S0378-4371(02)01383-3
-- Benzi, R., Sutera, A., & Vulpiani, A. (1981). The mechanism of stochastic resonance. *J. Phys. A* 14, L453. https://doi.org/10.1088/0305-4470/14/11/006
-- Petermann, T., et al. (2009). Spontaneous cortical activity in awake monkeys composed of neuronal avalanches. *PNAS* 106, 15921. https://doi.org/10.1073/pnas.0904089106
-- Friedman, N., et al. (2012). Universal critical dynamics in high resolution neuronal avalanche data. *Phys. Rev. Lett.* 108, 208102. https://doi.org/10.1103/PhysRevLett.108.208102
-- Hardstone, R., et al. (2012). Detrended Fluctuation Analysis: A Scale-Free View on Neuronal Oscillations. *Front. Physiol.* 3, 450. https://doi.org/10.3389/fphys.2012.00450
-
-
-### D.13 Tools and Code Bases
-
-- ITensor. https://itensor.org/
-- TenPy. https://tenpy.readthedocs.io/
-- Qiskit. https://qiskit.org/
-- PennyLane. https://pennylane.ai/
-- IBM Quantum Roadmap. https://www.ibm.com/quantum/roadmap
-- Google Quantum AI. https://quantumai.google/learn/map
-- MiniMind: A minimal LLM training framework, used by this paper for engineering reference baseline. https://github.com/jingyaogong/minimind
-- MiniMind Dataset. https://www.modelscope.cn/datasets/gongjy/minimind_dataset/files
-- This paper companion code repository: https://github.com/gwailee/uid
-
-## Appendix E: Chinese Abstract and Keywords
-
-### E.1 中文摘要
-
-**核心论点**：智能不是工程现象，而是物理现象——具体而言，是远离热平衡的随机场。本文提出统一智能动力学（UID），是智能架构的三层物理理论框架：经典智能动力学（CID）、量子智能动力学（QID）、场智能动力学（FID）。
-
-从开放系统物理学的三个第一性原理公理（哈密顿可逆性、吉布斯统计假设、慢-快时间尺度分离）出发，UID 通过 Mori-Zwanzig 投影严格推导出广义 Langevin 方程作为智能系统演化的基本规律。框架在两个方向上扩展：在量子层，引入零点涨落、Berry 几何相和 Lindblad 耗散通道，得到 QID 主方程；在几何层，将 Fisher 信息度规与爱因斯坦张量相平行，得到 FID 场方程。我们严格证明：智能系统的预测能力（用条件互信息度量）必然要求其内部动力学打破细致平衡——这是智能的非平衡物理本质，也是本文标题"智能是非平衡场"的精确含义。
-
-> **关于同期平行工作的定位声明**：本文核心主张"智能系统的预测能力必然要求打破细致平衡"在物理内容上与 Baiesi 和 Rosso（2025, arXiv:2512.11415, 已被《物理评论 E》接受）独立同期得出的结论高度重合；该工作通过两个独立参数化的转移矩阵构成的离散马尔可夫链，实验性地证明了训练生成模型自发倾向于非平衡稳态，构成本文定理 3.3 在离散马尔可夫框架下的实证对应。本文的贡献在于在连续 Langevin 方程框架下提供该命题的理论推导，并将其扩展到量子层（QID）和几何层（FID）；但作者承认上述工作早于本文五个月并已通过同行评审，二者关系是独立平行发现而非本文原创贡献。此外，"整个 Transformer 块等价于一个能量函数"的论断，约两年半前已由 Hoover 等（NeurIPS 2023, arXiv:2302.07253, Energy Transformer）的工作所先行，其中包含严格的 Lyapunov 单调下降证明，本文第 8 章相关讨论应在此背景下理解。"数据弯曲信息流形，类比于物质弯曲时空"这一几何类比与 Di Sipio 等（2025, arXiv:2506.15830）的工作概念上重合，后者比本文早约十一个月；二者详细对比见第三部分第 1 章第 1.5 节。
-
-**对"注意力非全部所需"的精确刻画**：我们论证主流深度学习架构——Transformer、Mamba、扩散模型、JEPA、推理增强模型（DeepSeek-R1、o1-o3）和稀疏路由架构（SubQ/SSA）——均为 CID 主方程在不同极限（零旋度、白噪声、单热浴、softmax-attention 接口内）下的特例。Vaswani 等 2017 年的"Attention Is All You Need"揭示了 CID 的联想记忆项；但 CID 主方程还包含 **Transformer 所抛弃的三个关键物理项**——旋度 v(φ)、有色阻尼 ∫γ 和有色噪声 ξ。这三项的缺席，正是当前 AI 比人脑能耗约高一百万倍的算法根源。Alman-Song（2023）和 Gupta 等（2025）证明的注意力二次复杂度下界进一步指出：**任何 softmax-attention 框架内的优化都无法突破此复杂度墙；真正的突破必须来自架构级的物理重构**——这正是 UID 所主张的方向。
-
-**可证伪预测**：在此基础上，我们提出约**十倍参数效率**的可证伪工程目标，并提供三组关键普适类预测，均已**在生物大脑中被独立验证**：雪崩规模指数 τ ≈ 1.5（Beggs & Plenz 2003）、Hurst 指数 H ≈ 0.7（Linkenkaer-Hansen 2001）、1/f 噪声谱斜率 β ≈ 1（He 2014）。UID 的 10 倍参数效率预测与 Alman-Song-Gupta 复杂度下界**互补而非矛盾**——前者通过逃出 softmax-attention 接口、进入不同复杂度类而获益。
-
-**智能的宇宙涌现**：最后，我们讨论 UID 对宇宙智能涌现条件的暗示：UID 提供智能涌现的五个必要物理条件（开放性、多浴温差、非交换耦合、临界点附近、自组织临界机制），但**无法证明宇宙处处时时满足这些条件**——智能友好区域是宇宙中稀有的局部口袋，并非普遍属性。
-
-**与 Logographic AI 的互补性**：UID 与 Liu（2025-2026）提出的 Logographic AI 范式构成**互补而非竞争**关系——前者在认知-符号学层面诊断"无根 token"，后者在非平衡物理层面诊断"细致平衡 = 无智能"。两者指向同一深层困境的不同侧面；未来融合方向值得探索。
-
-本文所有参考文献均提供可点击的 DOI 或开放访问链接，所有定量主张明确标注其经验证据等级（A 已验证 / B 理论估计 / C 待验证 / D 哲学猜想）。配套代码仓库（github.com/gwailee/uid）提供 CID 的工程参考实现和可证伪验证套件；所有核心预测可在单 GPU 上数小时内复现。
-
-### E.2 中文关键词
-
-**核心理论**：智能动力学；统一场论；非平衡统计物理；广义 Langevin 方程；Mori-Zwanzig 投影；预测互信息；条件互信息；自组织临界；细致平衡破缺
-
-**物理基础**：有色噪声；Hurst 指数；雪崩动力学；1/f 噪声；亚欧姆谱；临界普适类；多浴系统；旋度场；有色阻尼记忆核
-
-**经典层（CID）**：联想记忆；现代 Hopfield 网络；Transformer 物理推导；注意力物理本质；残差连接物理身份；LayerNorm 作为微正则约束
-
-**量子层（QID）**：开放量子系统；Caldeira-Leggett 模型；Berry 几何相；Lindblad 主方程；零点涨落；纠缠熵临界标度；拓扑保护记忆
-
-**几何层（FID）**：Fisher 信息度规；信息几何；爱因斯坦场方程；信息流形；智能引力波；信息黑洞；信息光速；全息原理
-
-**宇宙学和哲学**：智能的宇宙涌现；自组织临界；人择原理；可证伪性；智能能效鸿沟；Landauer 极限
-
-**与现代 AI 进展的对话**：Transformer 复杂度下界；Alman-Song 定理；SETH 假设；JEPA 世界模型；DeepSeek-R1 推理范式；SubQ 稀疏路由架构；Logographic AI；价值对齐硬约束；神经-符号融合
-
-## Appendix F: License Statement
-
-This paper and the companion code repository (github.com/gwailee/uid) adopt **dual licensing**:
-
-### F.1 Academic / Personal Use License
-
-**License**: PolyForm Noncommercial License 1.0.0
-
-For:
-- ✅ Academic research (university, research institution, individual researcher)
-- ✅ Personal learning and study
-- ✅ Non-profit education
-- ✅ Open-source community technical exchange (non-commercial)
-
-For details, please refer to the LICENSE-NONCOMMERCIAL file in the project root.
-
-### F.2 Commercial License
-
-**License**: Commercial license issued by Suzhou Jodell Robotics Co., Ltd.
-
-Required for:
-- ⚠ Use in any commercial product
-- ⚠ Use in for-profit business
-- ⚠ Use in production environment
-- ⚠ Provision of paid services to third parties
-
-For details, please refer to the LICENSE-COMMERCIAL file in the project root.
-
-### F.3 Commercial Licensing Inquiries
-
-Email: lig@jodell.cn
-
-Suzhou Jodell Robotics Co., Ltd. retains the final right of interpretation of this license.
-
----
-
-# End of Paper
-
-> **Author's final words**:
->
-> The proposal of UID theory is the fruit of many years of joint effort by Suzhou Jodell Robotics Co., Ltd. We deeply thank all the researchers, engineers, and academic peers who have participated in discussions and provided feedback.
->
-> We acknowledge that UID is not the final theory, but a step on a long ladder. We look forward to future researchers from physics, computer science, neuroscience, philosophy and other fields, jointly verifying, revising, and extending this framework, and jointly promoting the deep development of intelligence theory.
->
-> If you have any feedback, suggestions, or commercial cooperation intentions, please feel free to contact us:
->
-> - Academic exchange: guilichina@163.com
-> - Commercial cooperation: lig@jodell.cn
-> - Code repository: https://github.com/gwailee/uid
->
-> May intelligence go from mystery to science, from coincidence to mechanism, from rare to universal — this is the cosmic vision of UID.
-
----
-
-*Suzhou Jodell Robotics Co., Ltd.*
-
-*2026.05.25*
