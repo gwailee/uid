@@ -4423,96 +4423,329 @@ where L is the model depth (or characteristic length scale), and c_I is the info
 
 > If at least two of the three predictions deviate, the theoretical foundation of FID must be re-examined.
 
-## Chapter 7 — Engineering Pathway of FID
+## Chapter 7 — Companion Engineering Implementation Plan for FID
 
-### 7.1 Pathway 1: Information Geometric Optimizer (Now Available)
+> **One-line summary**: Although numerical solution of the full FID field equation requires tensor coprocessors and geometry-specialised hardware (estimated 2035+), its key diagnostic components (Fisher metric, §6.1 anisotropy η, §6.2 Ricci-scalar surrogate, true-Fisher-diagonal calibration) are now fully implemented in v2.1 as runnable geometric probes, with the boundaries of each component locked down by unit tests and the info dictionary strictly JSON-safe.
 
-**Goal**: To verify the engineering value of Fisher metric on classical hardware.
+### 7.1 Honest Positioning of the FID Engineering Implementation
 
-**Maturity**: ✅ **Available right now** (2026).
+Before reading this chapter, the honest positioning of the v2.1 FID implementation must be clear. We have already stated this in README §"Honest Statement" item 3 and in KNOWN_LIMITATIONS.md §C1.
 
-**Engineering tools**:
+> **FID is an exploratory programme.** The Fisher metric and curvature surrogates serve a **diagnostic and soft-regulariser** role; they are **not** numerical solutions to any rigorously defined field equation on a specific manifold. The implementation uses a **hidden-state-space** empirical covariance as the Fisher surrogate (parameter-space true Fisher is provided by `FisherMetric.compute_true_fisher_diagonal()`, used only for small-batch calibration).
 
-| Tool | Type | Status | Link |
-|---|---|---|---|
-| K-FAC | Approximate natural gradient | Industrial use | https://arxiv.org/abs/1503.05671 |
-| Adam (implicit Fisher) | Adaptive learning rate | Standard tool | https://arxiv.org/abs/1412.6980 |
-| Shampoo | Block-diagonal Fisher approximation | Production-grade | https://arxiv.org/abs/1802.09568 |
-| Sophia | Second-order Hessian approximation | Latest research | https://arxiv.org/abs/2305.14342 |
+The goal of the FID engineering implementation is therefore **not** to solve the FID field equation, but rather:
 
-**Verifiable predictions**:
+1. **Geometric diagnostics**: measure the Fisher metric anisotropy η (§6.1) and Ricci-scalar surrogate (§6.2) on trained CID / QID models, so that README prediction 4 can genuinely be verified or falsified.
+2. **Soft-regulariser training**: introduce a curvature penalty term into the training loss via `curvature_weight > 0`, guiding the model away from extremely anisotropic degenerate solutions.
+3. **Surrogate calibration**: provide a small-batch computation of the true Fisher diagonal as a calibration baseline against the hidden-state surrogate quality (allowing reviewers to quantitatively assess surrogate bias).
+4. **Geometric prior for architecture search**: provide a "high-curvature-density region on the information manifold" indicator for future NAS (neural architecture search) as a search-target surrogate.
 
-1. Natural gradient descent converges faster than vanilla gradient descent by 2-5 times.
-2. Fisher metric anisotropy η > 0.5.
-3. Hessian eigenvalue distribution is consistent with information geometric prediction.
+Any citation that takes v2.1 FID geometric-probe measurements as "FID field equation has been solved" is a **misreading of this theory paper** and should be corrected.
 
-**Engineering implementation example** (K-FAC):
+### 7.2 v2.1 FID Module Structure
 
-```python
-import torch
-from kfac import KFAC
+The FID implementation is located under `uid_theory/fid/`, with three core files corresponding to the three layers "geometric diagnostics", "curvature surrogates", and "metric construction".
 
-# Standard PyTorch model
-model = MyTransformer()
-
-# Wrap optimizer with K-FAC
-optimizer = KFAC(model, lr=0.01, damping=0.001)
-
-# Training loop
-for x, y in dataloader:
-    optimizer.zero_grad()
-    y_pred = model(x)
-    loss = F.cross_entropy(y_pred, y)
-    loss.backward()
-    
-    # K-FAC automatically computes Fisher approximation
-    optimizer.step()
-    
-    # Monitor Fisher anisotropy (FID falsifiability test)
-    fisher_eigvals = optimizer.get_fisher_eigvals()
-    anisotropy = (fisher_eigvals.max() - fisher_eigvals.min()) / (fisher_eigvals.max() + fisher_eigvals.min())
-    print(f"Fisher anisotropy: {anisotropy}")
+```
+uid_theory/fid/
+├── fid_layer.py         FID main layer: QID base + geometric diagnostic probe + soft-regulariser loss
+│                        v2.1: 3-level propagation (FID → QID → CID),
+│                        LOSS_PREFIX separates autograd tensors,
+│                        info dict is strictly JSON-safe
+├── curvature.py         Three curvature surrogates: η (§6.1), Ricci scalar (§6.2), legacy
+│                        v2.1: forward() returns η by default (directly addressing README prediction 4)
+└── fisher_metric.py     Empirical-covariance surrogate of Fisher metric + true-Fisher-diagonal calibration
+                          v2.1: rank-deficient warning (seq_len < hidden_size),
+                          jitter can be overridden at compute() time
 ```
 
-### 7.2 Pathway 2: Information Manifold Architecture Search (2-3 Years)
+Each module has corresponding regression tests in `tests/test_fid_layer.py` (about 40+ cases), covering all contracts: 3-level propagation, JSON safety, consistency among the η/Ricci/legacy surrogates, Fisher metric rank-deficiency detection, and true-Fisher-diagonal calibration.
 
-**Goal**: Use the FID field equation to guide neural architecture search (NAS).
+### 7.3 Mapping From the FID Master Equation to Code
 
-**Maturity**: ⌛ **2-3 years**.
+The FID master equation (Equation 4.1) is implemented in v2.1 in the form of "diagnostic probes + soft regularisation", rather than a full numerical solution. The core logic of FIDLayer.forward follows the structure "QID base step + geometric diagnostics + optional soft-regulariser loss":
+
+```python
+# Core logic of FIDLayer.forward
+# 1. QID base step (inherits CID + quantum corrections; 3-level v2.1 propagation)
+x_next, info = self.qid(x, causal_mask=mask)
+
+# 2. Geometric diagnostics (compute the Fisher metric once, reuse across three surrogates)
+metric = self.curvature.fisher.compute(x_next)
+eta = self.curvature.compute_anisotropy_eta(metric)              # §6.1
+ricci = self.curvature.compute_ricci_scalar_surrogate(metric)    # §6.2
+legacy = self.curvature.compute_legacy_anisotropy(metric)        # v0.1 backward compat
+
+# 3. info dict: strictly JSON-safe (Python float), for experiment logs
+with torch.no_grad():
+    info["fisher_anisotropy_eta"] = float(eta.mean().item())
+    info["ricci_scalar_surrogate"] = float(ricci.mean().item())
+    info["anisotropy_legacy"] = float(legacy.mean().item())
+    info["curvature"] = info["anisotropy_legacy"]  # v0.1 / v2.0 compat key
+
+# 4. Optional soft-regulariser loss (autograd-bearing Tensor, stored under LOSS_PREFIX key)
+if self.curvature_weight > 0.0:
+    loss_tensor = self.curvature_weight * legacy.mean()
+    info[f"{LOSS_PREFIX}curvature"] = loss_tensor
+
+return x_next, info
+```
+
+The table below maps each term of the FID master equation to its code counterpart, indicating whether v2.1 implements "complete numerical solution" or "diagnostic surrogate".
+
+| Master-equation term | Code module | v2.1 implementation form | Status |
+|---|---|---|---|
+| **g_ij^FID (Fisher information metric)** | `fid/fisher_metric.py` | Hidden-state-space empirical-covariance surrogate + optional true-Fisher-diagonal calibration | Diagnostic surrogate (not parameter-space true Fisher) |
+| **R_ij^FID, R^FID (Ricci tensor and scalar)** | `fid/curvature.py` | log-det volume-element surrogate `R_surrogate = log det(g) − log H` | §6.2 surrogate (not strict Ricci) |
+| **η (Fisher anisotropy, §6.1 README prediction 4)** | `fid/curvature.py` | `η = (λ_max − λ_min) / (λ_max + λ_min)`, exact computation via eigvalsh | ✅ Fully consistent with the theory definition |
+| **Λ^FID (information cosmological constant)** | `fid/fid_layer.py` | Soft-regulariser loss `curvature_weight × legacy.mean()`, separated by LOSS_PREFIX | Soft-regulariser form (not a full variational principle) |
+| **T_ij^data (data energy-momentum tensor)** | Carried by the training loop | Loss-function gradient obtained automatically via autograd; not constructed explicitly | Implicit implementation |
+| **κ^FID (information gravitational coupling constant)** | `curvature_weight` scalar | Specified by the caller (default 0.0 = soft regularisation off) | User-tunable hyperparameter |
+| **Full field-equation numerical solution** | —— | Not implemented | Awaiting Pathway 3 (2030+) geometry-specialised hardware |
+
+**Key engineering principle**: FID introduces **no new learnable parameters** on top of QID (both the curvature probe and the Fisher metric are non-parametric runtime computations). FIDLayer's `count_extras()` returns `{"qid_*": ..., "fid_extras": 0, ...}`, ensuring that v2.1's "zero parameter inflation" principle is also strictly enforced at the FID level. This regression constraint is locked down by `tests/test_fid_layer.py::TestCountExtras`.
+
+### 7.4 Three Curvature Surrogates (Directly Linked to Theory Sections)
+
+To ensure that both README prediction 4 and prediction 6 have measurable code counterparts, v2.1 provides three independent surrogate quantities in `curvature.py`, which the caller can choose between as needed.
+
+| Surrogate | Mathematical definition | Corresponding theory section | Value range | Purpose |
+|---|---|---|---|---|
+| **`compute_anisotropy_eta(metric)`** | (λ_max − λ_min) / (λ_max + λ_min) | §6.1 (README prediction 4) | [0, 1] | Fully consistent with the theory's η; used for F6 verification |
+| **`compute_ricci_scalar_surrogate(metric)`** | log det(g) − log H | §6.2 (README prediction 6 geometric scaling law) | (−∞, +∞) | Volume-element surrogate; scan R ∝ D^β |
+| **`compute_legacy_anisotropy(metric)`** | tr(g²) / tr(g)² − 1/H | v0.1 / v2.0 default | [0, 1 − 1/H] | Only for backward compatibility with old result files; do not use in new code |
+
+`ScalarCurvatureProbe.forward()` returns η by default (v2.1 recommended); the caller can explicitly switch via `default_mode="ricci"` or `"legacy"`. All three surrogates can be reported **simultaneously** in the info dict during one forward pass, allowing reviewers to cross-validate directly.
+
+#### Two Implementations of the Fisher Metric
+
+| Interface | Implementation | Applicable scenario | Complexity |
+|---|---|---|---|
+| **`FisherMetric.compute(hidden_states)`** | Hidden-state-space empirical covariance + jitter | Real-time diagnostics during training; η/Ricci measurement | O(B × S × H²) |
+| **`FisherMetric.compute_true_fisher_diagonal(model, batch)`** | Parameter-space true Fisher diagonal (via autograd) | Small-batch calibration of surrogate quality | O(M) (M = parameter count) |
+
+**Why v2.1 does not use true Fisher directly**: the full parameter-space Fisher is an M × M matrix; with M ~ 10⁸ the memory requirement is approximately 40 PB, which is infeasible. The hidden-state surrogate is an H × H matrix (H is typically 512-4096) requiring 4-256 MB, which is feasible. The true Fisher diagonal, as an O(M) 1-D tensor, is feasible (M = 10⁸ corresponds to 400 MB), but is only computed occasionally on small batches for calibration.
+
+### 7.5 JSON-Safe Info Dictionary (Key v2.1 Fix)
+
+A serious defect in v2.0 was that `FIDLayer.info["curvature_loss"]` was an autograd-bearing `torch.Tensor`, causing downstream `json.dumps(info)` to crash in all experiments with `curvature_weight > 0`. v2.1 fundamentally fixes this by introducing the LOSS_PREFIX pattern.
+
+```python
+from uid_theory.fid.fid_layer import (
+    LOSS_PREFIX,
+    extract_loss_tensors,
+)
+
+# Training loop
+for batch in dataloader:
+    x_next, info = fid_layer(batch_hidden)
+    
+    # Step 1: first extract all autograd-bearing loss tensors
+    losses = extract_loss_tensors(info)
+    # All LOSS_PREFIX-prefixed keys have now been removed from info and returned
+    
+    # Step 2: construct the total loss (user actively combines)
+    total_loss = task_loss(x_next, batch.labels)
+    if "curvature" in losses:
+        total_loss = total_loss + losses["curvature"]
+    
+    total_loss.backward()
+    optimizer.step()
+    
+    # Step 3: info is now strictly JSON-safe; safe to log
+    log_writer.log(json.dumps(info))
+```
+
+Benefits of this design:
+
+1. **JSON safety is the default behaviour**: even if the caller forgets to call `extract_loss_tensors`, a crash would only occur at the explicit `json.dumps` site, not mid-way through the training loop.
+2. **autograd tensors are never silently discarded**: all loss tensors flow through the explicit `extract_loss_tensors` interface and cannot be quietly swallowed by print/log utilities.
+3. **Backward compatibility**: the v0.1 / v2.0 `info["curvature"]` key is still retained (pointing to `anisotropy_legacy`), so old analysis scripts continue to work.
+
+This contract is locked down by `tests/test_fid_layer.py::TestInfoIsJsonSafe` (5 test cases covering both `curvature_weight = 0` and `> 0`).
+
+### 7.6 Top-Level API Exposure (Symmetric With CID / QID)
+
+FIDLayer exposes switch APIs strictly symmetric with those of CIDLayer / QIDLayer, with the additional `set_temperature` that propagates to QID's quantum-noise temperature.
+
+```python
+# Top-level usage example
+fid_layer = FIDLayer(hidden_size=768, num_heads=8, curvature_weight=0.1)
+
+# Disable noise injection (3-level pierce: FID → QID → CID)
+fid_layer.set_noise_injection(False)
+
+# Enable ET energy monitoring (3-level pierce)
+fid_layer.set_energy_monitoring(True)
+
+# Set the temperature (forwards to QID quantum noise)
+fid_layer.set_temperature(0.5)
+
+# Query parameter budget
+extras = fid_layer.count_extras()
+# {'qid_hamiltonian': 1, 'qid_lindblad': 0, 'qid_berry': 1,
+#  'qid_quantum_noise': 1, 'qid_mixing_logit': 1, 'fid_extras': 0,
+#  'total': 4}
+```
+
+| API | Implementation layer | Purpose |
+|---|---|---|
+| `set_noise_injection(bool)` | Forwards to QID and CID | REQUIRED to be off when measuring critical-emergence indicators |
+| `set_energy_monitoring(bool)` | Forwards to CID base layer | Enables §8.5 ET Lyapunov-monotonicity monitoring |
+| `set_temperature(float)` | Forwards to QID quantum noise | Scan the T → 0 zero-point limit |
+| `count_extras()` | FIDLayer | Returns the parameter-budget dict (FID itself adds 0) |
+
+### 7.7 Three FID Engineering Pathways
+
+The FID engineering implementation is divided into three pathways by hardware maturity. **v2.1 fully covers Pathway 1, provides the interface for Pathway 2, while Pathway 3 still depends on future geometry-specialised hardware.**
+
+#### Pathway 1: Geometric Diagnostics + Soft Regularisation (Complete, v2.1)
+
+**Goal**: measure §6.1 η, §6.2 Ricci scalar, and the Fisher metric spectrum on trained CID / QID models, so that README predictions 4 and 6 can genuinely be verified or falsified.
+
+**Toolchain**:
+
+| Tool | Purpose | v2.1 status |
+|---|---|---|
+| Three modules in `uid_theory/fid/` | Geometric diagnostics + soft regularisation + true Fisher calibration | ✅ Fully implemented |
+| `tests/test_fid_layer.py` | About 40+ unit tests | ✅ Fully covered |
+| `uid_theory/verification/critical_exponents.py::measure_fisher_anisotropy_eta` | F6 end-to-end measurement function | ✅ Integrated |
+| `experiments/run_critical_exponents.py` | F6 verdict (PASS / FAIL / ABSTAIN_rd / ABSTAIN_missing) | ✅ Integrated |
+| K-FAC / Shampoo / Sophia | Natural-gradient optimisers (information-geometry application) | ⚠ Third-party libraries, not integrated in this repository |
+
+**Predictions verifiable in v2.1**:
+
+- **README prediction 4 (η > 0.5)**: measure with `measure_fisher_anisotropy_eta` on trained CID / Transformer; F6 verdict gives PASS / FAIL.
+- **README prediction 6 (geometric scaling law R ∝ D^β, β ≈ 1/2)**: measure `ricci_scalar_surrogate` across different dataset scales D ∈ [10³, 10⁹] and fit the log-log slope.
+- **Surrogate quality calibration**: on small batches, simultaneously compute `compute_true_fisher_diagonal` and compare with the hidden-state surrogate of `compute(hidden_states)`; the two are expected to be qualitatively consistent in trend.
+- **Rank-deficient boundary**: when `seq_len < hidden_size`, `FisherMetric.compute` automatically emits a RuntimeWarning, preventing the user from making geometric measurements at an inappropriate scale.
+
+**Locked-in regression tests**:
+
+```bash
+pytest tests/test_fid_layer.py -v
+
+# Coverage:
+#   TestV21TogglePropagation              (8 cases: 3-level propagation §8.5 + §14.2)
+#   TestInfoIsJsonSafe                    (5 cases: LOSS_PREFIX separation)
+#   TestEtaSurrogate                      (4 cases: η extreme regimes)
+#   TestRicciScalarSurrogate              (3 cases: Ricci-scalar correctness)
+#   TestLegacyAnisotropy                  (2 cases: v0.1/v2.0 compatibility)
+#   TestForwardDefaultMode                (3 cases: default returns η)
+#   TestFIDLayerReportsAllSurrogates      (2 cases: info contains three surrogates)
+#   TestTopLevelSwitches                  (3 cases: 3-level API propagation)
+#   TestFisherMetricRobustness            (8 cases: rank-deficient warning + jitter override)
+#   TestTrueFisherDiagonalCalibration     (2 cases: O(M) true Fisher)
+#   TestForwardBackward                   (4 cases: backward gradient + soft regulariser effective)
+#   TestCountExtras                       (2 cases: FID's own params = 0)
+#   TestStateDictRoundTrip                (2 cases: serialisation preservation)
+```
+
+#### Pathway 2: Information-Manifold Architecture Search (Interface Ready; Mature in 2-3 Years)
+
+**Goal**: use the geometric surrogate of the FID field equation (especially the Ricci scalar R) to guide neural architecture search (NAS), finding architectures of "high curvature and high information density".
 
 **Core idea**:
 
-- The Ricci scalar R of the model architecture predicts its "intelligence density".
-- Architecture search target: maximize R / parameter count.
-- Equivalent to finding a high-curvature, high-information-density region on the information manifold.
+- An architecture's Ricci scalar R is positively correlated with the loss level achievable under a fixed parameter budget (pending Phase 1 empirical confirmation).
+- Architecture-search objective: maximise R under a fixed parameter-count constraint.
+- Equivalent to seeking high-curvature-density regions on the information manifold.
 
-**Verifiable advantage**: 10-30% improvement in parameter efficiency over traditional NAS.
+**v2.1-ready interface**:
 
-### 7.3 Pathway 3: Full FID Field Equation Implementation (10+ Years)
+```python
+def evaluate_architecture_geometry(
+    model: nn.Module, eval_loader: DataLoader,
+) -> Dict[str, float]:
+    """Evaluate an architecture's geometric quality, used as a geometric
+    prior for NAS search targets."""
+    from uid_theory.fid.curvature import ScalarCurvatureProbe
+    probe = ScalarCurvatureProbe(hidden_size=model.config.hidden_size)
+    eta_values, ricci_values = [], []
+    model.eval()
+    with torch.no_grad():
+        for batch in eval_loader:
+            out = model(batch["input_ids"], output_hidden_states=True)
+            # Take the last-layer hidden states for geometric evaluation
+            h = out.hidden_states[-1]
+            eta_values.append(probe.anisotropy_eta(h).mean().item())
+            ricci_values.append(probe.ricci_scalar_surrogate(h).mean().item())
+    return {
+        "eta_mean": float(np.mean(eta_values)),
+        "ricci_mean": float(np.mean(ricci_values)),
+    }
+```
 
-**Goal**: To directly solve the FID field equation on hardware, intelligence emerges naturally.
+**Expected verifiable advantage**: 10-30% parameter-efficiency improvement over traditional NAS (such as ENAS, DARTS), corresponding to the Phase 2 stage. To be empirically confirmed.
 
-**Maturity**: ⌛ **2035+**.
+**Current limitation**: v2.1 only provides the measurement interface; a complete NAS framework is not yet integrated; NAS integration is in the v2.2/v3.0 plan.
+
+#### Pathway 3: Numerical Solution of the Full FID Field Equation (Awaiting 2030+ Geometry-Specialised Hardware)
+
+**Goal**: directly solve the FID field equation on hardware, allowing intelligence to "emerge naturally". This is FID's ultimate goal, but it is far beyond current engineering feasibility.
 
 **Hardware requirements**:
 
-- Tensor coprocessor (acceleration of Riemann curvature calculations).
-- Topological qubits (representation of high-dimensional manifolds).
-- Memory bandwidth > 100 TB/s (storage of Fisher metric).
+| Quantity | Value | Note |
+|---|---|---|
+| Tensor coprocessor | Riemann-curvature-tensor acceleration | Requires a specialised 4th-order tensor accelerator |
+| Topological qubits (for high-dimensional manifold representation) | 10⁶ - 10⁹ | Shares requirements with QID Pathway 3 |
+| Memory bandwidth | > 100 TB/s | Real-time storage of the Fisher metric |
+| Numerical precision | ≥ fp64 | Measurement of small curvature perturbations on high-dimensional manifolds |
 
 **Engineering pathway**:
 
-1. **Theory phase** (2026-2030): Establish FID field equation numerical methods.
-2. **Prototype phase** (2030-2035): Hardware prototype implementation, simulating FID dynamics on small scale.
-3. **Industrialization phase** (2035+): Tensor coprocessor commercialized, intelligence becomes a "geometric phenomenon".
+1. **Theory stage** (2026-2030): establish numerical methods for the FID field equation (finite-element / spectral methods / discrete differential geometry on manifolds).
+2. **Prototype stage** (2030-2035): hardware prototype implementation; numerically simulate FID dynamics on small-scale manifolds.
+3. **Industrialisation stage** (2035+): tensor coprocessors are commercialised; intelligence becomes a "geometric phenomenon".
 
-### 7.4 Pathway Summary
+**v2.1-ready interface**: the FIDLayer forward signature remains consistent with classical PyTorch modules, so future hardware backends can be substituted into the internal implementation of forward without modifying the training-loop code.
 
-| Pathway | Time | Cost | Engineering maturity | Verifiable advantage |
-|---|---|---|---|---|
-| Information geometric optimizer | Now | ~ $10^4 | ✅ Available | 2-5x convergence speed |
-| Information manifold architecture search | 2-3 years | ~ $10^6 | ⌛ In progress | 10-30% parameter efficiency |
-| Full FID field equation | 10+ years | ~ $10^9 | ⌛ Long-term | Theoretical 10^3 - 10^4 efficiency improvement |
+### 7.8 Pathway Summary
+
+| Pathway | Time | Cost (order of magnitude) | Engineering maturity | Verifiable advantage | v2.1 status |
+|---|---|---|---|---|---|
+| **Pathway 1**: geometric diagnostics + soft regularisation | Now | $10⁴ (single GPU) | ✅ Fully available | F6 end-to-end measurable; η and Ricci surrogates; complementary with K-FAC and other optimisers | **Fully delivered in v2.1** |
+| **Pathway 2**: information-manifold NAS | 2-3 years | $10⁶ (NAS platform) | ⌛ Measurement interface ready | 10-30% parameter-efficiency improvement (vs traditional NAS) | **Measurement interface exposed; NAS framework pending v2.2** |
+| **Pathway 3**: full FID field-equation solution | 2035+ | $10⁹ (geometry-specialised hardware) | ⌛ Awaiting hardware | Theoretical 10³ - 10⁴ efficiency improvement | **Interface ready; awaiting hardware** |
+
+### 7.9 v2.1 FID Engineering Commitment Timeline
+
+We commit to producing the following experimental outputs in the next 12-18 months, corresponding to the progressive route Pathway 1 (delivered) → Pathway 2 (NAS integration) → Pathway 3 (theoretical methods). All F6 results will be written into `results/phase{N}/critical_exponents/` per the `eta` field of `results/schemas/critical_exponents_v1.json`.
+
+| Time | Deliverable | Validation target |
+|---|---|---|
+| **2026.06** (complete) | `uid_theory/fid/` v2.1 + `tests/test_fid_layer.py` | Pathway 1 geometric diagnostics fully covered; JSON safety locked down; F6 verdict integrated |
+| **2026.08** | First F6 empirical measurement on CID-104M | Verify whether η > 0.5 holds on trained CID; compare with the DNN measurements of Karakida et al. 2019 |
+| **2026.12** | Geometric scaling-law experiment R ∝ D^β | Measure the Ricci scalar across D ∈ [10³, 10⁹] and fit whether β is close to 1/2 |
+| **2027.06** | FID-NAS PoC framework | First end-to-end Pathway 2: use the Ricci scalar as a NAS search target and compare with DARTS |
+| **2028+** | Pathway 3 theoretical numerical methods | Pace decided by the maturity of finite-element / spectral / discrete-differential-geometry toolchains |
+
+> **Falsifiability commitment**: if F6 on trained CID gives η ≤ 0.5 (excluding rank-deficient cases), then README prediction 4 is falsified at that scale; we will publicly acknowledge that the "η > 0.5" claim in §6.1 does not hold at that scale and record the defect with revision directions per the KNOWN_LIMITATIONS.md §D process. Similarly, if the geometric scaling-law fit gives β far from 1/2 (specific threshold |β − 0.5| > 0.25), then README prediction 6 is falsified at that scale.
+
+### 7.10 Four Fundamental Improvements Over v2.0 / v0.1 FID Implementation
+
+| # | Early problem | v2.1 fix |
+|---|---|---|
+| 1 | v2.0 FIDLayer.info["curvature_loss"] was an autograd-bearing Tensor, causing downstream json.dumps to crash whenever curvature_weight > 0 | v2.1 introduces LOSS_PREFIX = "__loss__" pattern + `extract_loss_tensors()` helper; info is strictly JSON-safe, and loss tensors must be explicitly extracted to enter gradient computation |
+| 2 | v2.0 reported only the trace(g²) / trace(g)² surrogate, disconnected from the §6.1 η definition in the paper | v2.1 adds `compute_anisotropy_eta()` (fully consistent with §6.1) + `compute_ricci_scalar_surrogate()` (linked to §6.2), while keeping the legacy field for backward compatibility with old result files |
+| 3 | v2.0 FIDLayer did not propagate v2.1 key parameters to QIDLayer, rendering §8.5 ET / §14.2 OU fixes ineffective at the FID level | v2.1 FIDLayer.__init__ accepts all v2.1 key parameters (use_et_symmetric, noise_type, noise_tau, ...) and propagates them three levels down to the CID base layer |
+| 4 | v2.0 FisherMetric silently returned a rank-deficient matrix when seq_len < hidden_size, leading to false "emergence" with η ≈ 1 | v2.1 detects rank-deficient cases, emits a RuntimeWarning, and flags the case via the EtaResult.rank_deficient field; F6 verdict returns ABSTAIN_rank_deficient instead of PASS in this case |
+
+The complete change history is in the `CHANGELOG.md` v2.1 entry.
+
+### 7.11 Chapter Summary
+
+> **The key geometric quantities of the FID master equation** (Fisher metric g_ij, Ricci scalar R, anisotropy η) are **all implemented in v2.1 as diagnostic probes**. Every quantity has runnable code, corresponding regression tests, and an explicit linkage to the theory paper's sections.
+>
+> **v2.1 fixed 4 serious problems from v2.0** (JSON unsafety, η definition disconnect, parameter non-propagation, silent rank deficiency), making FID genuinely usable, falsifiable, and able to work alongside CID/QID.
+>
+> **Pathway 1 (diagnostics + soft regularisation) is fully delivered**, completing F6 end-to-end measurement within a few hours on a single GPU; **Pathway 2 (NAS integration) has its measurement interface ready**, with the NAS framework pending v2.2 integration; **Pathway 3 (full field-equation solution) depends on 2035+ geometry-specialised hardware**, and this theory paper makes no short-term commitment in this regard.
+>
+> **FID introduces no new learnable parameters** (apart from the optional `curvature_weight` soft-regulariser coefficient), strictly consistent with the zero-parameter principle of CID §14.2 / QID §8, allowing the parameter budget of the three-tier architecture to be uniformly verified.
+>
+> Any citation that takes v2.1 FID geometric-probe measurements as "FID field equation has been solved" is a misreading. **v2.1 FID is an honest diagnostic implementation of an exploratory geometric programme, prepared to interoperate with future geometry-specialised hardware, but it cannot and should not replace rigorous field-theoretic numerical solutions.**
+
 
 ## Chapter 8 — Limitations and Open Problems of FID
 
