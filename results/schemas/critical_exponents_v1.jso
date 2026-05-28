@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gwailee/uid/blob/main/results/schemas/critical_exponents_v1.json",
+  "title": "UID Critical-Exponent Battery Result (v1)",
+  "description": "Output of experiments/run_critical_exponents.py — contrasts noise-OFF and noise-ON measurements of beta/H/eta/tau on a trained model, with an optional baseline negative-control block and a final verdict. Conforms to results/README.md §Schema 4.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cid_emergence", "cid_with_noise", "verdict"],
+  "properties": {
+    "cid_emergence": { "$ref": "#/$defs/exponentBlock" },
+    "cid_with_noise": { "$ref": "#/$defs/exponentBlock" },
+    "baseline": {
+      "anyOf": [
+        { "$ref": "#/$defs/exponentBlock" },
+        { "type": "null" }
+      ]
+    },
+    "verdict": { "$ref": "#/$defs/verdictBlock" }
+  },
+  "$defs": {
+    "exponentBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_name",
+        "noise_injection_on",
+        "hurst",
+        "spectrum"
+      ],
+      "properties": {
+        "model_name": { "type": "string" },
+        "noise_injection_on": { "type": "boolean" },
+        "hurst": { "$ref": "#/$defs/hurstResult" },
+        "spectrum": { "$ref": "#/$defs/spectrumResult" },
+        "avalanche": {
+          "anyOf": [
+            { "$ref": "#/$defs/powerLawFit" },
+            { "type": "null" }
+          ]
+        },
+        "eta": {
+          "anyOf": [
+            { "$ref": "#/$defs/etaResult" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "hurstResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hurst_mean",
+        "hurst_std",
+        "n_series",
+        "sample_length",
+        "method"
+      ],
+      "properties": {
+        "hurst_mean": { "type": "number" },
+        "hurst_std": { "type": "number", "minimum": 0 },
+        "n_series": { "type": "integer", "minimum": 0 },
+        "sample_length": { "type": "integer", "minimum": 1 },
+        "method": {
+          "type": "string",
+          "enum": ["DFA", "R/S"]
+        }
+      }
+    },
+    "spectrumResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "beta_mean",
+        "beta_std",
+        "n_series",
+        "sample_length",
+        "r_squared_mean"
+      ],
+      "properties": {
+        "beta_mean": { "type": "number" },
+        "beta_std": { "type": "number", "minimum": 0 },
+        "n_series": { "type": "integer", "minimum": 0 },
+        "sample_length": { "type": "integer", "minimum": 1 },
+        "r_squared_mean": { "type": "number" }
+      }
+    },
+    "powerLawFit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "alpha_se",
+        "xmin",
+        "n_tail",
+        "ks_statistic",
+        "p_value",
+        "is_power_law"
+      ],
+      "properties": {
+        "alpha": { "type": "number" },
+        "alpha_se": { "type": "number" },
+        "xmin": { "type": "number" },
+        "n_tail": { "type": "integer", "minimum": 0 },
+        "ks_statistic": { "type": "number", "minimum": 0 },
+        "p_value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "is_power_law": { "type": "boolean" }
+      }
+    },
+    "etaResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eta_mean",
+        "eta_std",
+        "eta_in_range",
+        "n_samples",
+        "hidden_size",
+        "seq_len",
+        "rank_deficient"
+      ],
+      "properties": {
+        "eta_mean": { "type": "number", "minimum": 0, "maximum": 1 },
+        "eta_std": { "type": "number", "minimum": 0 },
+        "eta_in_range": { "type": "boolean" },
+        "n_samples": { "type": "integer", "minimum": 0 },
+        "hidden_size": { "type": "integer", "minimum": 1 },
+        "seq_len": { "type": "integer", "minimum": 1 },
+        "rank_deficient": { "type": "boolean" }
+      }
+    },
+    "verdictBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "beta_off",
+        "beta_on",
+        "hurst_off",
+        "hurst_on",
+        "beta_diff",
+        "hurst_diff",
+        "beta_in_range",
+        "hurst_in_range",
+        "noise_diff_tol",
+        "verdict"
+      ],
+      "properties": {
+        "beta_off": { "type": "number" },
+        "beta_on": { "type": "number" },
+        "hurst_off": { "type": "number" },
+        "hurst_on": { "type": "number" },
+        "eta_off": { "type": "number" },
+        "eta_on": { "type": "number" },
+        "beta_diff": { "type": "number", "minimum": 0 },
+        "hurst_diff": { "type": "number", "minimum": 0 },
+        "eta_diff": { "type": "number", "minimum": 0 },
+        "beta_in_range": { "type": "boolean" },
+        "hurst_in_range": { "type": "boolean" },
+        "eta_state": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail",
+            "abstain_rd",
+            "abstain_missing"
+          ]
+        },
+        "eta_threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+        "eta_rank_deficient": { "type": "boolean" },
+        "noise_diff_tol": { "type": "number", "minimum": 0 },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "emergence_confirmed",
+            "emergence_confirmed_eta_abstained",
+            "ambiguous_residual_echo",
+            "emergence_not_confirmed",
+            "emergence_not_confirmed_eta"
+          ]
+        }
+      }
+    }
+  }
+}
