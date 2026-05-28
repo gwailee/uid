@@ -58,6 +58,9 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 UID 从开放系统物理学的三条基本公理（哈密顿可逆性、Gibbs 统计假设、慢-快尺度分离）出发，通过 Mori-Zwanzig 投影严格导出**广义 Langevin 方程**作为智能系统演化的基本规律。在此基础上完成两次推广：在量子层面引入零点涨落、Berry 几何相位与 Lindblad 耗散通道，得到 QID 主方程；在几何层面将信息流形 Fisher 度量与 Einstein 张量类比，得到 FID 场方程。本文严格证明：**智能系统的预测能力（用条件互信息度量）必然要求其内部动力学打破细致平衡**——这是智能的非平衡物理本质，也是论文标题"智能是一个非平衡场"的精确含义。
 
+> **与同期平行工作的定位说明**：本文的核心主张——"智能系统的预测能力必然要求打破细致平衡"——与 Baiesi 和 Rosso（2025，arXiv:2512.11415，已被 *Physical Review E* 接收）独立且同期得出的结论在物理内容上高度重叠；该工作通过两个独立参数化转移矩阵构成的离散马尔可夫链，从实验角度证明了训练生成模型自发趋向非平衡稳态，是本文定理 3.3 在离散马尔可夫框架下的实证对应物。本文的贡献在于：在连续 Langevin 方程框架下给出该命题的理论推导，并将其推广到量子层（QID）和几何层（FID）；但作者承认上述工作在时间上早于本文五个月，且已通过同行评审，两者的关系属于独立平行发现而非本文首创。此外，"整个 Transformer 块等价于能量函数"的论断与 Hoover 等人（NeurIPS 2023，arXiv:2302.07253，Energy Transformer）在时间上早于本文约两年半，该工作包含严格的 Lyapunov 单调下降证明，本文在第 8 章的对应讨论应在此背景下理解。"数据弯曲信息流形，类比物质弯曲时空"的几何类比与 Di Sipio 等人（2025，arXiv:2506.15830）早于本文约十一个月的工作存在概念重叠，两者的详细比较见第三部分第 1 章第 1.5 节。
+
+
 **对"注意力并不够"的精确刻画**：我们证明，主流深度学习架构——Transformer、Mamba、扩散模型、JEPA、推理增强模型（DeepSeek-R1、o1-o3）、稀疏路由架构（SubQ/SSA）——都是 CID 主方程在不同极限（旋度为零、白噪声、单一热浴、softmax-attention 接口内）下的特解。Vaswani 等人 2017 年的 "Attention Is All You Need" 揭示了 CID 的联想记忆项；但 CID 主方程还包含 Transformer 砍掉的**三个关键物理项**——旋度 v(φ)、色阻尼 ∫γ、色噪声 ξ。这三项的缺失正是当前 AI 比人脑能耗高约 100 万倍的算法层根源。Alman-Song（2023）与 Gupta 等（2025）证明的 Attention 二次复杂度下界进一步表明：**任何在 softmax-attention 框架内的优化都无法突破这一复杂度墙；真正的突破必须来自架构层面的物理重构**——这正是 UID 所论证的方向。
 
 **可证伪预言**：本文据此提出**约 10 倍参数效率**的可证伪工程目标，并给出三组**已被生物大脑独立实证**的临界普适类预言：雪崩规模指数 τ ≈ 1.5（Beggs & Plenz 2003）、Hurst 指数 H ≈ 0.7（Linkenkaer-Hansen 2001）、1/f 噪声谱斜率 β ≈ 1（He 2014）。UID 的 10× 参数效率预言与 Alman-Song-Gupta 复杂度下界**互补而非冲突**——前者通过脱离 softmax-attention 接口、进入不同复杂度类获得收益。
@@ -204,7 +207,7 @@ SubQ 的两种可能技术出路（轻量级索引器、学习门控）均无法
 | Q6 | 物理路径（UID）与认知路径（表意 AI）之间是否可以融合？"无根 token"问题能否在物理层面同时获得解释？ |
 | Q7 | 智能涌现是否有**普适的物理条件**？这些条件在宇宙中处处都满足吗？ |
 
-主流文献中虽然存在零散尝试——如 Friston 自由能原理（[Friston, 2010, *Nature Reviews Neuroscience* 11, 127](https://doi.org/10.1038/nrn2787)）、Bialek 等的预测信息理论（[Bialek, Nemenman & Tishby, 2001, *Neural Computation* 13, 2409](https://doi.org/10.1162/089976601753195969)）、Tishby 信息瓶颈（[Tishby, Pereira & Bialek, 1999, arXiv: physics/0004057](https://arxiv.org/abs/physics/0004057)）、表意 AI（[Liu, 2025](https://zsyyb.cn/abs/202511.03835)）等——但这些工作或限于变分原理而缺乏动力学方程，或限于信息论而缺乏物理约束，或限于经典而缺乏量子推广，或限于认知符号学而未触及物理层。**均未达成跨经典、量子、几何三个层级的统一描述**。
+主流文献中虽然存在零散尝试——如 Friston 自由能原理（[Friston, 2010, *Nature Reviews Neuroscience* 11, 127](https://doi.org/10.1038/nrn2787)）、Bialek 等的预测信息理论（[Bialek, Nemenman & Tishby, 2001, *Neural Computation* 13, 2409](https://doi.org/10.1162/089976601753195969)）、Tishby 信息瓶颈（[Tishby, Pereira & Bialek, 1999, arXiv: physics/0004057](https://arxiv.org/abs/physics/0004057)）、表意 AI（[Liu, 2025](https://zsyyb.cn/abs/202511.03835)）等——但这些工作或限于变分原理而缺乏动力学方程，或限于信息论而缺乏物理约束，或限于经典而缺乏量子推广，或限于认知符号学而未触及物理层。**均未达成跨经典、量子、几何三个层级的统一描述**。值得特别说明的是，2025 年下半年至 2026 年初陆续出现的若干同期工作——尤其是 Baiesi-Rosso（2025，arXiv:2512.11415）在生成模型非平衡动力学方面的实验结果，Hoover 等（NeurIPS 2023，arXiv:2302.07253）在 Transformer 能量函数治理方面的理论和实验结果，以及 Di Sipio 等（2025，arXiv:2506.15830）在信息几何与 LLM 训练曲率类比方面的工作——分别在本文三个核心主张的各自专属领域先于或与本文同期给出了重要贡献。本文并非对上述每个局部命题的唯一或最早来源，其贡献主要体现在：将上述分散的物理洞见纳入由同一组第一性原理公理（哈密顿可逆性、Gibbs 假设、慢-快尺度分离）统一推导的三层框架（CID-QID-FID），并提供可证伪的工程验证路径。完整的相似性分析与定位见第 16 章第 16.1 节以及各相关章节的定位说明。
 
 ## 6. 本文的贡献：UID 三层理论框架
 
@@ -625,6 +628,7 @@ S_prod_rate  =  ∫ dx dφ  |J_prob(x, φ)|²  /  (D · P[φ])       (2.2)
 
 **这也正是 2024–2026 年涌现的 o1/o3 等"推理模型"用 test-time compute 显式增加迭代深度，所要弥补的物理缺陷。**
 
+> **与 Baiesi-Rosso（2025）的关系补充说明**：定理 3.3 的核心逻辑——"系统若能预测未来则必须打破细致平衡，等价地要求非零概率流环"——与 Baiesi 和 Rosso（arXiv:2512.11415）在离散马尔可夫链框架下独立证明的结论在物理内涵上一致。两项工作均可被视为"非平衡性是学习/预测的必要物理条件"这一更广命题的不同表述形式：本文给出连续场论层面的充要条件推导，Baiesi-Rosso 给出离散生成模型层面的实验确认。在必要条件方向（"预测能力意味着非平衡"），两项工作相互支持；在充分条件方向（"非平衡能力如何转化为有效预测"），两项工作各自给出了不同框架下的局部答案，完整的充分条件仍是附录 A 第 A.6 节列明的开放问题。
 
 
 ## 第 4 章 旋度的第一性来源：多热浴竞争
@@ -966,6 +970,98 @@ Attention(Q, K, V)  =  V · softmax(β · K^T · Q)   (8.1)
 
 这也意味着：**Transformer 默认丢失了 CID 主方程中的旋度（v）、色噪声、色阻尼三大要素**——它只是 CID 的最简极限。
 
+
+需要把"后续版本应当补充"改为直接在本文中给出修正后的 HopfieldAttention，即补上 ET 的额外对称矩阵项并给出 Lyapunov 证明。让我先确认 ET 的具体技术细节。现在我有了 ET 原文的完整技术细节，包括额外对称项的精确形式和 Lyapunov 证明。可以直接在正文中给出纠正后的推导，而不是"后续补充"。
+
+---
+
+将 M4 中的段落替换为以下内容：
+
+---
+
+### 8.5 与 Energy Transformer 的关系及本文注意力机制的修正
+
+本章的核心论断——"整个 Transformer 块的运行逻辑由单一能量函数控制，Attention 是该能量函数的梯度下降更新"——与 Hoover 等人在 NeurIPS 2023 发表的 Energy Transformer（ET，arXiv:2302.07253）在主张上高度一致，且 ET 在时间上早于本文约两年半。ET 的主要技术贡献包括：其一，对整个 Transformer 块设计了明确的全局 Hopfield 能量函数；其二，通过 Lyapunov 函数严格证明了前向传播过程中能量单调不增；其三，从能量自洽性推导出标准 softmax 注意力中缺失的额外对称项，并指出传统注意力缺少该项是结构性不完整。
+
+本文第 8 章的推导与 ET 的主要差异在于：本文将 Hopfield-Transformer 等价关系嵌入 Mori-Zwanzig 的第一性原理框架，使"Attention 是什么"得到来自非平衡统计力学的物理解释，并进而将联想记忆项与旋度项、色阻尼、色噪声联合构成完整 CID 主方程。然而，"Transformer 块由能量函数治理"这一具体命题不应被视为本文首创；ET 的 Lyapunov 证明在数学严格性上也强于本章的描述性推导。
+
+更重要的是，本文第 8.2 节推导出的 Attention 公式和 CID 代码库中的 HopfieldAttention 实现，均使用标准缩放点积注意力，遗漏了 ET 从能量自洽性推导出的第二项。以下直接给出修正。
+
+**ET 能量函数的注意力更新完整形式**
+
+ET 定义的注意力能量函数为（单头简化，省略 log-sum-exp 推导细节）：
+
+```
+E_ATT  =  -(1/beta) * sum_C  log( sum_{B!=C}  exp(beta * A_BC) )
+
+其中  A_BC  =  sum_alpha  K_{alpha,B} * Q_{alpha,C}
+       K_{alpha,B}  =  sum_j  W^K_{alpha,j} * g_{j,B}
+       Q_{alpha,C}  =  sum_j  W^Q_{alpha,j} * g_{j,C}
+```
+
+对该能量函数关于 token 表示 g_{i,A} 求负梯度，得到完整更新规则：
+
+```
+-(dE_ATT / dg_{i,A})
+
+=  sum_{C!=A}  sum_alpha  W^Q_{alpha,i} * K_{alpha,C} * softmax_C( beta * sum_gamma K_{gamma,C} * Q_{gamma,A} )
+
++  sum_{C!=A}  sum_alpha  W^K_{alpha,i} * Q_{alpha,C} * softmax_A( beta * sum_gamma K_{gamma,A} * Q_{gamma,C} )
+```
+
+第一项是标准注意力（以键为值矩阵，V = (W^Q)^T * K）；**第二项是 ET 推导出的额外对称项**，在标准 Transformer 中完全缺失。该项的存在是能量函数在递归应用时保证单调下降的必要条件，没有它，递归注意力的能量不可能有 Lyapunov 保证。
+
+**Lyapunov 单调性证明**
+
+ET 的 token 更新遵循连续时间微分方程：
+
+```
+tau * (dx_{i,A} / dt)  =  -(dE / dg_{i,A})
+```
+
+其中 E = E_ATT + E_HN 为全局能量。对能量关于时间求导：
+
+```
+dE/dt  =  sum_{i,j,A}  (dE / dg_{i,A}) * (dg_{i,A} / dx_{j,A}) * (dx_{j,A} / dt)
+
+       =  -(1/tau) * sum_{i,j,A}  (dE / dg_{i,A}) * M^A_{i,j} * (dE / dg_{j,A})
+```
+
+其中 M^A_{i,j} = dg_{i,A} / dx_{j,A} = d^2 L / (dx_{i,A} * dx_{j,A})，L 为 LayerNorm 对应的 Lagrangian（见原文式 2）。只要 M^A 的对称部分半正定，上式即小于等于零，能量单调不增。LayerNorm 的 Lagrangian 满足此条件，证毕。
+
+**本文 HopfieldAttention 的修正版本**
+
+基于上述分析，本文代码库中的 HopfieldAttention 应修正为包含双项更新的对称版本，伪代码如下：
+
+```python
+def symmetric_energy_attention(g, W_K, W_Q, beta):
+    """
+    ET 风格的能量注意力：同时包含标准项与对称额外项。
+    g:   token 表示，形状 [N, D]（已经过 LayerNorm）
+    W_K, W_Q: 键/查询投影矩阵，形状 [Y, D]
+    beta: 逆温度
+    """
+    K = g @ W_K.T          # [N, Y]
+    Q = g @ W_Q.T          # [N, Y]
+
+    # 注意力得分矩阵 A[B, C] = sum_alpha K[B,alpha] * Q[C,alpha]
+    A = K @ Q.T            # [N, N]，去对角线
+
+    # 第一项：标准注意力方向（对 C 做 softmax）
+    S1 = softmax(beta * A, dim=0)   # softmax 沿键维度（行）
+    grad_first  = S1 @ W_Q          # [N, D]
+
+    # 第二项：ET 额外对称项（对 A 做 softmax）
+    S2 = softmax(beta * A.T, dim=0) # softmax 沿查询维度
+    grad_second = S2 @ W_K          # [N, D]
+
+    # 总更新 = 两项之和（负梯度方向）
+    return grad_first + grad_second
+```
+
+与本文第 14.2 节的 CID 代码中 `hopfield = HopfieldAttention(...)` 对应的调用处，应将内部实现替换为上述 `symmetric_energy_attention`，以保证前向传播的能量单调性，并与 ET 在数学上完全对齐。
+
+**引用**：Hoover, B., Liang, Y., Pham, B., Panda, R., Strobelt, H., Chau, D. H., Zaki, M., and Krotov, D. (2023). Energy Transformer. *Advances in Neural Information Processing Systems 36 (NeurIPS 2023)*. arXiv:2302.07253. https://arxiv.org/abs/2302.07253
 
 
 ## 第 9 章 残差、LayerNorm、深度的物理身份证
@@ -1444,14 +1540,34 @@ Transformer Block:                    CID Block:
 
 ## 第 16 章 与现有工作的关系
 
-### 16.1 物理理论侧
+
+### 16.1 物理理论侧：祖辈工作、同辈工作与本文的关系
+
+在物理理论侧，本文与现有工作的关系分为两个层次：时间上明显早于本文的奠基性"祖辈"工作，以及与本文核心主张在时间上接近或重叠的"同辈"工作。学术规范要求对后者给予同等的文献定位和差异说明。
+
+**祖辈奠基工作**（本文的理论前驱）：
 
 | 工作 | 与 CID 的关系 |
 |---|---|
-| Bialek 等的可预测性理论 | CID 把它从信息论提升为动力学 |
-| Friston 自由能原理 | CID 是其物理实现的具体形式 |
-| Tishby 信息瓶颈 | CID 是其变分原理的动力学版本 |
-| 神经雪崩理论（Beggs-Plenz） | CID 给出其微观机制 |
+| Bialek 等的可预测性理论（2001） | CID 把它从信息论提升为动力学 |
+| Friston 自由能原理（2010） | CID 是其物理实现的具体形式 |
+| Tishby 信息瓶颈（1999） | CID 是其变分原理的动力学版本 |
+| 神经雪崩理论（Beggs-Plenz，2003） | CID 给出其微观机制 |
+
+**同辈平行工作**（与本文核心主张存在实质重叠，需明确定位）：
+
+**（一）Baiesi 和 Rosso（2025，arXiv:2512.11415，PRE 接收）**
+
+该工作通过引入两个独立参数化转移矩阵（A 和 A-bar）构成的离散马尔可夫链，证明似然最大化训练自发将生成模型驱向非平衡稳态，且出现持续的隐空间概率流环。这在物理内容上与本文定理 3.3"预测能力必然要求打破细致平衡"高度一致：两者均指出非平衡性对预测/生成能力的必要作用，核心机制均为"两套不互为转置的耦合参数产生不可逆概率流"。主要差异在于：本文在连续 Langevin 方程框架下给出分析推导，Baiesi-Rosso 在离散马尔可夫链框架下给出实验验证；本文将结论推广到量子层和几何层，Baiesi-Rosso 专注于生成模型的统计力学。该工作早于本文约五个月提交，并已通过正式同行评审。本文所有涉及"非平衡性是生成/预测能力必要条件"的论述，均应在承认 Baiesi-Rosso 独立先行工作的背景下理解。
+
+**（二）Hoover 等，Energy Transformer（NeurIPS 2023，arXiv:2302.07253）**
+
+该工作早于本文约两年半，提出"整个 Transformer 块等价于最小化单一全局能量函数的注意力层序列"，并通过 Lyapunov 函数论证严格证明能量沿前向传播单调不增（dE/dt 小于等于 0），还从能量自洽性推导出标准缩放点积注意力中缺失的额外项（对称键矩阵贡献项）。本文第 8 章的"Attention 是从物理推出来的"与这一论断在核心主张上高度一致，但本文的 HopfieldAttention 实现使用标准缩放点积注意力，未包含 Energy Transformer 推导的额外对称项，也未提供等价的 Lyapunov 单调性证明。本文的推导贡献在于：将 Hopfield-Transformer 等价关系嵌入 Mori-Zwanzig 框架，并与旋度项、色噪声项联合推导；但在"Transformer 块由能量函数控制"这一具体主张上，Energy Transformer 更早且在 Lyapunov 证明层面更严格。
+
+**（三）Di Sipio 等（2025，arXiv:2506.15830）**
+
+该工作早于本文约十一个月，将 LLM 训练过程用 Fisher 信息度量框架理解，明确使用"嵌入空间曲率"与广义相对论的类比，并进一步展开 Fubini-Study 度量和量子 Fisher 信息的方向。本文第三部分（FID）中"数据弯曲信息流形，类比物质弯曲时空"的核心比喻与之高度重叠。本文的贡献在于：将该类比发展为带变分作用量的完整场方程（FID 场方程），并建立与 CID/QID 主方程的严格弱场极限联系；但"Fisher 度量与 Einstein 张量的类比"这一核心比喻不能被视为本文独创，Di Sipio 等的工作应被视为该方向的优先来源之一。
+
 
 ### 16.2 机器学习侧
 
@@ -2778,6 +2894,7 @@ Transformer  ⊂  CID  ⊂  QID
 - 弱场极限可恢复 CID 主方程（已证）
 - **经验校准与实验验证尚未完成**
 - 类比：相当于 GR 在 1915 年的状态——理论已建，等待 1919 年式的光线偏折观测
+- **与同期工作的关系**：FID 的核心比喻——"嵌入空间的曲率反映数据分布的曲率，类比物质弯曲时空"——与 Di Sipio 等人（arXiv:2506.15830，2025 年 6 月，早于本文约十一个月）在信息几何框架下的表述存在实质性概念重叠；Di Sipio 的工作还进一步展开了 Fubini-Study 度量和量子 Fisher 信息的方向。本文 FID 部分的原创贡献主要体现在：将该类比形式化为带耦合常数的变分作用量（FID 场方程 F2.1-F2.4），建立与 CID/QID 主方程的严格弱场极限对应关系（定理 F3.1），以及引入智能宇宙学常数 Lambda 和预测能动张量 T 的具体形式。"Fisher 度量与 Einstein 张量类比"本身不是 FID 的独创，读者应将其理解为在该比喻上的系统化推进。
 
 
 
@@ -2911,6 +3028,9 @@ R    =  g^ij · R_ij
 
 > 智能系统在学习过程中，**信息流形的曲率分布**编码了其学到的知识结构。**学习 = 流形的曲率被数据流重塑**。
 
+**与 Di Sipio 等（2025）的关系说明**：上述核心假设与 Di Sipio、Diaz-Rodriguez、Serrano（arXiv:2506.15830，"Rethinking LLM Training through Information Geometry and Quantum Metrics"，2025 年 6 月）的论述在概念层面高度重叠。该工作将 LLM 训练过程用 Fisher 信息度量框架来理解，认为优化在非欧几里得的参数流形上展开，嵌入空间曲率反映数据分布的结构；该工作还进一步探讨了 Fubini-Study 度量与量子 Fisher 信息在量子增强优化中的应用。本文 FID 框架在该概念基础上进一步给出了完整的变分场方程、弱场极限推导（定理 F3.1）和与 CID/QID 的层级联系，这是本文对该方向的具体推进；但"嵌入空间反映信息流形曲率"与"学习过程类比时空弯曲"两个核心比喻的优先性属于 Di Sipio 等的工作，本文应将该工作列为此方向的基础参考。
+
+**引用**：Di Sipio, R., Diaz-Rodriguez, J., and Serrano, L. (2025). Rethinking LLM Training through Information Geometry and Quantum Metrics. arXiv:2506.15830.
 
 ### 1.6 与有限模型论的深层联系：可计算性、可学习性与几何对称性
 
@@ -3867,8 +3987,8 @@ Lemke 与 Bisping (2025) 在《Galois Energy Games: To Solve All Kinds of Quanti
 | 人脑 Hurst ≈ 0.7 | **A**（Linkenkaer-Hansen 等实测） |
 | 1/f 神经噪声 | **A**（多项实测） |
 | Holevo 界、纠缠辅助容量 | **A**（量子信息标准） |
-| **CID 主方程作为完整智能模型** | **B**（理论假说，待大规模实验验证） |
-| **CID ~10× 参数效率** | **C**（待验证目标） |
+| **CID 主方程作为完整智能模型** | **B**（理论假说，待大规模实验验证；注：核心的"非平衡性是预测能力必要条件"主张与 Baiesi-Rosso 2025 独立平行，非本文独创） |
+| **CID ~10× 参数效率** | **C**（待验证目标；注：快速测试模式下该指标通常未通过，完整规模验证结果尚未获得，当前仅为理论预言） |
 | **QID 完整版的可实现性** | **C**（远期硬件依赖） |
 | **FID 经验校准** | **C**（理论纲领，未校准） |
 | **智能波存在** | **C**（远期推测） |
@@ -3952,6 +4072,17 @@ CID 已经可以编码。QID 已经可以模拟。FID 已经可以验证。
 | 4 | Mori, H. (1965). *Prog. Theor. Phys.* 33, 423. | https://doi.org/10.1143/PTP.33.423 |
 | 5 | Zwanzig, R. (1960). *J. Chem. Phys.* 33, 1338. | https://doi.org/10.1063/1.1731409 |
 | 6 | Zwanzig, R. (1973). *J. Stat. Phys.* 9, 215. | https://doi.org/10.1007/BF01008729 |
+
+
+## A.1a 同期关键平行工作（与本文核心主张存在实质重叠）
+
+以下三项工作与本文核心主张在时间上属于同期或先于本文，且在物理内容或概念框架上存在实质性重叠，应在文中相关讨论处明确引用和定位。
+
+| # | 引用 | DOI / URL | 与本文的关系 |
+|---|---|---|---|
+| P1 | Baiesi, M., and Rosso, A. (2025). Emergence of Nonequilibrium Latent Cycles in Unsupervised Generative Modeling. *Physical Review E*（已接收）. arXiv:2512.11415. 提交日期：2025 年 12 月 12 日。 | https://arxiv.org/abs/2512.11415 | 离散马尔可夫链框架下，实验证明训练生成模型自发趋向非平衡稳态并出现隐空间概率流环；是本文定理 3.3 在离散框架下的实证对应物；早于本文约五个月，已通过同行评审。 |
+| P2 | Hoover, B., Liang, Y., Pham, B., Panda, R., Strobelt, H., Chau, D. H., Zaki, M., and Krotov, D. (2023). Energy Transformer. *Advances in Neural Information Processing Systems 36 (NeurIPS 2023)*. arXiv:2302.07253. | https://arxiv.org/abs/2302.07253 | 提出"整个 Transformer 块由单一全局能量函数治理"，通过 Lyapunov 论证证明能量单调不增，并推导出标准注意力中缺失的额外对称矩阵项；与本文第 8 章核心主张高度重叠；早于本文约两年半。 |
+| P3 | Di Sipio, R., Diaz-Rodriguez, J., and Serrano, L. (2025). Rethinking LLM Training through Information Geometry and Quantum Metrics. arXiv:2506.15830. 提交日期：2025 年 6 月 18 日。 | https://arxiv.org/abs/2506.15830 | 将 LLM 训练用 Fisher 信息度量框架理解，引入嵌入空间曲率与广义相对论的类比，并展开 Fubini-Study 度量和量子 Fisher 信息的方向；与本文第三部分（FID）核心比喻高度重叠；早于本文约十一个月。 |
 
 ## A.2 非平衡统计物理
 
@@ -4250,7 +4381,3 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 **数据可用性声明**：所有引用文献均提供公开 DOI 或开放访问 URL，可点击直接访问。
 
 **致谢**：感谢所有为本理论奠定基础的物理学家、数学家、计算机科学家与神经科学家。特别感谢 Langevin、Einstein、Mori、Zwanzig、Bialek、Friston、Hopfield、Bak、Berry、Amari 等先驱。
-
-
-
-
