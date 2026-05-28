@@ -6,7 +6,7 @@
 
 UID 训练 / 评估管道的数据加载工具。
 
-This module name (``test_uid_on_minimind``) is HISTORICAL: it predates
+This module name (``data_loaders.py``) is HISTORICAL: it predates
 v2.1 and is referenced by ``experiments/run_*.py`` via
 ``from test_uid_on_minimind import PretrainJsonl``. Despite the
 ``test_`` prefix, it is NOT a pytest test module — it is a data-
