@@ -1861,158 +1861,341 @@ CID is **not** a panacea. We expect:
 
 > **Our position**: CID is the strongest physical framework now in hand, but it is **not the final answer to intelligence**. It is one step on a long ladder, and it must be tested and refined by future experiments and theory.
 
+
 ## Chapter 14 — Companion Engineering Implementation: From Theory to Code
 
-> **In a single sentence**: All theoretical claims have a runnable code base; readers can independently verify all the predictions of this paper on a single GPU.
+> **One-line summary**: Every theoretical claim in this paper has a runnable code module corresponding to it; readers can independently verify all falsifiable predictions on a single GPU, and every theoretical fix is protected by regression tests.
 
-### 14.1 Code-Base Overview
+### 14.1 Code Repository Overview
 
 **Open-source repository**: https://github.com/gwailee/uid
 
-The repository contains five engineering deliverables of CID:
+**Current version**: v2.1 (honest validation release plus Theory §8.5 / §14.2 fixes, released 2026-05-28)
+
+The repository is built around the three-tier architecture CID → QID → FID, with 7 v2.1 key regression test files, organised as follows.
 
 ```
 uid/
-├── cid/                  # Core implementation: minimum-modification full CID block (drop-in)
-├── train/                # Single-GPU training scripts (MiniMind-compatible)
-├── eval/                 # Falsifiability test suite (H/τ/β/perplexity/ablation)
-├── data/                 # Direct support for MiniMind-compatible Chinese / English text corpora
-└── scripts/              # One-click reproduction commands for the figures in the paper
+├── README.md                          Chinese README
+├── README_en.md                       English README
+├── KNOWN_LIMITATIONS.md               Honest declaration of v0.1 / v2.0 defects
+├── ROADMAP.md                         Validation roadmap (8 pre-registered F-conditions F1-F8 plus F9)
+├── CHANGELOG.md                       Complete v0.1 → v2.0 → v2.1 changelog
+├── LICENSE / LICENSE-NONCOMMERCIAL / LICENSE-COMMERCIAL
+├── data_loaders.py                    Data loading (PretrainJsonl + SftJsonl)
+│
+├── uid_theory/                        Core UID theory implementation
+│   ├── cid/                           Classical Intelligo-Dynamics
+│   │   ├── cid_layer.py               v2.1: OU noise default + ET toggle + FDT diagnostic
+│   │   ├── colored_noise.py           OU + FFT dual implementations (OU is the §14.2 default)
+│   │   ├── vortex_field.py            Zero-extra-params vortex (§14.2)
+│   │   ├── memory_kernel.py           Sub-Ohmic memory kernel γ(t) ~ t^(-α)
+│   │   └── hopfield_potential.py      ET symmetric dual-term Hopfield attention (§8.5)
+│   │
+│   ├── qid/                           Quantum Intelligo-Dynamics (classical simulation)
+│   │   ├── qid_layer.py               v2.1: shared_with_ffn default + top-level API
+│   │   ├── berry_phase.py             Zero-params Berry rotation + tanh × π bounded
+│   │   └── quantum_noise.py           QFDT + OU/FFT dual modes + set_temperature
+│   │
+│   ├── fid/                           Field Intelligo-Dynamics (diagnostic probe)
+│   │   ├── fid_layer.py               v2.1: 3-level propagation + LOSS_PREFIX + three surrogates
+│   │   ├── curvature.py               §6.1 η + §6.2 Ricci + legacy
+│   │   └── fisher_metric.py           Rank-deficient warning + true-Fisher-diagonal calibration
+│   │
+│   └── verification/                  v2.1 rigorous validation suite
+│       ├── powerlaw_estimator.py      Clauset-Shalizi-Newman MLE
+│       ├── critical_exponents.py      DFA + spectrum + measure_fisher_anisotropy_eta
+│       ├── correlation_length.py      §11.1 Definition 11.1 ξ measurement (used by F9)
+│       ├── avalanche_detector.py      Correct Beggs-Plenz protocol
+│       ├── energy_meter.py            v2.1 batch 4: pynvml + idle + decode
+│       ├── ablation_suite.py          11-way complete ablation
+│       └── prediction_test.py         DEPRECATED: auto-routes to v2.0+ toolchain
+│
+├── model/
+│   ├── modern_transformer.py          RoPE + RMSNorm + SwiGLU strong baseline
+│   ├── known_tricks_baseline.py       Transformer + all known tricks
+│   └── model_uid.py                   UID causal LM (top-level API exposed)
+│
+├── experiments/                       Full experiment scripts (end-to-end 5-step)
+│   ├── run_scaling_law.py             Step 1: scaling law + unified checkpoint schema
+│   ├── run_ablation.py                Step 2: 11-way ablation + 3 critical contrasts
+│   ├── run_critical_exponents.py      Step 3: β / H / τ / η + noise-OFF vs ON
+│   ├── run_correlation_length.py      Step 4: F9 ξ(T) ~ T^γ fitting
+│   ├── run_energy_benchmark.py        Step 5: above-idle + decode mode
+│   └── run_all.py                     End-to-end pipeline (auto path discovery + F9 verdict forwarded)
+│
+├── results/                           Real experimental results (Phase 0 complete as of v2.1)
+│   ├── README.md                      Results-directory index (with cite-or-not quick reference)
+│   ├── schemas/                       6 JSON Schemas (including correlation_length_v1)
+│   └── phase1/                        Phase 1 results (awaiting actual Phase 1 runs)
+│       └── REPORT.template.md         Standardised 8-section report template
+│
+└── tests/                             Unit tests (pytest, ~ 200+ cases)
+    ├── test_et_lyapunov.py            §8.5 ET monotonic descent + §14.2 zero-extra-params vortex
+    ├── test_run_scaling_law.py        v2.1 key propagation + checkpoint schema
+    ├── test_qid_layer.py              QID v2.1 + bounded Berry + QFDT
+    ├── test_fid_layer.py              FID 3-level propagation + JSON-safe + η/Ricci
+    ├── test_critical_exponents.py     New η regression + integration tests
+    ├── test_correlation_length.py     ξ measurement (white noise / OU / fBm ground truth)
+    ├── test_energy_meter.py           Energy integration + portability + GPU smoke
+    ├── test_data_loaders.py           PretrainJsonl + SftJsonl + tail truncation
+    ├── test_cid_layer.py              CID base tests
+    ├── test_ablation_suite.py         11-way ablation presence
+    ├── test_avalanche_detector.py     Beggs-Plenz protocol
+    ├── test_modern_transformer.py     Baseline base tests
+    └── conftest.py                    Shared fixtures
 ```
 
-**License**: GPL-3.0 + Commercial dual license. Free for academic use; commercial use requires a separate licence (see LICENSE-COMMERCIAL).
+**License**: PolyForm Noncommercial License 1.0.0 plus Commercial License dual licensing. Academic use is free; commercial use requires a separate license (see `LICENSE-COMMERCIAL`).
 
-### 14.2 Mapping from Theory to Code (Drop-In Style)
+### 14.2 Mapping From Theory to Code (Drop-In Style, Zero Parameter Inflation)
 
-Every theoretical term has a one-to-one corresponding code module. The CID architecture is **fully aligned with the parameter scale, depth, hidden-dim, and tokeniser of the MiniMind baseline**, with **no superfluous parameters or extra layers added**:
+Every theoretical term has a one-to-one corresponding code module. The CID architecture aligns byte-for-byte with the MiniMind baseline in vocabulary, tokenizer, depth, and hidden dimension, **adding no superfluous parameters or extra layers**, so that the "physical advantage" of CID can be demonstrated under conditions of equal parameter count rather than larger parameter count.
 
-| Theory item | Code module | Implementation in code | Extra parameters |
+| Theory term | Code module | v2.1 implementation | Extra params per layer |
 |---|---|---|---|
-| -∇U (associative memory) | `cid/blocks/hopfield_attn.py` | Replaces standard softmax-attention with HopfieldAttention with no extra parameters (Hopfield mode + temperature scheduling) | 0 |
-| v (curl) | `cid/blocks/curl_mlp.py` | Curl is generated by the SwiGLU MLP itself; only an antisymmetric mask `J_ij = (W - W^T)/2` is added | 0 (mask is non-parametric) |
-| -∫γ (colored damping) | `cid/blocks/residual.py` | Residual coefficient α changed from 1.0 to a learnable scalar α ∈ [0,1], simulating power-law decay | +1 scalar / layer |
-| ξ (colored noise) | `cid/blocks/colored_noise.py` | Adds Ornstein–Uhlenbeck colored noise via a single learnable scalar σ during training; turned off during inference | +1 scalar / layer |
-| Full master equation (6.1) | `cid/cid_block.py` | Combines the four modules above into a 60-line CIDBlock, ready as a drop-in replacement for MiniMind's `MiniMindBlock` | 0 (overall) |
+| **-∇U (associative memory)** | `cid/hopfield_potential.py` | ET symmetric dual-term update (§8.5), equivalent to the negative gradient of the ET energy function, with Lyapunov-guaranteed monotonic descent; provides `compute_energy(x)` for runtime verification | 0 |
+| **v (vortex)** | `cid/vortex_field.py` | Built on the fly from the antisymmetric part of the FFN first-layer weight J = (W − Wᵀ) / 2 (§14.2), only a non-parametric mask is added | +1 scalar (log_temp_diff) |
+| **-∫γ (colored damping)** | `cid/memory_kernel.py` | depthwise causal convolution with power-law kernel γ(t) ∝ t^(-α) initialization (α ∈ (0, 1) sub-Ohmic regime) | only the convolution kernel itself |
+| **ξ (colored noise)** | `cid/colored_noise.py` | Default OrnsteinUhlenbeckNoise physical SDE (§14.2), steady-state autocorrelation ⟨ξ(t) ξ(t+s)⟩ = exp(-|s|/τ); FFT shaping kept as legacy | +1 scalar (log_sigma) |
+| **Full master equation (6.1)** | `cid/cid_layer.py` | Combines all four terms in a 60-line CIDLayer, exposing three top-level APIs: `set_noise_injection`, `set_energy_monitoring`, `fluctuation_dissipation_consistency` | +4 scalars (per-term weights + noise amplitude) |
 
-**Key engineering principle: drop-in style, no parameter inflation**. CID does not add depth, hidden_dim, or extra layers, and is byte-for-byte aligned with the MiniMind baseline in vocabulary, tokeniser, and dataset, so that the "physical advantage" of CID can be **demonstrated under conditions of equal parameter count rather than larger parameter count**.
+**Key engineering principle: drop-in style, no parameter inflation.** Compared with v2.0, v2.1 fixed a serious parameter-inflation defect through the zero-extra-params vortex (v2.0 introduced 2 × H² extra parameters in VortexField, violating the §14.2 zero-parameter commitment). After the fix, CID introduces only 6 scalar extra parameters per layer (vortex temperature difference + OU noise amplitude + 4 term weights), and the total parameter count difference relative to the MiniMind baseline is less than 0.001%. This regression constraint is locked down by the `tests/test_et_lyapunov.py::TestCIDLayerParameterBudget` unit test.
 
-### 14.3 Five Falsifiability Tests (Runnable on a Single GPU)
+#### Precise Mapping of the CID Master Equation in Code
 
-The repo provides five end-to-end test scripts; each finishes in **0.5 hours** on a single RTX 3060 GPU, and the comparison object is **exactly the same scale of MiniMind / nanoGPT baseline**:
+The core forward logic of `uid_theory/cid/cid_layer.py` corresponds strictly to the four terms of the CID master equation under Euler-Maruyama discretisation.
 
-#### Test 1: Hurst Exponent (`eval/test_hurst.py`)
+```python
+# 1. Associative memory -∇U → ET symmetric dual-term Hopfield attention (§8.5)
+#    out = softmax_C(KQᵀ) @ q  +  softmax_B(KQᵀ) @ k
+#    Lyapunov-guaranteed monotonic energy descent in the forward pass.
+grad_term   = torch.exp(self.log_w_grad) * self.attn(h, causal_mask=mask)
 
-- **Goal**: Verify that the Hurst exponent of CID hidden states is in 0.6–0.8.
-- **Method**: Train a 12M-parameter MiniMind-26M model (same architecture, same data) and the corresponding CID-26M; sample hidden-state time series; compute Hurst via DFA.
-- **Expected**: H_CID ≈ 0.7 ± 0.1, while H_baseline < 0.5.
-- **Falsification line**: If H_CID < 0.55 the theory is wrong.
+# 2. Vortex v(φ) → zero-extra-params vortex (§14.2)
+#    J = (W_FFN - W_FFNᵀ) / 2, only +1 learnable scalar log_temp_diff per layer
+vortex_term = torch.exp(self.log_w_vortex) * self.vortex(h)[0]
 
-#### Test 2: Avalanche Exponent (`eval/test_avalanche.py`)
+# 3. Colored damping γ(t) ~ t^(-α) → MemoryKernel (depthwise causal conv)
+mem_term    = -torch.exp(self.log_w_mem) * self.memory(h)
 
-- **Goal**: Verify that the activation-cascade size of CID satisfies P(S) ∝ S^(−1.5).
-- **Method**: Define an "avalanche" as activations exceeding a threshold; count the distribution; fit log–log slope.
-- **Expected**: τ_CID ≈ 1.5 ± 0.2, while τ_baseline is essentially exponential (no power law).
-- **Falsification line**: If τ_CID does not lie in [1.3, 1.7] the theory is wrong.
+# 4. Colored noise → OrnsteinUhlenbeckNoise (v2.1 §14.2 physical default)
+#    Can be turned off via model.set_noise_injection(False) for measurement
+noise_term  = self.noise_scale * self.noise(B, S, h.device, h.dtype)
 
-#### Test 3: 1/f Spectrum (`eval/test_spectrum.py`)
+# Euler-Maruyama discretisation: dt absorbed into the per-term weights
+x = x + grad_term + vortex_term + mem_term + noise_term
+```
 
-- **Goal**: Verify that the power spectrum of CID hidden states is S(ω) ∝ ω^(−β), β ≈ 1.
-- **Method**: FFT of hidden-state time series; fit a log–log slope.
-- **Expected**: β_CID ≈ 1.0 ± 0.3, while β_baseline ≈ 0 (white noise).
-- **Falsification line**: If β_CID < 0.5 the theory is wrong.
+#### Relationship to Transformer (v2.1 Degeneration Pathway Complete)
 
-#### Test 4: Parameter Efficiency (`eval/test_efficiency.py`)
+Under the following limits, CID strictly degenerates to a standard Transformer.
 
-- **Goal**: Verify the claim that "CID needs only ~1/10 the parameters of MiniMind at equal performance".
-- **Method**: Train MiniMind-104M and CID-12M on the **same Chinese/English mixed corpus** (compatible with MiniMind's data format); compare validation perplexity.
-- **Expected**: PPL_CID(12M) ≤ PPL_baseline(104M) × 1.05 (within 5% gap).
-- **Falsification line**: If at the 1/10 parameter setting CID's PPL is more than 20% worse than the baseline the theory must be revised.
+| Limit condition | Code toggle |
+|---|---|
+| Turn off vortex v = 0 | `use_vortex=False` |
+| Turn off colored noise ξ = 0 | `use_colored_noise=False` |
+| Degenerate colored damping to white γ → δ | `use_memory=False` |
+| Turn off ET symmetric term (revert to standard attention) | `use_et_symmetric=False` |
+| Standard scaling β = 1/√d_k | implemented in `HopfieldAttention.scale` |
 
-#### Test 5: Four-Term Ablation (`eval/test_ablation.py`)
+This confirms the Chapter 8 and Chapter 10 claim of the theory paper that "Transformer is the simplest limit of CID". But the central v2.0+ falsification test is whether merely adding back the "known tricks" suffices, or whether CID's physical organisation genuinely contributes an increment — a question answered by the critical contrasts in §14.4.
 
-- **Goal**: Verify that each of the four CID terms (associative memory, curl, colored damping, colored noise) is indispensable.
-- **Method**: Remove one term at a time; measure language-model perplexity.
-- **Expected**:
-  - Remove curl → PPL up by ~ 10%
-  - Remove colored damping → PPL up by ~ 5%
-  - Remove colored noise → PPL up by ~ 5%
-  - Remove all (= baseline) → PPL up by ~ 20%
+### 14.3 Top-Level API Exposure Across Three Tiers
 
-### 14.4 One-Click Reproduction Commands
+A key engineering improvement in v2.1 is the exposure of switch APIs at the top-level `UIDModel`, so the caller can manipulate them without piercing through to inner submodules.
+
+| API | CID | QID | FID | UIDModel |
+|---|---|---|---|---|
+| `set_noise_injection(bool)` | ✅ | ✅ forwards to CID | ✅ forwards to QID and CID | ✅ top-level entry |
+| `set_energy_monitoring(bool)` | ✅ | ✅ forwards | ✅ forwards | ✅ top-level entry |
+| `set_temperature(float)` | — | ✅ (QID quantum noise) | ✅ forwards | ✅ top-level entry |
+| `fluctuation_dissipation_consistency()` | ✅ | — | — | ✅ top-level entry |
+| `count_extras()` | ✅ | ✅ | ✅ | — |
+
+Usage example:
+
+```python
+import torch
+from model.model_uid import UIDConfig, UIDModel
+
+config = UIDConfig(vocab_size=6400, hidden_size=512, num_hidden_layers=8)
+model = UIDModel(config)
+# ... train the model ...
+
+# CRITICAL: noise injection must be OFF before measuring emergence
+# otherwise the measured 1/f / Hurst / η would just echo the injected noise
+model.eval()
+model.set_noise_injection(False)
+
+# Then run β / H / τ / η measurements
+from uid_theory.verification.critical_exponents import (
+    run_critical_exponent_battery,
+)
+res = run_critical_exponent_battery(
+    model=model, model_name="my_cid",
+    dataloader=eval_loader, device="cuda",
+    n_sequences=10000,
+    disable_noise=True,
+    include_eta=True,
+    eta_threshold=0.5,
+)
+print(f"β = {res.spectrum.beta_mean:.3f}")
+print(f"H = {res.hurst.hurst_mean:.3f}")
+print(f"η = {res.eta.eta_mean:.3f} (in_range = {res.eta.eta_in_range})")
+```
+
+### 14.4 Eight Falsifiable Tests (End-to-End Phase 1 Suite)
+
+v2.1 provides eight end-to-end test scripts corresponding to the pre-registered F1-F9 falsification conditions in the README. The first 6 tests can be reproduced on a single RTX 3060 GPU within a few hours; the last 2 require multi-GPU or multi-machine environments. The comparison object is always the **exact same scale of MiniMind / nanoGPT baseline**.
+
+| Test | File | Measured quantity | Falsification line |
+|---|---|---|---|
+| **F1 / F2 scaling law** | `eval/test_efficiency.py` | Horizontal shift of iso-FLOP iso-loss curves | < 3× → F1 fail; < 1.5× → F1 vs all_tricks fail |
+| **F3 1/f spectrum** | `eval/test_spectrum.py` | β_CID = log-log FFT slope (noise OFF) | β_CID < 0.5 → F3 fail |
+| **F4 Hurst exponent** | `eval/test_hurst.py` | H_CID (DFA gold standard, noise OFF) | H_CID < 0.55 → F4 fail |
+| **F5 avalanche exponent** | `eval/test_avalanche.py` | τ_CID (Clauset MLE + KS test) | τ_CID ∉ [1.3, 1.7] or KS p < 0.1 → F5 fail |
+| **F6 Fisher anisotropy η** | `eval/test_eta.py` | η = (λ_max − λ_min) / (λ_max + λ_min) | η ≤ 0.5 (excluding rank-deficient) → F6 fail |
+| **F7 inference energy efficiency** | `eval/test_energy.py` | Above-idle energy / token ratio | < 3× → F7 fail |
+| **F8 ET Lyapunov monotonicity** | `tests/test_et_lyapunov.py` | dE/dt ≤ 0 under recursive attention | any step with E_t > E_{t-1} + 1e-3·|E_0| → F8 fail |
+| **F9 ξ(T) ~ T^γ scaling** | `experiments/run_correlation_length.py` | Multi-T scan fitting γ and R² | γ < 0.3 or R² < 0.8 → F9 fail |
+
+#### End-to-End Pipeline (Single Command Reproduces the Entire Phase 1)
 
 ```bash
-# Clone the repo
+python experiments/run_all.py \
+    --data_path data/wikitext-103/train.jsonl \
+    --tokenizer_path gpt2 \
+    --seeds 42 43 44
+```
+
+`run_all.py` automatically executes 5 experiment scripts in order: scaling law → 11-way ablation → critical exponents (with η) → correlation length (F9) → energy (above-idle + decode mode). Failed results at any step are recorded in `run_all_summary.json` rather than silently skipped.
+
+### 14.5 One-Click Reproduction Commands
+
+```bash
+# Clone the repository
 git clone https://github.com/gwailee/uid.git
 cd uid
 
 # Install dependencies
 pip install -r requirements.txt
+pip install nvidia-ml-py    # strongly recommended: enables 25 Hz high-frequency power sampling
 
-# Run all falsifiability tests (single GPU, total ~ 3 hours)
-bash scripts/reproduce_all.sh
+# Run all CPU-runnable tests (about 200+ cases, 5-10 minutes)
+pytest tests/ -v -m "not gpu"
 
-# Or run individual tests
-python eval/test_hurst.py        # ~ 30 min
-python eval/test_avalanche.py    # ~ 30 min
-python eval/test_spectrum.py     # ~ 30 min
-python eval/test_efficiency.py   # ~ 60 min
-python eval/test_ablation.py     # ~ 30 min
+# Run the v2.1 key regression test suite (about 80 cases, 3 minutes)
+pytest tests/test_et_lyapunov.py \
+       tests/test_run_scaling_law.py \
+       tests/test_qid_layer.py \
+       tests/test_fid_layer.py \
+       tests/test_critical_exponents.py \
+       tests/test_correlation_length.py \
+       tests/test_energy_meter.py \
+       tests/test_data_loaders.py -v
+
+# Single-GPU smoke test (about 30 minutes)
+python experiments/run_all.py \
+    --data_path data/wikitext-2/train.jsonl \
+    --tokenizer_path gpt2 \
+    --scale 10M --seeds 42 \
+    --output_root /tmp/uid_smoke
+
+# Full Phase 1 experiment (multi-machine multi-GPU, several days)
+python experiments/run_all.py \
+    --data_path data/wikitext-103/train.jsonl \
+    --tokenizer_path gpt2 \
+    --seeds 42 43 44
 ```
 
-### 14.5 Drop-In Code Example (Conceptual; concrete implementation in `cid/cid_block.py`)
+### 14.6 Three Critical Measurement Protocols
+
+#### 14.6.1 Measurement of Critical Emergence Requires Noise Injection OFF
+
+The five core measurement functions `measure_fisher_anisotropy_eta`, `measure_power_spectrum`, `measure_hurst_exponent`, `detect_avalanches`, and `measure_correlation_length` all rely on a common premise: **the model's intrinsic emergent signal must be separated from the injected noise**. Otherwise the measured 1/f spectrum is only the frequency-domain fingerprint of the injected noise itself and does not constitute genuine evidence of emergence. v2.1 guarantees this through three layers of defence.
+
+1. **Module layer**: the private flag `CIDLayer._inject_noise`, flipped explicitly by `set_noise_injection(False)`.
+2. **Pipeline layer**: `collect_hidden_states(..., disable_noise=True)` automatically captures and restores the model state around the measurement window.
+3. **Test layer**: `tests/test_critical_exponents.py::TestEtaInBattery::test_battery_does_not_pollute_noise_injection_state` verifies that the pipeline does not corrupt caller settings.
+
+The measurement protocol is as follows.
 
 ```python
-import torch
-import torch.nn as nn
-from cid.blocks.hopfield_attn import HopfieldAttention
-from cid.blocks.curl_mlp import CurlMLP
-from cid.blocks.residual import LearnableResidual
-from cid.blocks.colored_noise import OUNoise
-
-class CIDBlock(nn.Module):
-    """
-    Full CID building block, 100% drop-in replacement for MiniMindBlock.
-    Parameter scale, depth, hidden_dim aligned with the MiniMind baseline;
-    no extra parameters added.
-    """
-    def __init__(self, config):
-        super().__init__()
-        # 1. -∇U: associative memory (replaces softmax-attention; no extra params)
-        self.attn = HopfieldAttention(config)
-        # 2. v: curl (added via antisymmetric mask in the MLP; no extra params)
-        self.mlp  = CurlMLP(config, curl_strength=0.1)
-        # 3. -∫γ: colored damping (learnable residual scalar α; +1 param)
-        self.res_alpha = nn.Parameter(torch.tensor(1.0))
-        # 4. ξ: colored noise (OU process; +1 param)
-        self.noise = OUNoise(dim=config.dim, tau=10.0)
-        # LayerNorm (same as the baseline)
-        self.ln1 = nn.LayerNorm(config.dim)
-        self.ln2 = nn.LayerNorm(config.dim)
-    
-    def forward(self, x):
-        # Implements Eq. (6.1): four terms combined in a single forward pass
-        x = x + self.res_alpha * self.attn(self.ln1(x))             # term 1+3
-        x = x + self.res_alpha * self.mlp(self.ln2(x))              # term 2+3
-        if self.training:                                           # term 4 (training only)
-            x = x + self.noise(x)
-        return x
-
-# Drop-in replacement for the original block in the MiniMind project:
-# Just change `MiniMindBlock` to `CIDBlock`; everything else is unchanged.
+model.eval()
+# Step 1: save current state
+prev = model.backbone.layers[0]._inject_noise
+# Step 2: turn off noise injection
+model.set_noise_injection(False)
+try:
+    # Step 3: measure in the noise-OFF state
+    result_off = measure_xxx(model, ...)
+    # Step 4: optionally also measure in noise-ON state as a control
+    model.set_noise_injection(True)
+    result_on = measure_xxx(model, ...)
+finally:
+    # Step 5: restore the caller's original state
+    model.set_noise_injection(prev)
 ```
 
-### 14.6 Engineering Promise
+`run_critical_exponents.py` automatically contrasts the noise-OFF and noise-ON differences in its verdict; if the two are too close (default tolerance 0.05), the verdict outputs an `ambiguous_residual_echo` warning, alerting the user that the noise-OFF measurement may be a residual echo of training-time noise rather than genuine emergence.
 
-We promise the following experimental outputs in the next 6 months:
+#### 14.6.2 Energy Measurement Must Report the Above-Idle Field
 
-| Time | Deliverable | Verification Goal |
+`uid_theory/verification/energy_meter.py` (v2.1 batch 4) by default uses pynvml 25 Hz high-frequency power sampling, independently measures the idle baseline, and reports both raw and above-idle energy metrics.
+
+| Field | Meaning | Applicable scenario |
 |---|---|---|
-| 2026.06 | CID-26M (single-GPU model, MiniMind-26M aligned) | At 26M parameters, demonstrate H/τ/β three exponents in the predicted intervals; PPL matches MiniMind-26M |
-| 2026.08 | CID-104M (single-GPU model, MiniMind-104M aligned) | At 104M parameters, demonstrate that CID is at least 30% faster at equal PPL |
-| 2026.10 | CID-1B (8×A100 single-machine, GPT-2 large baseline) | At 1B parameters, demonstrate the engineering reality of the 10× efficiency target (CID-1B ≈ GPT-2 large 1.5B) |
-| 2026.12 | CID-7B (multi-machine multi-GPU, LLaMA-7B baseline) | At the 7B parameter level, demonstrate competitive ability with LLaMA-7B; first complete falsifiability test |
+| `energy_per_token_joules` | Total energy including idle ÷ tokens | Data-centre-scale comparison |
+| `energy_per_token_above_idle_joules` | Energy with idle subtracted ÷ tokens | Cross-model-scale fair comparison (this field MUST be used) |
+| `idle_power_watts` | Power baseline after model loaded but before forward begins | Data-quality check |
+| `power_above_idle_watts` | Average working power minus idle power | Architecture's own power overhead |
 
-> **Falsifiability promise**: If on the MiniMind / nanoGPT / LLaMA series of standard benchmarks the parameter efficiency of CID **does not reach 5× or more** (10× being the conservative target), we will publicly admit the failure of the theory and revise the framework.
+The evaluation of README prediction 6 (inference energy efficiency ≥ 3×) **must use the above-idle field**, because the idle baseline of small models (typically 30-80 W) would dominate raw energy per token, making large models appear disproportionately efficient. `run_energy_benchmark.py` automatically prints both ratio columns in the comparison table and emits an explicit warning when the idle fraction exceeds 30%.
+
+#### 14.6.3 Correlation Length ξ Measurement Protocol (Phase 1 F9)
+
+`uid_theory/verification/correlation_length.py` implements ξ per Theory §11.1 Definition 11.1: the number of steps for the mutual information to decay to 1/e of the self-mutual-information serves as ξ_ℓ,c, then the median across all (layer, channel) pairs gives the model-wide ξ. F9 condition further requires that under a multi-T scan, fitting ξ(T) ~ T^γ yields γ ≥ 0.3 with R² ≥ 0.8 (corresponding to the engineering commitment in §11.2.10).
+
+`experiments/run_correlation_length.py` provides both single-T measurement and multi-T scanning modes, automatically yielding one of 5 verdicts: PASS / FAIL / ABSTAIN_clipped / ABSTAIN_not_scanned / not_applicable. Any v2.1 ξ measurement must be conducted in the noise-OFF state, otherwise it triggers the KSG-estimator small-sample-bias warning documented in `KNOWN_LIMITATIONS.md` §C5.
+
+### 14.7 Engineering Commitment Timeline
+
+We commit to producing the following experimental outputs in the next 6-18 months, corresponding to the pre-registered F1-F9 falsification conditions in the README. All results will be serialised strictly according to the 6 JSON Schemas in `results/schemas/`, written to `results/phase{N}/`, and accompanied by a Phase report (using the 8-section template in `results/phase1/REPORT.template.md`).
+
+| Time | Deliverable | F-conditions validated |
+|---|---|---|
+| **2026.06** | CID-26M (single-GPU model, aligned with MiniMind-26M) | F3 / F4 / F5 / F6 / F8 |
+| **2026.08** | CID-104M (single-GPU model, aligned with MiniMind-104M) | Same as above + preliminary F1 / F7 |
+| **2026.10** | CID-1B (8 × A100 single machine, GPT-2 large baseline) | Full F1 / F2 / F7 + F9 |
+| **2026.12** | CID-7B (multi-machine multi-GPU, LLaMA-7B baseline) | All 9 F-conditions of Phase 1 |
+
+> **Falsifiability commitment**: if in the Phase 1 experiment CID's parameter efficiency **fails to reach 5× (conservative threshold 3×) or** η fails to satisfy > 0.5 or ξ(T) fails to satisfy γ ≥ 0.3, we will publicly acknowledge theory failure and revise the framework along the "fix-by-defect" directions in §C; all failed results will be published with equal prominence to successful results on `results/phase1/REPORT.md` and on the project homepage.
+
+### 14.8 Five Fundamental Improvements Over v0.1 / v2.0
+
+To help readers understand v2.1's progress relative to early versions, the table below summarises the 5 most critical improvements. The complete changelog is in `CHANGELOG.md`.
+
+| # | Early problem | v2.1 fix |
+|---|---|---|
+| 1 | v0.1 avalanche detection used \|logits_a − logits_b\| measuring noise differences, unrelated to actual avalanches | v2.0+ switched to the Beggs-Plenz protocol (z-score threshold crossings), locked by `tests/test_avalanche_detector.py` |
+| 2 | v0.1 critical-exponent measurement was circular (inject 1/f noise → measure 1/f spectrum) | v2.0+ introduced the `set_noise_injection(False)` API plus noise-OFF vs noise-ON contrast verdict |
+| 3 | v2.0 HopfieldAttention was standard attention, inconsistent with the theory's §8.5 ET symmetric claim | v2.1 implements the ET full dual-term update with Lyapunov-guaranteed monotonic descent, locked by `tests/test_et_lyapunov.py` |
+| 4 | v2.0 VortexField introduced 2 × H² extra parameters, violating §14.2 zero-parameter principle | v2.1 rebuilds from the antisymmetric projection of the FFN first-layer weight, only +1 scalar per layer, locked by `TestVortexZeroExtraParams` |
+| 5 | v2.0 default FFT spectral shaping noise carried a circular-measurement risk | v2.1 default switched to OU physical SDE, FFT retained as legacy for §14.2 isolation ablation contrast |
+
+### 14.9 Chapter Summary
+
+> **The four terms of the CID master equation** (associative memory, vortex, colored damping, colored noise) **correspond one-to-one to four modules in the v2.1 code**, the extra parameter count of each term is locked to a constant (at most 1 scalar per layer), and the question of whether each term "actually helps when added" is answered through corresponding ablation variants (cid_no_vortex / cid_no_memory / cid_no_noise / cid_full_no_et / cid_full_fft_noise) acting as inverse verification.
+>
+> **The top-level APIs of the three-tier architecture** (set_noise_injection / set_energy_monitoring / set_temperature / fluctuation_dissipation_consistency) **are uniformly exposed on UIDModel**, so the caller need not pierce through to internal submodules.
+>
+> **Eight falsifiable tests** (F1-F8 plus F9) **are wired through end-to-end**, orchestrated by `experiments/run_all.py` with one command, and results are written into `results/phase1/` per the unified schema.
+>
+> **Seven v2.1 key regression test files** (about 200+ cases) **cover every fix across the three-tier architecture**, automatically validated by GitHub Actions CI on every PR, ensuring that future refactors do not regress to the already-fixed issues of v0.1 / v2.0.
+>
+> The goal of these engineering implementations is not "to prove UID is right", but **to turn the question of whether UID is right into an empirical question that can be reproduced independently**. Phase 1 measurement results (whether supporting or falsifying) will be made public per the negative-result publication policy in `results/README.md`, with the same prominence as positive results.
+
 
 ## Chapter 15 — Dialogue with the AI Frontier of 2024–2026
 
