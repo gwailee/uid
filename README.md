@@ -38,9 +38,8 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 <div align="center">
 
-# 统一智动力学：CID · QID · FID 完整理论
-
-**Unified Intelligo-Dynamics (UID): A Three-Tier Theoretical Framework**
+# 智能是一个非平衡场：统一智动力学（UID）的三层物理理论
+## ——注意力并不够：智能架构的非平衡物理基础
 
 [CI](https://github.com/gwailee/uid/actions/workflows/ci.yml) | [DOI](https://doi.org/10.5281/zenodo.20372493) | [License: PolyForm Noncommercial](LICENSE)
 
