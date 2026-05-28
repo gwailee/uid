@@ -1711,6 +1711,8 @@ The relationship between the Alman-Song-Gupta lower bound and Theorem 11.1 can b
 
 > **Conclusion**: UID's 5-10× parameter-efficiency upper bound and the Alman-Song-Gupta quadratic complexity lower bound are strictly complementary. They do not conflict because they address different complexity quantities (T_alg versus N) and different interfaces (softmax-attention versus the CID master equation). Any attempt to break the Alman-Song lower bound via engineering tricks within the softmax-attention interface is doomed (short of falsifying SETH), as demonstrated by the May 2026 SubQ incident. But stepping outside the softmax-attention interface and pursuing parameter efficiency in a new interface is the falsifiable direction this theory advocates, and is fully consistent with all known fine-grained complexity results.
 
+## Chapter 12 – Falsifiable Predictions: Three Critical Exponents  
+CID is not philosophy: it makes three quantitative predictions, each of which can be tested in an independent experiment.
 
 ### 12.1 Hurst Exponent: H ≈ 0.6 – 0.8
 
