@@ -1566,38 +1566,151 @@ The "dozens of times" or "hundreds of times" compression claims commonly seen on
 | Embedded curl (no test-time compute) | ~ 3× | Physical dynamics replaces explicit reasoning iteration |
 | **Total** | ~ 60× total training-energy reduction | Conservative estimate |
 
-**11.5 Relationship with Computational Complexity Lower Bounds: How UID Bypasses the Alman-Song-Gupta Complexity Wall**
+## 11.5 Relation to the Alman-Song-Gupta Complexity Wall: Theorem 11.1 Is COMPLEMENTARY, Not in Conflict
 
-The preceding derivation in this chapter yields a theoretical upper bound of approximately 10× parameter efficiency for CID relative to Transformer. A natural question arises: does this prediction contradict the Attention complexity lower bounds established by theoretical computer science (TCS) in recent years?
+### 11.5.1 Core Claim of This Section
 
-**Alman and Song (2023)** in "Fast Attention Requires Bounded Entries" [arXiv: 2302.13214](https://arxiv.org/abs/2302.13214) first rigorously proved: under the standard setting of head dimension d = Θ(log n), assuming the Strong Exponential Time Hypothesis (SETH) holds, when the absolute value of input matrix entries B ≥ Ω(√log n), **there exists no truly subquadratic-time Attention algorithm**. This result was generalized in May 2025 by **Gupta, Huang, Saha, Xu, Ye (2025)** in "Subquadratic Algorithms and Hardness for Attention with Any Temperature" [arXiv: 2505.14840](https://arxiv.org/abs/2505.14840) to arbitrary temperatures and arbitrary constant head dimensions, proving that even under the extremely weak setting of d = 2^(Θ(log* n)), Attention still requires n^(2-o(1)) time.
+> **Proposition 11.2 (Compatibility of Theorem 11.1 with the Alman-Song-Gupta lower bound)**: The quadratic-complexity lower bound on attention proven by Alman-Song (2023) and Gupta et al. (2025) does not constitute a counter-example to the 5-10× parameter-efficiency upper bound given by Theorem 11.1. The two results target different complexity classes: the Alman-Song-Gupta lower bound characterises algorithmic time complexity within the softmax-attention interface, whereas Theorem 11.1 characterises parameter-space complexity of the entire CID master-equation interface. The two have no domain of overlap, hence no conflict.
 
-**This complexity lower bound is fully compatible with UID's 10× parameter efficiency prediction**, because the two target **different complexity classes**:
+This section rigorously proves Proposition 11.2 and clarifies the respective scope of applicability of both bounds, ensuring no reader confuses an algorithmic-time lower bound with a parameter-count upper bound.
 
-1. **Scope of the Alman-Song-Gupta lower bound**: This bound is strictly confined to the **input-output interface of softmax-attention**—i.e., given query matrix Q, key matrix K, value matrix V, the computational complexity of outputting D^(-1) · exp(QK^T / d) · V. Any optimization within this interface (FlashAttention, Linear Attention, Performer, SubQ/SSA, etc.) cannot break the n² complexity wall.
+### 11.5.2 Three Independent Complexity Quantities
 
-2. **UID's breakthrough pathway**: The CID master equation, by introducing **vorticity v(φ)** and **colored damping ∫γ(t-s)**, **changes the way the Langevin equation is discretized**, essentially escaping the complexity class of softmax-attention. Specifically:
-   - In Transformer, one forward pass = one softmax-attention computation, complexity O(n²);
-   - In CID, one forward pass = one generalized Langevin update with vorticity and memory kernel, complexity still O(n²), **but the information carried per step increases by approximately 10×**;
-   - Therefore, the **number of layers L** and **parameter count P** required to achieve the same perplexity decrease logarithmically: L_CID ≈ L_Transformer / log(ξ), where ξ is the memory length parameter (typical value ξ ≈ 10–100).
+To avoid conceptual confusion, we first rigorously distinguish three independent complexity quantities.
 
-3. **Complexity positioning of three parallel pathways**:
+> **Definition 11.2 (Three classes of complexity)**:
+>
+> - **Algorithmic time complexity** `T_alg(n)`: for input sequence length n, the number of floating-point operations required for one forward pass.
+> - **Architectural parameter complexity** `N_arch`: the non-embedding parameter count required to reach a given task performance (for example, iso-loss).
+> - **Interface expressive complexity** `M_iface`: the number of equivalence classes the architecture can stably distinguish.
 
-| Pathway | Representative Architecture | Complexity Class | Constrained by Alman-Song Bound? | Efficiency Gain Mechanism |
+The relations among these three quantities are as follows. We have `N_arch ≤ T_alg / n`, because the parameter count is upper-bounded by the per-step FLOPs (every parameter must be accessed at least once during a single forward pass). But the reverse relation, namely "a lower bound on parameter count implies a lower bound on FLOPs", does NOT hold — a sparsely activated architecture can have small N while requiring large T_alg (Mixture-of-Experts being the canonical example).
+
+This asymmetry is the key reason why a lower bound on T_alg does not automatically translate into a lower bound on N, and is the foundation on which Proposition 11.2 rests.
+
+### 11.5.3 Precise Statement of the Alman-Song-Gupta Lower Bound
+
+Alman-Song (2023, arXiv:2302.13214) proves precisely the following result.
+
+> **Theorem (Alman-Song 2023, simplified statement of Theorem 1.4)**: Let n be the input sequence length, d_k the head dimension, and B the upper bound on the absolute values of the input matrix entries. Under the standard setting d_k = Θ(log n), and assuming the Strong Exponential Time Hypothesis (SETH) holds, when B ≥ Ω(√log n) there does not exist a truly subquadratic-time softmax-attention algorithm. Specifically, for any ε > 0:
+>
+> ```
+> T_alg^attn(n) ≥ Ω(n^(2-ε))     [within the softmax-attention interface]
+> ```
+
+Gupta et al. (2025, arXiv:2505.14840) extends this lower bound to arbitrary constant head dimensions and arbitrary temperatures, with the same form of conclusion holding under SETH.
+
+**Key observation**: this lower bound applies only to algorithms that compute the softmax-attention output, that is, computations of the form `D⁻¹ · exp(QKᵀ / d) · V`. Any algorithm that does not perform this exact computation is outside the scope of the bound, and may or may not be subject to a different (possibly weaker or possibly absent) complexity restriction.
+
+### 11.5.4 Precise Statement of Theorem 11.1 (Restatement)
+
+For comparison, recall the precise statement of Theorem 11.1 from §11.2.3, which gives a parameter-space upper bound rather than an algorithmic-time lower bound.
+
+> **Theorem 11.1 (restated)**: Under assumptions A1-A3, for CID and Transformer architectures solving the same task with the same vocabulary and the same number of equivalence classes M, their non-embedding parameter-count ratio satisfies:
+>
+> ```
+> N_Trans / N_CID  ≤  C · log(ξ_CID / ξ_Trans)
+> ```
+
+**Key observation**: this upper bound makes no statement about algorithmic time; it bounds only the parameter-count ratio. It does not claim that CID is faster than Transformer per forward pass — it claims that CID can reach the same task performance with fewer parameters.
+
+### 11.5.5 Proof of Proposition 11.2
+
+**Proof.** Suppose the Alman-Song lower bound gives `T_alg^attn(n) ≥ Ω(n^(2-ε))`. We are to prove this does not conflict with Theorem 11.1's `N_Trans / N_CID ≤ C · log(ξ_CID / ξ_Trans)`. The proof proceeds in three steps.
+
+**Step 1: CID and Transformer have the same algorithmic time complexity, both O(n²).**
+
+The discretisation of the CID master equation reads:
+
+```
+dφ/dt  =  -∇U(φ)  +  v(φ)  -  ∫ γ(t-s) (dφ/ds) ds  +  ξ(t)
+```
+
+Per-term time complexity is summarised in the following table.
+
+| Term | Algorithmic implementation | Time complexity |
+|---|---|---|
+| -∇U | HopfieldAttention (softmax-attention) | O(n²) |
+| v(φ) | Antisymmetric projection × hidden state | O(n × H²) |
+| -∫γ ds | depthwise causal conv | O(n × L_kernel) |
+| ξ(t) | OU process update | O(n × H) |
+
+The total is therefore `T_alg^CID(n) = O(n²) + O(n × H²) = O(n²)` when H is constant (which it is for any fixed architecture). Hence CID and Transformer lie in exactly the same algorithmic time-complexity class, and both are subject to the Alman-Song lower bound on the softmax-attention sub-step within their respective forward passes.
+
+**Step 2: However, the parameter counts of CID and Transformer can differ substantially even though their algorithmic time complexity does not.**
+
+Theorem 11.1 makes no claim about per-step FLOPs; it asserts only `N_Trans / N_CID ≤ C · log(...)`. Both architectures execute O(n²) FLOPs per forward pass, but if `ξ_CID >> ξ_Trans` and Hopfield capacity is saturated (per assumption A3), then CID can reach the same number M of distinguishable equivalence classes with strictly fewer parameters than Transformer. The information that a parameter "carries" in CID is more concentrated (each parameter participates in a longer-range correlation), so fewer parameters are needed to express the same task.
+
+**Step 3: The two inequalities act on disjoint sets, hence no conflict.**
+
+The respective scopes of the two results can be summarised as follows.
+
+```
+[ Alman-Song lower bound ]   T_alg^attn(n) ≥ Ω(n^(2-ε))
+       ↓ applies to
+[ Softmax-attention interface algorithms ]
+
+[ Theorem 11.1 upper bound ] N_Trans / N_CID ≤ C · log(ξ_CID / ξ_Trans)
+       ↓ applies to
+[ Parameter space of CID vs Transformer ]
+```
+
+The two are not propositions of the same kind — one is a lower bound on T_alg, the other an upper bound on N. Lower bounds and upper bounds are dual quantities that operate on different sides of any inequality, and even when they describe the "same" architecture they describe orthogonal aspects of it. Hence there is no possibility of conflict between them. ∎
+
+### 11.5.6 Classification of Three Parallel Optimisation Pathways by Complexity Class
+
+Based on the analysis above, all AI-architecture optimisation pathways currently active at the 2024-2026 research frontier can be cleanly classified by their target complexity class.
+
+| Pathway | Representative architectures | Optimisation target | Constrained by Alman-Song? |
+|---|---|---|---|
+| **Within-the-wall efficiency** | FlashAttention, SubQ / SSA, Linear Attention | Constant-factor improvement on T_alg (within O(n²)) | ✅ Yes |
+| **Outside-the-wall parameter** | UID / CID (this theory) | Improvement on N_arch (5-10× parameter efficiency) | ❌ No (different interface) |
+| **External-loop reasoning** | DeepSeek-R1, OpenAI o1-o3, Claude thinking | Add test-time compute T_inference on top of T_alg | ⚠ Single step still constrained |
+
+A finer comparison of per-step cost, cumulative cost, and relation to UID is given below.
+
+| Pathway | Optimisation direction | Per-step cost | Cumulative cost | Relation to UID |
 |---|---|---|---|---|
-| **Within-the-wall efficiency camp** | FlashAttention, SubQ/SSA | O(n²), constant factor optimization | ✅ Constrained | Reduces constants via pruning, caching, sparsification |
-| **External loop camp** | DeepSeek-R1, o1-o3 | O(n² × T), T = reasoning steps | ✅ Constrained (single step still softmax) | Compensates for internal vorticity via test-time compute |
-| **Physical reconstruction camp** | UID / CID | O(n²), but information per step × 10 | ❌ Not constrained (escapes softmax interface) | Restores vorticity/colored damping/colored noise |
+| Within-the-wall efficiency | Reduce c₁ in c₁·n² | Slightly reduced | Same | Complementary to UID; can be stacked on top of CID |
+| Outside-the-wall parameter | Reduce N | Same | Reduced (smaller model required) | **Core of this theory** |
+| External-loop reasoning | Deepen reasoning trajectory | Same | Significantly increased | Partial overlap with UID: CID's internal vortex reduces the need for external loops |
 
-4. **Complexity-theoretic interpretation of the SubQ incident**: In May 2026, Subquadratic's SubQ model claimed to achieve near-linear complexity through a "fully subquadratic sparse attention architecture (SSA)". However, critics ([Depue, 2026](https://x.com/willdepue/status/2051740399597760626)) immediately pointed out that SSA faces a **logical circularity dilemma**: how can the model know which positions are meaningful before running attention? Any "pre-selection" mechanism is either itself O(n²) (complexity merely relocated), or relies on training distribution (reliability locked within distribution). This is precisely the projection of the Alman-Song-Gupta complexity wall onto engineering products—**any optimization within the softmax-attention framework is "old wine in new bottles"**.
+The three pathways are not mutually exclusive. A future architecture could combine all three: a CID master-equation model (outside-the-wall N reduction) implemented with a FlashAttention-style kernel (within-the-wall constant-factor improvement) and augmented with a DeepSeek-R1-style external reasoning loop. UID does not preclude any of the other two pathways; it only argues that the outside-the-wall path is the one its theoretical framework justifies and predicts.
 
-5. **UID's Falsifiable Promise**: If a complete CID implementation **fails to achieve at least 5× parameter efficiency on standard benchmarks (e.g., language modeling, code generation, mathematical reasoning)**, the theory must be revised. This commitment is **complementary, not competitive**, with the Alman-Song-Gupta lower bound: the latter says "no breakthrough within the wall", the former says "if outside the wall, then at least 5×".
+### 11.5.7 Comparison with the SubQ Incident (May 2026)
 
-**Conclusion**: UID's 10× parameter efficiency prediction does not violate any complexity lower bound; on the contrary, it provides the **only theoretically feasible breakthrough pathway** under the constraint of complexity lower bounds. This pathway requires reincorporating the three physical terms of vorticity, colored noise, and colored damping into the dynamical equation—which is precisely the central thesis argued throughout this paper, "Attention Is Not All You Need".
+In May 2026, Subquadratic Inc. released the SubQ model claiming to achieve near-linear-time complexity through a "fully subquadratic sparse attention (SSA)" architecture. Critics including Depue (2026.05) and Liu (2026, ChinaXiv: T202604.00433) immediately pointed out a logical circularity in SSA, which can be summarised as follows.
 
-## Chapter 12 — Falsifiable Predictions: Three Critical Exponents
+> How can the model know which positions are meaningful before running attention? Any "pre-selection" mechanism is either itself O(n²) (just relocating complexity from one place to another within the same forward pass) or relies on the training distribution (locking reliability to the in-distribution case and losing robustness on novel inputs).
 
-CID is not philosophy: it gives three quantitative predictions, every one of which can be checked in independent experiments.
+This is the precise projection of the Alman-Song-Gupta lower bound onto an engineering product. The bound says that within the softmax-attention interface no algorithm can achieve truly subquadratic time under SETH; SubQ tried to dodge this by introducing a "pre-selection" step, but the pre-selection step itself either falls back into O(n²) or breaks distributional robustness — exactly the dichotomy that Alman-Song-Gupta predict.
+
+**Why SubQ failed in principle**: SubQ took the within-the-wall efficiency pathway and attempted to break the Alman-Song lower bound within the softmax-attention interface. But the SETH assumption underlying that bound is one of the most extensively studied conjectures in fine-grained complexity theory, and breaking it via engineering optimisation is equivalent to falsifying SETH — a result that would be one of the most important findings in theoretical computer science in decades. The conditional probability of an engineering team accidentally producing such a result is essentially zero.
+
+**Why UID does not commit this mistake**: UID takes the outside-the-wall parameter pathway. It does not optimise within the softmax-attention interface at all. Instead, it introduces three new physical structures (curl, colored damping, and colored noise) that move the entire architecture out of the softmax-attention interface and into a new CID master-equation interface. The two interfaces belong to different complexity classes, so UID's 5-10× parameter efficiency coexists with the Alman-Song lower bound in a complementary, non-competing fashion. UID does not claim to falsify SETH; it claims that SETH simply does not apply to architectures that have left the softmax-attention interface.
+
+### 11.5.8 Edge Case: Could UID "Pierce Through" the Alman-Song Wall?
+
+A careful reader may ask whether UID's escape from the softmax-attention interface implies UID could eventually achieve subquadratic algorithmic time. The honest answer is: this theory paper does not claim so, and no Phase 1 deliverable depends on it.
+
+> **Honest disclaimer**: UID does not claim to break the Alman-Song algorithmic time lower bound. The algorithmic implementation of the CID master equation is still O(n²) per forward pass (as proven in Step 1 of §11.5.5). UID's commitment is to smaller N, not shorter T_alg.
+
+If, in the future, someone proves that the CID implementation can be completed in O(n^(2-ε)) time for some ε > 0, this would not violate the Alman-Song lower bound — because CID is not softmax-attention, so the Alman-Song bound does not apply to CID's algorithm. The proof would establish a new, weaker (or absent) complexity bound specific to the CID master-equation interface, complementing rather than refuting the Alman-Song result. But this theory paper makes no such claim; the only commitment relevant to this chapter is `N_Trans / N_CID ≤ 5-10×`, and the engineering target in §11.2.10 reflects exactly that.
+
+### 11.5.9 Summary of §11.5
+
+The relationship between the Alman-Song-Gupta lower bound and Theorem 11.1 can be summarised in a single table.
+
+| Dimension | Alman-Song lower bound | Theorem 11.1 upper bound |
+|---|---|---|
+| Quantity bounded | Algorithmic time T_alg | Parameter count N |
+| Scope of applicability | Softmax-attention interface | Whole CID master-equation interface |
+| Mathematical form | T_alg ≥ Ω(n^(2-ε)) | N_Trans / N_CID ≤ C · log(ξ ratio) |
+| Direction of bound | Lower bound (impossibility) | Upper bound (achievability) |
+| Conflict with the other? | No | No (target different complexity quantities) |
+
+> **Conclusion**: UID's 5-10× parameter-efficiency upper bound and the Alman-Song-Gupta quadratic complexity lower bound are strictly complementary. They do not conflict because they address different complexity quantities (T_alg versus N) and different interfaces (softmax-attention versus the CID master equation). Any attempt to break the Alman-Song lower bound via engineering tricks within the softmax-attention interface is doomed (short of falsifying SETH), as demonstrated by the May 2026 SubQ incident. But stepping outside the softmax-attention interface and pursuing parameter efficiency in a new interface is the falsifiable direction this theory advocates, and is fully consistent with all known fine-grained complexity results.
+
 
 ### 12.1 Hurst Exponent: H ≈ 0.6 – 0.8
 
