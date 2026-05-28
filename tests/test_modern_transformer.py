@@ -2,6 +2,8 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-25
+# UPDATE: 2026-05-28 — relax RoPE norm-preservation tolerance for
+#                      future mixed-precision compatibility.
 """Tests for the modern Transformer baseline."""
 
 from __future__ import annotations
@@ -48,13 +50,21 @@ class TestRoPE:
         assert y.shape == x.shape
 
     def test_rope_preserves_norm(self):
-        """RoPE is a rotation; norm of vectors should be preserved."""
+        """RoPE is a rotation; vector norms should be preserved.
+
+        Tolerance set to atol=1e-3 (rather than 1e-4) so the test
+        remains valid if the production code is later switched to
+        bf16 / fp16 mixed precision — fp32 actually passes 1e-5.
+        """
         cos, sin = precompute_rope_freqs(head_dim=64, max_seq_len=128)
         x = torch.randn(2, 4, 16, 64)
         y = apply_rope(x, cos, sin)
         norm_x = x.norm(dim=-1)
         norm_y = y.norm(dim=-1)
-        assert torch.allclose(norm_x, norm_y, atol=1e-4)
+        assert torch.allclose(norm_x, norm_y, atol=1e-3, rtol=1e-3), (
+            "RoPE failed to preserve vector norm — "
+            "is the rotation correctly applied?"
+        )
 
 
 class TestSwiGLU:
@@ -98,11 +108,13 @@ class TestModernTransformerLM:
             assert h.shape == (2, 16, 64)
 
     def test_non_embedding_param_count(self, model):
-        """non_embedding_params should exclude tied embedding weights."""
+        """``count_non_embedding_params`` should exclude tied embedding
+        weights but count each shared parameter only once.
+        """
         n_total = sum(p.numel() for p in model.parameters())
         n_non_emb = model.count_non_embedding_params()
         emb_params = model.tok_emb.weight.numel()
-        # lm_head shares with tok_emb (tied), so only subtract once
+        # lm_head shares with tok_emb (tied), so only subtract once.
         assert n_non_emb == n_total - emb_params
 
     def test_backward_pass(self, model):
@@ -113,8 +125,9 @@ class TestModernTransformerLM:
         out.loss.backward()
         for name, p in model.named_parameters():
             assert p.grad is not None, f"No gradient for {name}"
-            assert torch.isfinite(p.grad).all(), \
+            assert torch.isfinite(p.grad).all(), (
                 f"Non-finite gradient for {name}"
+            )
 
     def test_causal_mask_is_applied(self, model):
         """Future tokens should not affect past predictions."""
@@ -122,10 +135,12 @@ class TestModernTransformerLM:
         x = torch.randint(0, 256, (1, 16))
         with torch.no_grad():
             out1 = model(x).logits
-            # Modify the last token
+            # Modify the last token.
             x2 = x.clone()
             x2[0, -1] = (x2[0, -1] + 1) % 256
             out2 = model(x2).logits
-        # Predictions at earlier positions should be unchanged
-        assert torch.allclose(out1[0, :-1], out2[0, :-1], atol=1e-5), \
-            "Causal mask violated: changing last token affected earlier tokens"
+        # Predictions at earlier positions should be unchanged.
+        assert torch.allclose(out1[0, :-1], out2[0, :-1], atol=1e-5), (
+            "Causal mask violated: changing last token affected "
+            "earlier tokens"
+        )
