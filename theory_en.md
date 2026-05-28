@@ -1,4 +1,4 @@
-```
+
 <!--
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
@@ -16,7 +16,7 @@ DUAL LICENSE:
 For commercial licensing inquiries, contact: lig@jodell.cn
 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权。
 -->
-```
+
 
 ![logo](./images/logo.png)
 
