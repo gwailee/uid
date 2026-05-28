@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gwailee/uid/blob/main/results/schemas/ablation_summary_v1.json",
+  "title": "UID Eleven-Way Ablation Summary (v1)",
+  "description": "Aggregate per-ablation summary and the three critical-contrast verdicts from experiments/run_ablation.py. Conforms to the contract in results/README.md §Schema 3.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["summary", "critical_comparisons"],
+  "properties": {
+    "summary": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ablationStat" }
+    },
+    "critical_comparisons": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/criticalContrast" }
+    }
+  },
+  "$defs": {
+    "ablationStat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ablation",
+        "n_seeds",
+        "eval_loss_mean",
+        "eval_loss_std",
+        "eval_ppl_mean",
+        "eval_ppl_std"
+      ],
+      "properties": {
+        "ablation": {
+          "type": "string",
+          "enum": [
+            "cid_no_vortex",
+            "cid_no_memory",
+            "cid_no_noise",
+            "cid_full",
+            "cid_full_no_et",
+            "cid_full_fft_noise",
+            "transformer_baseline",
+            "transformer_plus_noise",
+            "transformer_plus_conv",
+            "transformer_plus_linear",
+            "transformer_plus_all_tricks"
+          ],
+          "description": "One of the eleven v2.1 canonical ablation variant names (see uid_theory/verification/ablation_suite.py get_ablation_configs)."
+        },
+        "n_seeds": { "type": "integer", "minimum": 1 },
+        "eval_loss_mean": { "type": "number" },
+        "eval_loss_std": { "type": "number", "minimum": 0 },
+        "eval_ppl_mean": { "type": "number", "exclusiveMinimum": 0 },
+        "eval_ppl_std": { "type": "number", "minimum": 0 }
+      }
+    },
+    "criticalContrast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "name_a",
+        "name_b",
+        "loss_a",
+        "loss_b",
+        "advantage",
+        "z_score",
+        "verdict"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Human-readable title; typically 'CRITICAL COMPARISON {A|B|C}: ...'."
+        },
+        "name_a": { "type": "string" },
+        "name_b": { "type": "string" },
+        "loss_a": { "type": "number" },
+        "loss_b": { "type": "number" },
+        "advantage": {
+          "type": "number",
+          "description": "loss_b - loss_a; positive means variant 'a' is better."
+        },
+        "z_score": {
+          "type": "number",
+          "description": "Approximate two-sample z-score for difference of means; positive means 'a' beats 'b'."
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["supported", "falsified"],
+          "description": "'supported' = advantage > 0 AND |z| > 2.0; 'falsified' otherwise."
+        }
+      }
+    }
+  }
+}
