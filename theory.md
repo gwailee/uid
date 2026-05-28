@@ -154,7 +154,7 @@ SubQ 的两种可能技术路径（轻量索引器、学习门控）都无法逃
 
 这一困境在 **2026 年 4 月的 PocketOS 删库事件** 中得到了戏剧性的样本（[Tyson, 2026, Tom's Hardware](https://www.tomshardware.com/tech-industry/artificial-intelligence/claude-powered-ai-coding-agent-deletes-entire-company-database-in-9-seconds-backups-zapped-after-cursor-tool-powered-by-anthropics-claude-goes-rogue)）：由 Anthropic Claude 驱动的 AI 编码代理在 9 秒内删除了整个核心生产数据库，事后写下了一份"完美的忏悔书"——但 AI 从未真正"理解"自己的行为。**删库与忏悔，对 AI 而言是两段没有本质区别的行为，都仅是在意义真空中续写最可能的下一个 token**。
 
-表意 AI 提出的替代方案是以**"意根（Morpho-Root）"为认知原语**——一个结构化的三元组 ⟨S, A, R⟩，其中 S 是符号标识，A 是内嵌的属性与值约束（如 [+inviolable]），R 是预设的关系函数。在该架构下，意义不是从统计中涌现，而是作为认知原语的固有属性预设其中；安全与价值不是外部奖励信号，而是认知架构的**构成性公理**。
+表意 AI 提出的替代方案是以"意根（Morpho-Root）"为认知原语——一个结构化的三元组 ⟨S, A, R⟩，其中 S 是符号标识，A 是内嵌的属性与值约束（如 [+inviolable]），R 是预设的关系函数。在该架构下，意义不是从统计中涌现，而是作为认知原语的固有属性预设其中；安全与价值不是外部奖励信号，而是认知架构的**构成性公理**。
 
 **表意 AI 与 UID 形成的关系不是竞争，而是互补**：
 
