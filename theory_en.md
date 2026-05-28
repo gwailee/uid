@@ -949,9 +949,6 @@ This is the physical origin of the √d_k scaling factor in Transformers.
 ### 8.4 Implication
 
 > **Attention is not an engineering invention; it is the inevitable consequence of the Langevin equation in the limit v = 0, D = 0, with a maximum-entropy potential and Euler discretisation.**
-
-What is required is to change "subsequent versions should supplement" into directly providing the corrected HopfieldAttention in the body of this paper, namely adding the additional symmetric matrix term of ET and providing a Lyapunov proof. Let me first confirm the specific technical details of ET. Now that I have the complete technical details of the ET original paper, including the precise form of the additional symmetric term and the Lyapunov proof, the corrected derivation can be given directly in the main text rather than "supplemented later".
-
 This also implies: **Transformer by default discards the curl (v), the colored noise, and the colored damping that appear in the CID master equation** — it is just the simplest limit of CID.
 
 ### 8.5 Relationship with Energy Transformer and the Correction of the Attention Mechanism in This Paper
