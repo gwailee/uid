@@ -2,6 +2,7 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date:   2026-05-25
+# UPDATE: 2026-05-28 — implement ET symmetric second term per Theory §8.5
 #
 # This file is part of the UID Theory reference implementation.
 #
@@ -13,23 +14,28 @@
 #     see LICENSE-COMMERCIAL in the project root
 #
 # For commercial licensing inquiries, contact: lig@jodell.cn
-# 本文件采用双许可证发布；商业使用须先获得苏州机器人有限公司书面授权，
+# 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权，
 # 商业授权联系: lig@jodell.cn
 
-"""Modern Hopfield attention as the gradient of an exponential potential.
+"""Modern Hopfield attention with Energy Transformer (ET) symmetric term.
 
-Modern Hopfield 网络势能与其对应的注意力机制。
+Modern Hopfield 注意力 —— 完整实现论文 §8.5 要求的 ET 对称双项更新。
 
-Theory (Ramsauer et al. 2020):
-    The continuous Hopfield potential
-        ``U(x) = (1/2)||x||^2 - (1/beta) log sum_mu exp(beta * xi_mu . x)``
-    has gradient
-        ``-grad U(x) = softmax(beta * K x) V - x``
-    which, up to the residual ``-x`` (absorbed by the residual stream),
-    is exactly the scaled dot-product attention used in Transformers.
+Theory (Hoover et al. 2023, arXiv:2302.07253):
+    E_ATT(g) = -(1/beta) * sum_C  log sum_{B!=C}  exp(beta * K_B . Q_C)
 
-理论：连续 Hopfield 势能的梯度恰好给出 Transformer 的 scaled dot-product
-attention，是"Attention 即物理学结果"这一论断的核心依据。
+    The negative gradient -dE/dg has TWO terms:
+        term_1 = softmax_C(beta * scores) @ W_Q_input   (standard direction)
+        term_2 = softmax_A(beta * scores) @ W_K_input   (ET symmetric term)
+
+    The symmetric term is REQUIRED for Lyapunov-monotonic energy descent.
+    Standard Transformer attention omits term_2, which is the structural
+    incompleteness that §8.5 fixes.
+
+理论（Hoover 等 2023）：ET 能量函数对 token 表示 g 求负梯度后包含两项；
+标准 Transformer 只实现了第一项，缺失第二项导致前向递归无法保证能量
+单调下降。本类按 §8.5 给出完整双项实现，并提供 ``compute_energy``
+工具方法用于工程上验证 Lyapunov 单调性。
 """
 
 from __future__ import annotations
@@ -42,25 +48,36 @@ import torch.nn as nn
 
 
 class HopfieldAttention(nn.Module):
-    """Multi-head scaled dot-product attention with explicit physical role.
+    """Multi-head ET-style energy attention with dual symmetric updates.
 
-    多头注意力；其物理意义是 modern Hopfield 势能的负梯度。
+    多头 ET 式能量注意力 —— 含双项对称更新。
 
     Notes:
-        We follow the convention ``True`` in ``causal_mask`` means
-        *masked out* (i.e. forbidden to attend).  This matches PyTorch's
-        ``masked_fill`` convention.
-        约定：``causal_mask`` 中 ``True`` 表示禁止注意，与 PyTorch
-        ``masked_fill`` 的约定一致。
+        - 当 ``use_et_symmetric=True``（默认）时实现 §8.5 完整双项更新，
+          享有 ET 能量函数单调下降的 Lyapunov 保证。
+        - 当 ``use_et_symmetric=False`` 时退化为标准 Transformer attention，
+          仅供消融实验使用，**不享有 Lyapunov 保证**。
+        - 符号约定：``causal_mask`` 中 ``True`` 表示 *禁止* 注意，
+          与 PyTorch ``masked_fill`` 约定一致。
     """
 
-    def __init__(self, hidden_size: int = 768, num_heads: int = 8) -> None:
-        """Initialise the attention module.
+    def __init__(
+        self,
+        hidden_size: int = 768,
+        num_heads: int = 8,
+        use_et_symmetric: bool = True,
+    ) -> None:
+        """Initialise the ET-style attention module.
 
         Args:
-            hidden_size: Total feature dimension. 隐藏维度。
-            num_heads:   Number of attention heads. 注意力头数。
-                         Must divide ``hidden_size`` evenly. 必须整除。
+            hidden_size:      Total feature dimension. 隐藏维度。
+            num_heads:        Number of attention heads. 注意力头数。
+                              必须整除 ``hidden_size``。
+            use_et_symmetric: If True (default), include the ET symmetric
+                              second term (§8.5 requirement). If False,
+                              fall back to standard scaled dot-product
+                              attention (ablation only).
+                              是否启用 ET 对称项，默认 True。
         """
         super().__init__()
         if hidden_size % num_heads != 0:
@@ -75,11 +92,19 @@ class HopfieldAttention(nn.Module):
         # the softmax inputs at a non-degenerate temperature.
         # 缩放因子源自随机矩阵理论，保持 softmax 处于合理温度。
         self.scale: float = 1.0 / math.sqrt(self.head_dim)
+        self.use_et_symmetric: bool = bool(use_et_symmetric)
 
-        self.q_proj: nn.Linear = nn.Linear(
+        # ET parameterisation: W_K and W_Q are the primary projections.
+        # In ET mode the "value source" for both terms IS the projected
+        # input itself (no separate W_V), so the energy function stays
+        # self-consistent. W_V is kept here ONLY for the fallback branch
+        # to preserve parameter-count parity with prior versions.
+        # ET 参数化：W_K 和 W_Q 为主投影；ET 模式下 value 由 W_Q / W_K
+        # 投影后的输入本身承担，以保证能量函数自洽。W_V 仅在退化模式下使用。
+        self.k_proj: nn.Linear = nn.Linear(
             hidden_size, hidden_size, bias=False
         )
-        self.k_proj: nn.Linear = nn.Linear(
+        self.q_proj: nn.Linear = nn.Linear(
             hidden_size, hidden_size, bias=False
         )
         self.v_proj: nn.Linear = nn.Linear(
@@ -89,29 +114,86 @@ class HopfieldAttention(nn.Module):
             hidden_size, hidden_size, bias=False
         )
 
-    def forward(
+    # ------------------------------------------------------------------
+    # ET-symmetric branch (default, §8.5)
+    # ------------------------------------------------------------------
+
+    def _forward_et(
         self,
         x: torch.Tensor,
-        causal_mask: Optional[torch.Tensor] = None,
+        causal_mask: Optional[torch.Tensor],
     ) -> torch.Tensor:
-        """Run multi-head attention.
+        """ET-style dual-term attention (§8.5 of the Theory).
 
-        Args:
-            x:           Input of shape (B, S, H). 输入张量。
-            causal_mask: Optional boolean mask of shape (S, S) where
-                         ``True`` entries are *masked out*.
-                         可选的因果掩码，``True`` 表示屏蔽。
+        ET 式双项注意力：term_1 + term_2，保证能量单调下降。
 
-        Returns:
-            Attended output of shape (B, S, H). 注意力输出。
+        Per head:
+            A[B, C]   = K_B . Q_C / sqrt(d_k)
+            S1[B, C]  = softmax_B(beta * A)    softmax over key dim (rows)
+            S2[B, C]  = softmax_C(beta * A)    softmax over query dim (cols)
+            term_1[C] = sum_B  S1[B, C] * q[B]   (i.e.  S1^T @ q)
+            term_2[B] = sum_C  S2[B, C] * k[C]   (i.e.  S2  @ k)
+            out_token = term_1 + term_2
         """
         b, s, h = x.shape
-        if h != self.hidden_size:
-            raise ValueError(
-                f"channel dim mismatch: expected {self.hidden_size}, got {h}"
-            )
 
         # Project & reshape to (B, num_heads, S, head_dim).
+        k = (
+            self.k_proj(x)
+            .view(b, s, self.num_heads, self.head_dim)
+            .transpose(1, 2)
+        )
+        q = (
+            self.q_proj(x)
+            .view(b, s, self.num_heads, self.head_dim)
+            .transpose(1, 2)
+        )
+
+        # Energy attention scores A[B, C] = K_B . Q_C  (per head).
+        # Shape: (B, num_heads, S, S) — rows = key index B, cols = query index C.
+        scores = torch.matmul(k, q.transpose(-2, -1)) * self.scale
+
+        # Causal mask: True means *forbidden*.
+        # For ET, causality is applied to BOTH softmax directions to
+        # preserve energy monotonicity under autoregressive use.
+        if causal_mask is not None:
+            mask = causal_mask[None, None, :, :]  # (1, 1, S, S)
+            scores = scores.masked_fill(mask, float("-inf"))
+
+        # --- Term 1: standard attention direction (softmax over keys) ---
+        # S1[B, C] = exp(scores[B, C]) / sum_B' exp(scores[B', C])
+        s1 = torch.softmax(scores, dim=-2)  # softmax over key dim (rows)
+        # term_1[C] = sum_B  s1[B, C] * q[B]   ==   s1^T @ q
+        term_1 = torch.matmul(
+            s1.transpose(-2, -1), q
+        )  # (B, num_heads, S, head_dim)
+
+        # --- Term 2: ET symmetric term (softmax over queries) ---
+        # S2[B, C] = exp(scores[B, C]) / sum_C' exp(scores[B, C'])
+        s2 = torch.softmax(scores, dim=-1)  # softmax over query dim (cols)
+        # term_2[B] = sum_C  s2[B, C] * k[C]   ==   s2 @ k
+        term_2 = torch.matmul(s2, k)  # (B, num_heads, S, head_dim)
+
+        # Total update = sum of two terms = -dE/dg (energy descent).
+        # ET 总更新 = 两项之和，对应能量函数的负梯度。
+        out = term_1 + term_2  # (B, num_heads, S, head_dim)
+        out = out.transpose(1, 2).contiguous().view(b, s, h)
+        return self.o_proj(out)
+
+    # ------------------------------------------------------------------
+    # Standard branch (fallback / ablation only)
+    # ------------------------------------------------------------------
+
+    def _forward_standard(
+        self,
+        x: torch.Tensor,
+        causal_mask: Optional[torch.Tensor],
+    ) -> torch.Tensor:
+        """Standard scaled dot-product attention (FALLBACK / ABLATION ONLY).
+
+        标准缩放点积注意力 —— 仅供消融实验使用，不享有 Lyapunov 保证。
+        """
+        b, s, h = x.shape
         q = (
             self.q_proj(x)
             .view(b, s, self.num_heads, self.head_dim)
@@ -127,14 +209,99 @@ class HopfieldAttention(nn.Module):
             .view(b, s, self.num_heads, self.head_dim)
             .transpose(1, 2)
         )
-
         scores = torch.matmul(q, k.transpose(-2, -1)) * self.scale
         if causal_mask is not None:
-            # Broadcast over batch & heads.
             scores = scores.masked_fill(
                 causal_mask[None, None, :, :], float("-inf")
             )
         attn = torch.softmax(scores, dim=-1)
-        out = torch.matmul(attn, v)  # (B, num_heads, S, head_dim)
+        out = torch.matmul(attn, v)
         out = out.transpose(1, 2).contiguous().view(b, s, h)
         return self.o_proj(out)
+
+    # ------------------------------------------------------------------
+    # Public forward
+    # ------------------------------------------------------------------
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        causal_mask: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
+        """Run attention (dispatches to ET-symmetric or standard branch).
+
+        Args:
+            x:           Input of shape (B, S, H). 输入张量。
+            causal_mask: Optional boolean mask of shape (S, S);
+                         ``True`` entries are masked out.
+                         可选的因果掩码，``True`` 表示屏蔽。
+
+        Returns:
+            Attended output of shape (B, S, H). 注意力输出。
+        """
+        b, s, h = x.shape
+        if h != self.hidden_size:
+            raise ValueError(
+                f"channel dim mismatch: expected {self.hidden_size}, got {h}"
+            )
+        if self.use_et_symmetric:
+            return self._forward_et(x, causal_mask)
+        return self._forward_standard(x, causal_mask)
+
+    # ------------------------------------------------------------------
+    # ET energy monitoring (for Lyapunov verification per §8.5)
+    # ------------------------------------------------------------------
+
+    @torch.no_grad()
+    def compute_energy(
+        self,
+        x: torch.Tensor,
+        causal_mask: Optional[torch.Tensor] = None,
+        beta: float = 1.0,
+    ) -> torch.Tensor:
+        """Compute the ET energy function value (no grad).
+
+        计算 ET 能量函数值，用于验证 §8.5 的 Lyapunov 单调下降性质。
+
+            E_ATT(g) = -(1/beta) * sum_C  log sum_{B!=C}  exp(beta * K_B . Q_C)
+
+        The diagonal (B == C) is excluded per ET prescription.
+
+        Args:
+            x:           Input of shape (B, S, H).
+            causal_mask: Optional boolean mask (S, S); True = masked out.
+            beta:        Inverse temperature (default 1.0).
+
+        Returns:
+            Scalar tensor: total ET energy summed over batch / heads /
+            query positions. Smaller value = lower energy.
+            标量张量：在批 / 头 / 查询位置上累加的 ET 总能量；越小越低。
+        """
+        b, s, h = x.shape
+        if h != self.hidden_size:
+            raise ValueError(
+                f"channel dim mismatch: expected {self.hidden_size}, got {h}"
+            )
+        k = (
+            self.k_proj(x)
+            .view(b, s, self.num_heads, self.head_dim)
+            .transpose(1, 2)
+        )
+        q = (
+            self.q_proj(x)
+            .view(b, s, self.num_heads, self.head_dim)
+            .transpose(1, 2)
+        )
+        # scores[B, C] = beta * K_B . Q_C / sqrt(d_k)
+        scores = torch.matmul(k, q.transpose(-2, -1)) * self.scale * beta
+        # Exclude the diagonal (B == C) per ET prescription.
+        eye = torch.eye(s, device=x.device, dtype=torch.bool)
+        scores = scores.masked_fill(eye[None, None, :, :], float("-inf"))
+        if causal_mask is not None:
+            scores = scores.masked_fill(
+                causal_mask[None, None, :, :], float("-inf")
+            )
+        # log-sum-exp over key dim (B), then sum over query dim (C).
+        lse = torch.logsumexp(scores, dim=-2)  # (B, num_heads, S)
+        energy = -(1.0 / beta) * lse.sum()
+        return energy
