@@ -2,8 +2,18 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-25
+# UPDATE: 2026-05-28
+#   * Now consumes the full 11-variant v2.1 ablation matrix
+#     (4 traditional + 2 §8.5/§14.2 isolations + 5 baselines).
+#   * Reports THREE critical comparisons, not just one:
+#       A. cid_full vs transformer_plus_all_tricks
+#          (UID physical framework vs known tricks)
+#       B. cid_full vs cid_full_no_et
+#          (§8.5 ET symmetric term's engineering contribution)
+#       C. cid_full vs cid_full_fft_noise
+#          (§14.2 OU vs FFT noise's engineering contribution)
 """
-Run the full 9-way ablation suite.
+Run the full 11-way ablation suite (v2.1).
 
 Usage:
     python experiments/run_ablation.py \\
@@ -12,11 +22,11 @@ Usage:
         --scale 30M \\
         --epochs 3 \\
         --seeds 42 43 44 \\
-        --output_dir ./results/ablation_v1.0
+        --output_dir ./results/ablation_v2.1
 
-This script runs all 9 ablation variants (4 CID + 5 Transformer-based) 
-at a fixed scale, with multiple seeds, and computes the critical 
-comparison: cid_full vs transformer_plus_all_tricks.
+This script runs all 11 ablation variants at a fixed scale, with
+multiple seeds, and computes THREE critical comparisons that map
+directly to the predictions of Theory §8.5 / §14.2.
 """
 
 from __future__ import annotations
@@ -26,6 +36,7 @@ import json
 import time
 from dataclasses import asdict
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import torch
@@ -46,10 +57,10 @@ def train_and_eval(
     device: str,
     log_every: int = 100,
 ) -> tuple[float, float, float]:
-    """Train a model and return (final_train_loss, final_eval_loss, wall_time)."""
+    """Train and return (final_train_loss, final_eval_loss, wall_seconds)."""
     model.to(device)
     optim = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
-    
+
     start = time.time()
     for epoch in range(epochs):
         model.train()
@@ -65,16 +76,19 @@ def train_and_eval(
             out.loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optim.step()
-            
+
             ntok = int((labels != -100).sum().item())
             running += float(out.loss.item()) * ntok
             n_tok += ntok
-            
+
             if step % log_every == 0:
-                print(f"    ep{epoch} step{step} loss={float(out.loss.item()):.4f}")
+                print(
+                    f"    ep{epoch} step{step} "
+                    f"loss={float(out.loss.item()):.4f}"
+                )
         train_loss = running / max(n_tok, 1)
-    
-    # Eval
+
+    # Eval.
     model.eval()
     e_running = 0.0
     e_n = 0
@@ -93,38 +107,112 @@ def train_and_eval(
     return train_loss, eval_loss, wall
 
 
+def _two_sample_z_score(
+    a_mean: float, a_std: float, a_n: int,
+    b_mean: float, b_std: float, b_n: int,
+) -> float:
+    """Approximate two-sample z-score for difference of means.
+
+    Positive z means ``a`` is larger than ``b``.
+    """
+    a_se = a_std / np.sqrt(max(a_n, 1))
+    b_se = b_std / np.sqrt(max(b_n, 1))
+    combined_se = float(np.sqrt(a_se ** 2 + b_se ** 2) + 1e-12)
+    return float((a_mean - b_mean) / combined_se)
+
+
+def _print_critical_comparison(
+    title: str,
+    summary: List[Dict[str, Any]],
+    name_a: str,
+    name_b: str,
+    success_msg: str,
+    failure_msg: str,
+    z_threshold: float = 2.0,
+) -> Optional[Dict[str, Any]]:
+    """Print one critical comparison between two ablation variants.
+
+    Returns:
+        A dict with the comparison fields, or None if either variant
+        is missing from the summary.
+    """
+    a = next((s for s in summary if s["ablation"] == name_a), None)
+    b = next((s for s in summary if s["ablation"] == name_b), None)
+    if a is None or b is None:
+        print(f"\n[skip] {title}: missing variant "
+              f"({name_a} -> {'OK' if a else 'MISSING'}, "
+              f"{name_b} -> {'OK' if b else 'MISSING'})")
+        return None
+    advantage = b["eval_loss_mean"] - a["eval_loss_mean"]
+    z = _two_sample_z_score(
+        b["eval_loss_mean"], b["eval_loss_std"], b["n_seeds"],
+        a["eval_loss_mean"], a["eval_loss_std"], a["n_seeds"],
+    )
+
+    print(f"\n{'=' * 60}\n{title}\n{'=' * 60}")
+    print(f"  {name_a:35s} eval_loss = {a['eval_loss_mean']:.4f} "
+          f"(± {a['eval_loss_std']:.4f}, n={a['n_seeds']})")
+    print(f"  {name_b:35s} eval_loss = {b['eval_loss_mean']:.4f} "
+          f"(± {b['eval_loss_std']:.4f}, n={b['n_seeds']})")
+    print(f"  advantage ({name_a} better by): {advantage:+.4f}")
+    print(f"  approximate z-score:            {z:+.2f}")
+    if advantage > 0 and abs(z) > z_threshold:
+        print(f"  -> {success_msg}")
+        verdict = "supported"
+    else:
+        print(f"  -> {failure_msg}")
+        verdict = "falsified"
+
+    return {
+        "title": title,
+        "name_a": name_a,
+        "name_b": name_b,
+        "loss_a": a["eval_loss_mean"],
+        "loss_b": b["eval_loss_mean"],
+        "advantage": advantage,
+        "z_score": z,
+        "verdict": verdict,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data_path", type=str, required=True)
     parser.add_argument("--tokenizer_path", type=str, required=True)
-    parser.add_argument("--scale", type=str, default="30M",
-                        choices=["10M", "30M", "100M"])
+    parser.add_argument(
+        "--scale", type=str, default="30M",
+        choices=["10M", "30M", "100M"],
+    )
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--lr", type=float, default=3e-4)
-    parser.add_argument("--seeds", type=int, nargs="+", default=[42, 43, 44])
+    parser.add_argument(
+        "--seeds", type=int, nargs="+", default=[42, 43, 44],
+    )
     parser.add_argument("--max_seq_len", type=int, default=1024)
     parser.add_argument("--batch_size", type=int, default=16)
-    parser.add_argument("--output_dir", type=str,
-                        default="./results/ablation_v1.0")
+    parser.add_argument(
+        "--output_dir", type=str,
+        default="./results/ablation_v2.1",
+    )
     args = parser.parse_args()
-    
+
     SCALE_CONFIGS = {
         "10M":  dict(hidden_size=256, num_layers=6,  num_heads=4),
         "30M":  dict(hidden_size=384, num_layers=8,  num_heads=6),
         "100M": dict(hidden_size=512, num_layers=12, num_heads=8),
     }
     cfg = SCALE_CONFIGS[args.scale]
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Load tokenizer and data
+
+    # Load tokenizer and data.
     from transformers import AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_path)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    
+
     from test_uid_on_minimind import PretrainJsonl
     full_dataset = PretrainJsonl(
         Path(args.data_path), tokenizer, max_length=args.max_seq_len
@@ -134,24 +222,30 @@ def main():
         full_dataset, [int(0.9 * n), n - int(0.9 * n)],
         generator=torch.Generator().manual_seed(42),
     )
-    train_loader = DataLoader(train_ds, batch_size=args.batch_size,
-                               shuffle=True)
+    train_loader = DataLoader(
+        train_ds, batch_size=args.batch_size, shuffle=True,
+    )
     eval_loader = DataLoader(eval_ds, batch_size=args.batch_size)
-    
-    # Run all ablations
+
+    # Run all ablations.
     configs = get_ablation_configs()
-    all_results = []
-    
+    print(f"\n[info] Running {len(configs)} ablation variants "
+          f"x {len(args.seeds)} seeds = "
+          f"{len(configs) * len(args.seeds)} total runs")
+    all_results: List[Dict[str, Any]] = []
+
     for config in configs:
         for seed in args.seeds:
             print(f"\n{'=' * 60}")
             print(f"Ablation: {config.name} (seed={seed})")
             print(f"  {config.description}")
+            print(f"  v2.1 toggles: noise_type={config.noise_type}, "
+                  f"use_et_symmetric={config.use_et_symmetric}")
             print(f"{'=' * 60}")
-            
+
             torch.manual_seed(seed)
             np.random.seed(seed)
-            
+
             model = build_ablation_model(
                 config=config,
                 vocab_size=tokenizer.vocab_size,
@@ -160,10 +254,10 @@ def main():
                 num_heads=cfg["num_heads"],
                 max_seq_len=args.max_seq_len,
             )
-            
+
             n_params = sum(p.numel() for p in model.parameters())
             print(f"  Params: {n_params:,}")
-            
+
             train_loss, eval_loss, wall = train_and_eval(
                 model=model,
                 train_loader=train_loader,
@@ -172,7 +266,7 @@ def main():
                 lr=args.lr,
                 device=device,
             )
-            
+
             result = {
                 "ablation_name": config.name,
                 "description": config.description,
@@ -186,28 +280,32 @@ def main():
                 "wall_seconds": wall,
             }
             all_results.append(result)
-            print(f"  Result: train={train_loss:.4f}, eval={eval_loss:.4f}, "
-                  f"ppl={result['eval_ppl']:.2f}")
-            
-            # Save incrementally
+            print(
+                f"  Result: train={train_loss:.4f}, eval={eval_loss:.4f}, "
+                f"ppl={result['eval_ppl']:.2f}"
+            )
+
+            # Save incrementally.
             (output_dir / "results.json").write_text(
                 json.dumps(all_results, indent=2), encoding="utf-8"
             )
-            
+
             del model
-            torch.cuda.empty_cache() if torch.cuda.is_available() else None
-    
-    # Final analysis
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+    # ------------------------------------------------------------------
+    # Aggregate
+    # ------------------------------------------------------------------
     print("\n" + "=" * 60)
-    print("ABLATION ANALYSIS")
+    print("ABLATION SUMMARY (sorted by eval loss, lower = better)")
     print("=" * 60)
-    
-    # Group by ablation name
-    by_name: dict = {}
+
+    by_name: Dict[str, List[Dict[str, Any]]] = {}
     for r in all_results:
         by_name.setdefault(r["ablation_name"], []).append(r)
-    
-    summary = []
+
+    summary: List[Dict[str, Any]] = []
     for name, runs in by_name.items():
         losses = [r["eval_loss"] for r in runs]
         ppls = [r["eval_ppl"] for r in runs]
@@ -219,55 +317,95 @@ def main():
             "eval_ppl_mean": float(np.mean(ppls)),
             "eval_ppl_std": float(np.std(ppls)),
         })
-    
+
     summary.sort(key=lambda x: x["eval_loss_mean"])
-    
+
     print(f"\n{'Ablation':<35} {'Loss (mean±std)':<25} {'PPL (mean±std)':<25}")
     print("-" * 85)
     for s in summary:
-        print(f"{s['ablation']:<35} "
-              f"{s['eval_loss_mean']:.4f} ± {s['eval_loss_std']:.4f}      "
-              f"{s['eval_ppl_mean']:.2f} ± {s['eval_ppl_std']:.2f}")
-    
-    # The CRITICAL comparison
-    print("\n" + "=" * 60)
-    print("CRITICAL COMPARISON: cid_full vs transformer_plus_all_tricks")
-    print("=" * 60)
-    cid_full = next((s for s in summary if s["ablation"] == "cid_full"), None)
-    trans_tricks = next(
-        (s for s in summary if s["ablation"] == "transformer_plus_all_tricks"),
-        None,
+        print(
+            f"{s['ablation']:<35} "
+            f"{s['eval_loss_mean']:.4f} ± {s['eval_loss_std']:.4f}      "
+            f"{s['eval_ppl_mean']:.2f} ± {s['eval_ppl_std']:.2f}"
+        )
+
+    # ------------------------------------------------------------------
+    # THREE CRITICAL COMPARISONS (v2.1)
+    # ------------------------------------------------------------------
+    comparisons: List[Dict[str, Any]] = []
+
+    cmp_a = _print_critical_comparison(
+        title=(
+            "CRITICAL COMPARISON A: cid_full vs transformer_plus_all_tricks\n"
+            "  (UID physical framework vs known tricks)"
+        ),
+        summary=summary,
+        name_a="cid_full",
+        name_b="transformer_plus_all_tricks",
+        success_msg=(
+            "CID provides SIGNIFICANT improvement over Transformer + same "
+            "tricks. UID's 'physical framework' claim is SUPPORTED."
+        ),
+        failure_msg=(
+            "CID does NOT significantly outperform Transformer + same "
+            "tricks at this scale. UID's 'physical framework' claim is "
+            "FALSIFIED at this scale; the benefit (if any) comes from "
+            "known tricks, not physical organisation."
+        ),
     )
-    if cid_full and trans_tricks:
-        cid_loss = cid_full["eval_loss_mean"]
-        trans_loss = trans_tricks["eval_loss_mean"]
-        improvement = trans_loss - cid_loss
-        # Statistical significance via simple two-sample t-test approximation
-        cid_se = cid_full["eval_loss_std"] / np.sqrt(cid_full["n_seeds"])
-        trans_se = trans_tricks["eval_loss_std"] / np.sqrt(trans_tricks["n_seeds"])
-        combined_se = np.sqrt(cid_se ** 2 + trans_se ** 2)
-        z_score = improvement / (combined_se + 1e-12)
-        
-        print(f"\n  cid_full eval loss:                  {cid_loss:.4f}")
-        print(f"  transformer_plus_all_tricks loss:    {trans_loss:.4f}")
-        print(f"  CID advantage:                       {improvement:+.4f}")
-        print(f"  Approximate z-score:                 {z_score:.2f}")
-        
-        if improvement > 0 and abs(z_score) > 2.0:
-            print("\n  ✓ CID provides SIGNIFICANT improvement over "
-                  "Transformer + same tricks")
-            print("    → UID's 'physical framework' contribution is supported")
-        else:
-            print("\n  ✗ CID does NOT significantly outperform "
-                  "Transformer + same tricks")
-            print("    → UID's 'physical framework' claim is FALSIFIED at "
-                  f"this scale ({args.scale})")
-            print("    → The benefit (if any) comes from the known tricks, "
-                  "not the physical organization")
-    
-    # Save summary
+    if cmp_a:
+        comparisons.append(cmp_a)
+
+    cmp_b = _print_critical_comparison(
+        title=(
+            "CRITICAL COMPARISON B: cid_full vs cid_full_no_et\n"
+            "  (§8.5 ET symmetric term's engineering contribution)"
+        ),
+        summary=summary,
+        name_a="cid_full",
+        name_b="cid_full_no_et",
+        success_msg=(
+            "Disabling ET symmetric term DEGRADES performance. §8.5's "
+            "engineering contribution is SUPPORTED."
+        ),
+        failure_msg=(
+            "Disabling ET symmetric term does NOT significantly degrade "
+            "performance. §8.5's engineering contribution is UNCLEAR at "
+            "this scale (may still matter for Lyapunov stability)."
+        ),
+    )
+    if cmp_b:
+        comparisons.append(cmp_b)
+
+    cmp_c = _print_critical_comparison(
+        title=(
+            "CRITICAL COMPARISON C: cid_full vs cid_full_fft_noise\n"
+            "  (§14.2 OU vs FFT noise's engineering contribution)"
+        ),
+        summary=summary,
+        name_a="cid_full",
+        name_b="cid_full_fft_noise",
+        success_msg=(
+            "OU noise OUTPERFORMS FFT noise. §14.2's preference for OU "
+            "as the default is SUPPORTED."
+        ),
+        failure_msg=(
+            "OU noise does NOT significantly outperform FFT noise. "
+            "§14.2's OU preference is UNCLEAR at this scale (may still "
+            "matter for honest emergence measurement; see "
+            "run_critical_exponents.py)."
+        ),
+    )
+    if cmp_c:
+        comparisons.append(cmp_c)
+
+    # Save summary + comparisons.
     (output_dir / "summary.json").write_text(
-        json.dumps(summary, indent=2), encoding="utf-8"
+        json.dumps(
+            {"summary": summary, "critical_comparisons": comparisons},
+            indent=2,
+        ),
+        encoding="utf-8",
     )
     print(f"\n[ok] Summary saved to {output_dir / 'summary.json'}")
 
