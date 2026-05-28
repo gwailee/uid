@@ -1398,7 +1398,7 @@ Defining **C := d / B** (a constant depending on the vocabulary dimension and th
 N_Trans / N_CID ≤ C · log(ξ_CID / ξ_Trans)            ... (11.1)
 ```
 
-This completes the proof. ∎
+This completes the proof. 
 
 ### 11.2.5 Remarks on Theorem 11.1
 
