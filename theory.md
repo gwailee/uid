@@ -37,7 +37,9 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 <br>
 
 <div align="center">
-
+  
+<p style="clear: both;"></p>
+  
 # 智能是一个非平衡场：统一智动力学（UID）的三层物理理论
 
 ## ——注意力并不够：智能架构的非平衡物理基础
