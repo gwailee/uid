@@ -947,8 +947,6 @@ Attention(Q, K, V) = V · softmax(β · K^T · Q)
 
 > **Attention 不是工程发明；它是 Langevin 方程在 v = 0、D = 0、最大熵势能、Euler 离散化极限下的必然结果。**
 
-需要做的是把"后续版本应补充"改为直接在本文正文中给出修正后的 HopfieldAttention，即加上 ET 的额外对称矩阵项并给出 Lyapunov 证明。让我先确认 ET 的具体技术细节。现在我已掌握 ET 原论文的完整技术细节，包括额外对称项的精确形式与 Lyapunov 证明，可以直接在正文中给出修正推导，而非"后续补充"。
-
 这也意味着：**Transformer 默认丢弃了 CID 主方程中的旋度（v）、色噪声、色阻尼**——它只是 CID 的最简极限。
 
 ### 8.5 与 Energy Transformer 的关系及本文 Attention 机制的修正
