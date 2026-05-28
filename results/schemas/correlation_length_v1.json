@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gwailee/uid/blob/main/results/schemas/correlation_length_v1.json",
+  "title": "UID Correlation-Length Measurement (v1)",
+  "description": "Output of `uid_theory.verification.correlation_length.measure_correlation_length` (or its aggregate counterpart). Implements Theory §11.1 Definition 11.1: per-(layer, channel) correlation length via mutual-information decay to 1/e of self-MI, then median across (layer, channel). Used by Phase 1 condition F9 (see ROADMAP.md). Conforms to results/README.md §Schema set.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "produced_by",
+    "model_name",
+    "condition",
+    "xi_measurement",
+    "f9_check"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "correlation_length_v1"
+    },
+    "produced_by": {
+      "type": "string",
+      "description": "Path of the script that produced this file, e.g. 'experiments/run_correlation_length.py'."
+    },
+    "model_name": {
+      "type": "string",
+      "description": "Caller-supplied tag identifying the model under test."
+    },
+    "condition": {
+      "type": "object",
+      "description": "Measurement-condition metadata; values affect interpretation of xi.",
+      "additionalProperties": false,
+      "required": [
+        "noise_injection_disabled",
+        "checkpoint_path",
+        "uid_version",
+        "uid_commit_hash",
+        "device",
+        "seq_len",
+        "n_sequences"
+      ],
+      "properties": {
+        "noise_injection_disabled": {
+          "type": "boolean",
+          "description": "MUST be true per Theory §11.1.3(d). Otherwise xi is invalid (circular measurement)."
+        },
+        "checkpoint_path": {
+          "type": "string",
+          "description": "Path to the model checkpoint that was probed."
+        },
+        "uid_version": {
+          "type": "string",
+          "pattern": "^v\\d+\\.\\d+(\\.\\d+)?$"
+        },
+        "uid_commit_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$"
+        },
+        "device": {
+          "type": "string",
+          "description": "e.g. 'cuda:0' or 'cpu'."
+        },
+        "seq_len": {
+          "type": "integer",
+          "minimum": 16,
+          "description": "Sequence length T used in the protocol."
+        },
+        "n_sequences": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of input sequences whose hidden-state time series were aggregated."
+        },
+        "layer_indices": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 0 },
+          "description": "Layer indices probed; default is the model's full stack."
+        }
+      }
+    },
+    "xi_measurement": {
+      "$ref": "#/$defs/xiResult",
+      "description": "Direct payload of CorrelationLengthResult.to_dict()."
+    },
+    "f9_check": {
+      "type": "object",
+      "description": "Phase 1 F9 condition check (per Theory §11.2.10 / ROADMAP §Phase 1).",
+      "additionalProperties": false,
+      "required": [
+        "is_uid_model",
+        "verdict"
+      ],
+      "properties": {
+        "is_uid_model": {
+          "type": "boolean",
+          "description": "True if the probed checkpoint is a CID-family model (cid_full / cid_full_no_et / cid_full_fft_noise). For non-UID models the F9 condition does not apply, so the verdict is 'not_applicable'."
+        },
+        "xi_ratio_vs_baseline": {
+          "type": "number",
+          "minimum": 0,
+          "description": "If a baseline transformer measurement is present alongside, this is xi_CID / xi_Trans."
+        },
+        "scaling_fit_gamma": {
+          "type": "number",
+          "description": "If a multi-T scan was done, the fitted exponent γ in xi(T) ~ T^γ. F9 PASS requires γ ≥ 0.3 for CID."
+        },
+        "scaling_fit_r_squared": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "R^2 of the log-log fit; the verdict is only trustworthy if R^2 ≥ 0.8."
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "ABSTAIN_clipped",
+            "ABSTAIN_not_scanned",
+            "not_applicable"
+          ],
+          "description": "Phase 1 F9 verdict. PASS = γ ≥ 0.3 with R^2 ≥ 0.8 and no clipping. FAIL = γ < 0.3 or xi flat. ABSTAIN_clipped = seq_len_too_short flag fired. ABSTAIN_not_scanned = only one T value measured. not_applicable = baseline-only measurement (not a UID model)."
+        },
+        "verdict_justification": {
+          "type": "string",
+          "description": "One-sentence explanation matching the verdict."
+        }
+      }
+    },
+    "scaling_scan": {
+      "type": "object",
+      "description": "Optional: results of measuring xi at multiple T values (used to fit γ).",
+      "additionalProperties": false,
+      "properties": {
+        "T_values": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 16 },
+          "minItems": 2
+        },
+        "xi_values": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0 },
+          "minItems": 2
+        },
+        "fit_gamma": { "type": "number" },
+        "fit_log_intercept": { "type": "number" },
+        "fit_r_squared": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["T_values", "xi_values"]
+    }
+  },
+  "$defs": {
+    "xiResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "xi_median",
+        "xi_mean",
+        "xi_std",
+        "xi_per_layer",
+        "xi_per_channel",
+        "n_layers",
+        "n_channels_per_layer",
+        "seq_len",
+        "threshold",
+        "mi_estimator",
+        "ksg_k",
+        "seq_len_too_short",
+        "n_clipped",
+        "notes"
+      ],
+      "properties": {
+        "xi_median": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Model-wide median; see Theory §11.1 Def 11.1."
+        },
+        "xi_mean": {
+          "type": "number",
+          "minimum": 0
+        },
+        "xi_std": {
+          "type": "number",
+          "minimum": 0
+        },
+        "xi_per_layer": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0 },
+          "description": "Median xi per layer."
+        },
+        "xi_per_channel": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0 },
+          "description": "Flat list of per-(layer, channel) xi values."
+        },
+        "n_layers": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n_channels_per_layer": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seq_len": {
+          "type": "integer",
+          "minimum": 16
+        },
+        "threshold": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "Default 1/e ≈ 0.3679 per Theory §11.1.3(b)."
+        },
+        "mi_estimator": {
+          "type": "string",
+          "enum": ["ksg", "histogram"]
+        },
+        "ksg_k": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seq_len_too_short": {
+          "type": "boolean",
+          "description": "True iff at least one (layer, channel) pair hit the search upper bound; xi is then a lower bound on the true value."
+        },
+        "n_clipped": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
