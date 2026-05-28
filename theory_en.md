@@ -28,6 +28,7 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 </div>
 
 <div align="center">
+  
 <a href="./30minutes_report.md">30 分钟读懂 UID 理论（中文）</a> |
 <a href="./30minutes_report_en.md">Understand UID in 30 Minutes（English）</a>
 </div>
