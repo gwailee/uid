@@ -1,9 +1,9 @@
 <!--
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
-Date:   2026-05-25
+Date:   2026-05-30
 
-This README is part of the UID Theory reference implementation.
+This README is part of the UID Theory reference implementation (v2.0).
 
 DUAL LICENSE:
   - PolyForm Noncommercial License 1.0.0  (free for academic / personal use)
@@ -16,13 +16,27 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权。
 -->
 
+<div align="center">
+
 ![logo](./images/logo.png)
 
-[README（中文）](./README.md) | [README（English）](./README_en.md)
+</div>
 
-[30 分钟读懂 UID 理论（中文）](./30minutes_report.md) | [Understand UID in 30 Minutes（English）](./30minutes_report_en.md)
+<div align="center">
+<a href="./README.md"><b>README（中文）</b></a> | <a href="./README_en.md">README（English）</a>
+</div>
 
-[UID 理论全文（中文）](./theory.md) | [UID Theory (English)](./theory_en.md)
+<div align="center">
+<a href="./30minutes_report.md">30 分钟读懂 UID 理论（中文）</a> | <a href="./30minutes_report_en.md">Understand UID in 30 Minutes（English）</a>
+</div>
+
+<div align="center">
+<a href="./theory.md">UID 理论全文（中文）</a> | <a href="./theory_en.md">UID Theory (English)</a>
+</div>
+
+<br>
+
+<div align="center">
 
 # 智能是一个非平衡场：统一智动力学（UID）的三层物理理论
 
