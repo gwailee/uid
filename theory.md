@@ -3313,137 +3313,307 @@ print(f"Berry 相位: {berry_phase}")
 | 经典模拟 | 现在 | ~ $10^4（单 GPU）| ✅ 可用 | 理论验证（50-100 qubit）|
 | 经典-量子混合 | 2-3 年 | ~ $10^6（混合平台）| ⌛ 进行中 | 1-10% 性能提升 |
 | 完整量子 | 2030+ | ~ $10^9（容错量子集群）| ⌛ 长期 | 理论 10^4 - 10^6 效率提升 |
-
 ## 第 8 章 —— QID 的配套工程实现规划
 
-> **一句话**：虽然完整 QID 需要容错量子计算机，但其关键组件（Berry 相位损失、量子噪声注入、拓扑记忆）现在已可在经典硬件上部分实现。
+> **一句话**：尽管完整 QID 需要容错量子计算机（预计 2030+），其关键组件（Berry 相位、量子色噪声、Lindblad 通道、能量监控）已在 v2.1 中作为经典代理完整落地，每项的额外参数已经被严格控制，所有量子主张的边界都通过单元测试锁定。
 
-### 8.1 QID 代码仓库规划
+### 8.1 QID 工程实现的核心定位
 
-**开源仓库**：https://github.com/gwailee/uid（`qid/` 子目录）
+在阅读本章前，必须明确 v2.1 QID 实现的诚实定位。我们在 README §"诚实声明"第 2 条与 KNOWN_LIMITATIONS.md §C1 中已明确写明：
 
-**计划发布时间**：2026.08（配套 CID-104M 发布）
+> **QID 是经典代理。** 本实现使用经典神经网络模拟量子相干（Berry 相位、含零点项的色噪声、现象学 Lindblad 通道），**不是**严格 Kraus 分解。真实量子优势需 NISQ 或容错量子硬件。**本代码无法验证 QID 的量子主张**。
 
-**模块组织**：
+QID 工程实现的目标因此**不是**证明量子优势，而是：
+
+1. **接口前向兼容**：让 v2.1 的 QID API 与未来量子硬件的接口保持一致，使迁移无需重写训练代码。
+2. **理论一致性验证**：在经典模拟下验证 QID 主方程的数学一致性（如 ℏ → 0 极限是否回到 CID）。
+3. **数值预实验**：在小规模上数值验证 Berry 相位、QFDT 谱等结构的可观测性，为未来量子硬件实验设计提供参数边界。
+4. **教学与可读性**：让 QID 主方程的每一项都有可运行、可读、可单元测试的代码对应物。
+
+任何把 v2.1 QID 经典代理的实测数字当作"量子优势已验证"的引用都是**对本理论文档的误读**，应当被纠正。
+
+### 8.2 v2.1 QID 模块结构
+
+QID 实现位于 `uid_theory/qid/` 目录下，三个核心文件分别对应 QID 主方程的三个新组件（相对 CID 而言新增的部分）。
 
 ```
-uid/qid/
-├── core/                       # 核心实现
-│   ├── lindblad.py            # 标准 Lindblad 主方程求解器
-│   ├── caldeira_leggett.py    # Caldeira-Leggett 模型模拟
-│   └── hu_paz_zhang.py        # 非马尔可夫量子主方程
-│
-├── berry/                      # Berry 相位工具
-│   ├── connection.py          # Berry 联络计算
-│   ├── curvature.py           # Berry 曲率计算
-│   ├── loss.py                # Berry 相位损失函数（用于训练）
-│   └── chern.py               # Chern 数拓扑不变量
-│
-├── noise/                      # 量子噪声注入
-│   ├── vacuum.py              # 真空涨落模拟
-│   ├── thermal.py             # 量子热噪声
-│   └── colored.py             # 量子色噪声（1/f 谱）
-│
-├── topology/                   # 拓扑保护记忆
-│   ├── toric_code.py          # Toric 码实现
-│   ├── majorana.py            # Majorana 费米子实现
-│   └── stabilizer.py          # 稳定子码框架
-│
-└── eval/                       # 可证伪测试
-    ├── test_entanglement.py    # 纠缠熵临界标度测试
-    ├── test_berry.py           # Berry 相位非零测试
-    └── test_lindblad_gap.py    # Lindblad 谱隙测试
+uid_theory/qid/
+├── qid_layer.py         QID 主层：CID 基础 + 量子修正项的经典代理
+│                        v2.1 默认 hamiltonian_mode='shared_with_ffn',
+│                        lindblad_mode='off'，零额外矩阵参数
+├── berry_phase.py       Berry 几何相位的经典代理（成对 U(1) 旋转）
+│                        v2.1 默认 weight_ref 模式，零额外矩阵参数,
+│                        相位有界于 (−strength·π, +strength·π)
+└── quantum_noise.py     量子色噪声 QFDT + OU/FFT 双模式
+                          v2.1 默认 OU 模式，与 CID 端 §14.2 对齐
 ```
 
-### 8.2 Drop-In 代码示例（概念性）
+每个模块在 `tests/test_qid_layer.py` 中都有对应的回归测试（约 40+ 用例），覆盖参数预算、v2.1 透传、Berry 相位有界性、QFDT 谱估计等所有契约。
+
+### 8.3 从 QID 主方程到代码的映射
+
+QID 主方程（方程 5.1）在经典代理下的代码实现遵循"CID 基础 + 量子修正增量"的结构：
 
 ```python
-import torch
-import torch.nn as nn
-from cid.cid_block import CIDBlock
-from qid.berry.loss import BerryPhaseLoss
-from qid.noise.vacuum import VacuumFluctuationNoise
+# QIDLayer.forward 的核心逻辑
+# 1. CID 基础步（关闭其内部色噪声，由 QID 自己注入量子噪声替代）
+x_classical, cid_info = self.cid_base(x, causal_mask=mask, add_noise=False)
 
-class QIDBlock(nn.Module):
-    """
-    在 CIDBlock 之上的 QID 扩展：
-    1. 用量子真空涨落噪声替换经典高斯噪声
-    2. 添加 Berry 相位损失项
-    3. （可选）用稳定子码包裹关键记忆参数
-    """
-    def __init__(self, config):
-        super().__init__()
-        # 1. 继承 CIDBlock（经典层完整实现）
-        self.cid_block = CIDBlock(config)
-        
-        # 2. 用量子真空涨落噪声替换经典噪声
-        self.quantum_noise = VacuumFluctuationNoise(
-            dim=config.dim, 
-            cutoff_omega=config.omega_cutoff
-        )
-        
-        # 3. Berry 相位跟踪器（用于损失函数）
-        self.berry_tracker = BerryPhaseLoss(
-            param_dim=config.param_dim
-        )
-    
-    def forward(self, x, training_step=None):
-        # CID 标准前向
-        x = self.cid_block(x)
-        
-        # 替换经典噪声为量子噪声（仅训练时）
-        if self.training:
-            x = x + self.quantum_noise(x)
-        
-        # 记录参数轨迹（用于 Berry 相位计算）
-        if training_step is not None:
-            self.berry_tracker.record(self.parameters(), training_step)
-        
-        return x
-    
-    def get_berry_loss(self):
-        """获取累积 Berry 相位作为额外损失项"""
-        return -self.berry_tracker.compute_phase()
+# 2. 量子修正项均作为增量 delta 叠加到 x_classical 上
+delta = torch.zeros_like(x_classical)
 
-# 训练循环
-def train_qid(model, dataloader, optimizer, beta_berry=0.01):
-    for step, (x, y) in enumerate(dataloader):
-        optimizer.zero_grad()
-        
-        # 前向传播
-        y_pred = model(x, training_step=step)
-        
-        # 标准损失 + Berry 相位损失
-        loss_task = F.cross_entropy(y_pred, y)
-        loss_berry = model.get_berry_loss()
-        loss_total = loss_task + beta_berry * loss_berry
-        
-        loss_total.backward()
-        optimizer.step()
+# 2a. 哈密顿生成元 -i [H, ρ] / ℏ → 反对称化的一阶幺正近似
+delta = delta + (self._hamiltonian_step(x_classical) - x_classical)
+
+# 2b. Lindblad 耗散通道（若启用，默认 off）
+if self.lindblad_mode != "off":
+    delta = delta + 0.1 * self._lindblad_step(x_classical)
+
+# 2c. Berry 相位（成对 U(1) 旋转，相位由外部权重的反对称投影给出）
+if self.berry is not None:
+    y, phases = self.berry(x_classical)
+    delta = delta + (y - x_classical)
+
+# 2d. 量子噪声（QFDT 谱 + 零点涨落分支，仅训练时注入）
+if self.training and self._inject_quantum_noise:
+    qn, qn_info = self.quantum_noise(B, S, device, dtype)
+    delta = delta + 0.01 * qn
+
+# 3. 由 sigmoid(quantum_logit) 控制的混合系数
+weight = torch.sigmoid(self.quantum_logit)
+return x_classical + weight * delta, info
 ```
 
-### 8.3 可证伪测试规划
+下表给出 QID 主方程每一项与代码的对应关系，并标注每项的额外参数预算（v2.1 默认配置）。
 
-| 测试 | 工具 | 时间（单 GPU）| 验证目标 |
+| 主方程项 | 代码模块 | v2.1 默认实现 | 额外参数 |
 |---|---|---|---|
-| 测试 6：纠缠熵临界标度 | TenPy + DMRG | ~ 4 hr | S ∝ log(L)，c ∈ 已知 CFT 类 |
-| 测试 7：Berry 相位非零 | 精确对角化 | ~ 2 hr | γ_n[C_train] ≠ 0，接近量子化 |
-| 测试 8：Lindblad 谱隙 | QuTiP | ~ 2 hr | Δ_L 位于最优窗口 |
-| 测试 9：量子噪声增强 | 混合训练 | ~ 6 hr | QID vs CID 1-2% PPL 提升 |
-| 测试 10：拓扑记忆稳健性 | Toric 码 | ~ 4 hr | 记忆寿命指数延长 |
+| **−i [H_S, ρ] / ℏ** 么正演化 | `cid_base.attn` | 由 CID 基础层的 ET 对称双项 Hopfield 注意力承担 | 0（继承自 CID） |
+| **−i [H_Berry, ρ]** Berry 相位项 | `qid/berry_phase.py` | 从 attention K 投影权重的反对称分量构造，bounded by tanh × π | +1 标量（log_phase_strength）|
+| **∫ K(t−s) ℒ[ρ(s)] ds** 非马尔可夫记忆耗散 | `cid_base.memory` + 可选 `_lindblad_step` | 色阻尼由 CID 基础层承担；Lindblad 默认 off | 0（off）/ +K 标量（shared）|
+| **𝒞[ρ]** 非阿贝尔旋度 | `_hamiltonian_step` | 反对称化的 FFN 第一层权重（与 CID VortexField 思路一致），仅 +1 标量 | +1 标量（log_h_strength）|
+| **ξ_q(t)** 量子噪声（含零点项）| `qid/quantum_noise.py` | OU 物理 SDE + QFDT 振幅修正，默认 25 Hz 兼容采样 | +1 标量（log_temperature）|
+| **混合系数 w** | `quantum_logit` | sigmoid 输出 ∈ (0, 1)，控制量子修正的整体强度 | +1 标量 |
 
-### 8.4 工程承诺
+**关键工程原则**：QID 在 CID 之上引入的额外参数被严格控制为**至多 4 个标量/层**（log_h_strength、log_phase_strength、log_temperature、quantum_logit），相比 v2.0 的 5 × H² 参数预算（哈密顿 H × H 矩阵 + 4 个 Lindblad 通道 H × H 矩阵）减少超过 99%。这一回归约束由 `tests/test_qid_layer.py::TestZeroExtraParameters::test_v21_default_saves_significantly_vs_legacy` 单元测试锁定。
 
-我们承诺在未来 12-18 个月内提供以下实验输出：
+### 8.4 三种实现模式（向后兼容性）
+
+为兼顾理论灵活性与工程零参数原则，v2.1 QID 提供三个轴向上的开关，调用方可以根据消融需求自由组合。
+
+| 轴向 | 选项 | 默认 | 说明 |
+|---|---|---|---|
+| **`hamiltonian_mode`** | `"shared_with_ffn"` | ✅ | 反对称化 FFN[0] 权重，零额外矩阵参数（§14.2 风格）|
+|  | `"dedicated"` |  | 独立 H × H 矩阵（v2.0 legacy 模式，仅供消融对照）|
+| **`lindblad_mode`** | `"off"` | ✅ | 零 Lindblad 参数 |
+|  | `"shared"` |  | 1 个 H × H 矩阵 + K 个标量速率 |
+|  | `"independent"` |  | K 个 H × H 矩阵（v2.0 legacy）|
+| **`quantum_noise_mode`** | `"ou"` | ✅ | OU 物理 SDE + QFDT 振幅修正，与 CID §14.2 对齐 |
+|  | `"fft"` |  | FFT 频域整形（legacy，存在循环测量风险）|
+
+调用示例：
+
+```python
+from uid_theory.qid.qid_layer import QIDLayer
+
+# v2.1 推荐配置（零额外矩阵参数）
+layer = QIDLayer(
+    hidden_size=768, num_heads=8,
+    hamiltonian_mode="shared_with_ffn",   # 默认
+    lindblad_mode="off",                   # 默认
+    quantum_noise_mode="ou",               # 默认
+    use_berry=True,
+)
+
+# 检查参数预算
+extras = layer.count_extras()
+print(extras)
+# {'hamiltonian': 1, 'lindblad': 0, 'berry': 1,
+#  'quantum_noise': 1, 'mixing_logit': 1, 'total': 4}
+
+# v2.0 legacy 配置（仅供消融对照，引入大量额外参数）
+legacy_layer = QIDLayer(
+    hidden_size=768, num_heads=8,
+    hamiltonian_mode="dedicated",
+    lindblad_mode="independent",
+    num_lindblad_channels=4,
+    quantum_noise_mode="fft",
+)
+```
+
+这种"v2.1 默认 + legacy 可选"的设计既保证了零参数原则的严格执行，又保留了对历史结果的复现能力。
+
+### 8.5 顶层 API 透出（与 CID/FID 一致）
+
+QIDLayer 暴露与 CIDLayer 严格对称的开关 API，使 UIDModel 顶层调用方无需穿透到内部子模块即可控制 QID 行为。
+
+```python
+# 顶层调用示例
+qid_layer = QIDLayer(hidden_size=768, num_heads=8)
+
+# 关闭量子噪声注入（测量临界涌现指标时必须）
+qid_layer.set_noise_injection(False)
+
+# 开启 ET 能量监控（透传到内部 CID 基础层）
+qid_layer.set_energy_monitoring(True)
+
+# 设置量子噪声温度（用于扫描 T → 0 的零点涨落极限）
+qid_layer.quantum_noise.set_temperature(0.001)
+
+# 查询参数预算
+extras = qid_layer.count_extras()
+```
+
+| API | 实现层 | 用途 |
+|---|---|---|
+| `set_noise_injection(bool)` | QIDLayer | 同时控制 CID 基础层与量子噪声注入 |
+| `set_energy_monitoring(bool)` | 透传到 cid_base | 启用 §8.5 ET Lyapunov 单调性监控 |
+| `quantum_noise.set_temperature(T)` | QuantumColoredNoise | 设置环境温度，T → 0 时零点涨落主导 |
+| `count_extras()` | QIDLayer | 返回参数预算字典，用于 §14.2 零参数回归 |
+
+### 8.6 三层经典-量子工程路径
+
+QID 的工程实现按硬件成熟度划分为三个路径，**v2.1 完整覆盖路径 1，部分覆盖路径 2，路径 3 仍依赖未来量子硬件**。
+
+#### 路径 1：纯经典模拟（已完成，v2.1）
+
+**目标**：在经典硬件上验证 QID 主方程的数学一致性与 ℏ → 0 退化关系。
+
+**工具栈**：
+
+| 工具 | 用途 | v2.1 状态 |
+|---|---|---|
+| `uid_theory/qid/` 三个模块 | QID 主方程的经典代理 | ✅ 完整实现 |
+| `tests/test_qid_layer.py` | ~ 40+ 单元测试 | ✅ 完整覆盖 |
+| 张量网络（TenPy / ITensor） | 50-100 qubit 中等规模量子模拟 | ⚠ 路径 1 范围内可用，但本仓库未集成 |
+| Qiskit Aer / PennyLane | 小规模量子电路模拟（≤ 30 qubit）| ⚠ 同上 |
+
+**已可在 v2.1 完成的预言验证**：
+
+- ℏ → 0 极限：QID 主方程退化为 CID 主方程的数值验证（通过 `quantum_logit` 趋于 −∞ 实现）。
+- Berry 相位 ≠ 0：在小系统上数值验证训练后 Berry 相位的累积。
+- 非阿贝尔旋度：通过 `_hamiltonian_step` 的反对称生成元验证算子非交换性。
+- QFDT 谱形状：在 OU 模式下扫描温度 T ∈ [0.001, 100]，验证零点涨落分支在 T → 0 时主导。
+
+**已落地的回归测试**：
+
+```bash
+pytest tests/test_qid_layer.py -v
+
+# 覆盖：
+#   TestV21TogglePropagation     (8 个: §8.5 ET 透传 + §14.2 OU 透传)
+#   TestZeroExtraParameters      (5 个: 参数预算锁定)
+#   TestBerryPhaseRobustness     (5 个: 相位有界性 + cos.mean 监控)
+#   TestQuantumNoiseModes        (7 个: OU vs FFT + set_temperature)
+#   TestPublicAPI                (5 个: 顶层开关 API)
+#   TestForwardSmoke             (~ 24 个 parametrize 组合)
+#   TestRoundTrip                (2 个: state_dict 序列化保留 v2.1 toggles)
+```
+
+#### 路径 2：经典-量子混合（部分覆盖，2-3 年成熟）
+
+**目标**：用经典计算机训练 QID 模型，少量量子硬件（NISQ）提供"高质量随机性"或"几何相位生成"作为辅助。
+
+**v2.1 已就绪的接口**：
+
+`QuantumColoredNoise` 的 `forward` 接口允许调用方传入任意噪声采样器，未来可以替换为来自真实 NISQ 设备的量子真空涨落采样。
+
+```python
+class QuantumNoiseProtocol(Protocol):
+    """v2.1 已暴露的接口契约，未来由 pynvml-style 量子硬件 API 实现。"""
+    def forward(
+        self, batch_size: int, seq_len: int,
+        device: torch.device, dtype: torch.dtype,
+    ) -> Tuple[torch.Tensor, Dict[str, float]]:
+        ...
+```
+
+未来 v2.2/v3.0 计划提供：
+
+- `qid/hardware/qiskit_backend.py`：基于 Qiskit Aer 的量子噪声采样后端。
+- `qid/hardware/ionq_backend.py`：基于 IonQ 云 API 的离子阱采样后端。
+- `qid/hardware/quera_backend.py`：基于 QuEra Aquila 的中性原子采样后端。
+
+**预期可验证的优势**：
+
+- 量子真空涨落作为更高质量的随机源：对 PPL 约 1-2% 改善。
+- Berry 相位由真实量子电路生成：5-10% 参数效率改善（因为部分 v(φ) 旋度由几何相位承担）。
+- 量子-经典接口带宽限制：当前 1-10 kHz，远低于 GPU 训练所需 100 MHz；这是路径 2 的主要工程瓶颈。
+
+#### 路径 3：完整量子实现（待 2030+）
+
+**目标**：在容错量子计算机（FTQC）上运行完整的 QID 主方程，每个 token 的演化对应一次真实量子电路执行。
+
+**硬件需求**：
+
+| 量级 | 数值 | 说明 |
+|---|---|---|
+| 逻辑 qubit 数 | 10⁶ - 10⁹ | 与 CID 隐藏维度同阶 |
+| 逻辑错误率 | < 10⁻¹⁵ | 由表面码或 LDPC 量子纠错保证 |
+| 相干时间 | > 1 秒 | 跨整个序列长度 |
+| 拓扑 qubit | 全部 | Majorana 零模实现拓扑保护记忆 |
+
+**v2.1 已就绪的接口**：QIDLayer 的整体接口（`forward(input_ids) → logits`）保持与经典 PyTorch 模型一致，未来量子硬件后端可作为 `forward` 内部的实现替换，**无需修改训练循环代码**。
+
+**关键工程里程碑（基于 IBM、Google、QuEra 公开路线图的保守估计）**：
+
+| 里程碑 | 时间（预测）| QID 可实现的功能 |
+|---|---|---|
+| 量子优势演示 | ✅ 已实现（2019, Sycamore）| 仅基础研究 |
+| 1000 容错逻辑 qubit | 2028-2030 | QID 单层 forward 可在量子硬件上跑通 |
+| 10⁶ 容错逻辑 qubit | 2032-2035 | QID 多层堆栈达到商业智能应用阈值 |
+| 拓扑 qubit 完全部署 | 2035-2040 | 完整实现 Berry 相位的拓扑保护记忆 |
+
+**参考路线图**：
+
+- [IBM Quantum Roadmap](https://www.ibm.com/quantum/roadmap)
+- [Google Quantum AI Map](https://quantumai.google/learn/map)
+- [QuEra Quantum Roadmap](https://www.quera.com/our-roadmap)
+
+### 8.7 路径汇总
+
+| 路径 | 时间 | 成本（量级）| 工程成熟度 | 可验证优势 | v2.1 状态 |
+|---|---|---|---|---|---|
+| **路径 1**：纯经典模拟 | 现在 | $10⁴（单 GPU）| ✅ 完整可用 | 数学一致性 + 50-100 qubit 中等规模理论验证 | **v2.1 全部交付** |
+| **路径 2**：经典-量子混合 | 2-3 年 | $10⁶（混合平台）| ⌛ 接口已就绪 | 1-10% 性能改善 | **接口透出，硬件后端待 v2.2** |
+| **路径 3**：完整量子 | 2030+ | $10⁹（容错量子集群）| ⌛ 待量子硬件成熟 | 理论上 10⁴ - 10⁶ 效率提升 | **接口已就绪，等待硬件** |
+
+### 8.8 v2.1 QID 工程承诺时间表
+
+我们承诺在未来 12-18 个月内提供以下实验输出，对应路径 1（已交付）→ 路径 2（接口）→ 路径 2（硬件后端）的渐进路线。所有结果会写入 `results/qid_phase{N}/` 并附 Phase 报告。
 
 | 时间 | 交付物 | 验证目标 |
 |---|---|---|
-| 2026.08 | qid/ 子仓库 v0.1（经典模拟）| 在小系统（10-20 qubit）上验证 γ_n[C_train] ≠ 0 |
-| 2026.12 | QID-26M（经典-量子混合原型）| 在 CID-26M 基础上注入量子噪声，观察 1-2% PPL 提升 |
-| 2027.06 | QID-104M（完整经典-量子混合版）| 展示 Berry 相位损失 + 量子噪声注入的协同效应 |
-| 2028 | QID-1B（取决于云量子硬件可用性）| QID 完整 pipeline 的首次端到端演示 |
+| **2026.06**（已完成）| `uid_theory/qid/` v2.1 + 7 个测试文件之一 | 路径 1 经典代理完整覆盖；零参数回归锁定 |
+| **2026.08** | QID-26M（CID-26M 基础上叠加 QID 修正）| 在小模型上验证 Berry 相位 ≠ 0、QFDT 谱形状、ℏ → 0 退化；预期 1-2% PPL 改善 |
+| **2026.12** | QID-104M + IBM Quantum 混合 PoC | 路径 2 首次端到端：用 IBM Quantum 真空涨落替代 OU 噪声，量化提升幅度 |
+| **2027.06** | QID-1B + 拓扑保护记忆原型 | 路径 2 完整版：Berry 相位损失 + 真实量子噪声协同，目标 5% 参数效率改善 |
+| **2028+** | 路径 3 路线图反复评估 | 视量子硬件商业化进展决定（1000 容错逻辑 qubit 阈值是关键节点）|
 
-> **可证伪承诺**：若引入量子组件（Berry 相位损失 + 真空噪声注入）后，QID 的性能提升**低于 1%**（理论期望 1-2%），我们将公开承认 QID 的工程价值远低于理论预言，重新审视框架。
+> **可证伪承诺**：若引入量子组件（Berry 相位损失 + 真空噪声注入）后，QID 的性能改善**低于 1%**（理论期望 1-2%），我们将在 `results/qid_phase{N}/REPORT.md` 公开承认 QID 路径 2 的工程价值远低于理论预言，并按 KNOWN_LIMITATIONS.md §D 流程报告缺陷与修正方向。
+
+### 8.9 与 v2.0 / v0.1 QID 实现的 4 个根本性改进
+
+| # | 早期问题 | v2.1 修复 |
+|---|---|---|
+| 1 | v2.0 QIDLayer 引入哈密顿 H × H 矩阵（破坏 §14.2 零参数原则）| v2.1 默认 `hamiltonian_mode="shared_with_ffn"`，反对称化 FFN[0] 权重，零额外矩阵参数 |
+| 2 | v2.0 默认 4 通道 Lindblad 各自一个 H × H 矩阵（4 × H² 额外参数）| v2.1 默认 `lindblad_mode="off"`；如需启用提供 `"shared"` 模式（仅 1 个 H × H + K 标量）|
+| 3 | v2.0 BerryPhaseLayer 引入 H × H/2 投影矩阵 + 相位无界，导致训练发散风险 | v2.1 默认从外部权重反对称投影构造（零矩阵参数），并将相位 bounded by tanh × π |
+| 4 | v2.0 QuantumColoredNoise 仅有 FFT 模式，与 CID §14.2 OU 默认不一致 | v2.1 默认改为 OU 物理 SDE，FFT 作为 legacy 保留以做隔离消融 |
+
+完整变更历史见 `CHANGELOG.md` v2.1 entry。
+
+### 8.10 章末小结
+
+> **QID 主方程的五个新组件**（么正演化、Berry 相位、非马尔可夫耗散、非阿贝尔旋度、量子噪声）在 v2.1 中**全部以经典代理的形式落地**，每个组件都有可运行的代码、对应的回归测试、以及明确的额外参数预算（路径 1）。
+>
+> **v2.1 修复了 v2.0 的 4 个严重参数膨胀问题**，使 QID 在 CID 基础上引入的额外参数严格控制在每层 4 个标量以内。这是一个真正的"drop-in"扩展，而非掩盖问题的"换皮重写"。
+>
+> **经典-量子混合的接口（路径 2）已就绪**，但真实量子硬件后端（Qiskit / IonQ / QuEra）需要等待 v2.2/v3.0 集成。
+>
+> **完整量子实现（路径 3）依赖未来 2030+ 容错量子计算机的成熟**，本理论文档不对此做任何短期承诺，只确保 v2.1 的 API 设计向前兼容。
+>
+> 任何把 v2.1 QID 经典代理的数字当作"量子优势已验证"的引用都是误读。**v2.1 QID 是一个经典框架的诚实经典实现，它准备好了与未来量子硬件协同，但不能也不应当替代量子硬件**。
 
 ## 第 9 章 —— QID 的局限与开放问题
 
