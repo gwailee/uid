@@ -3275,134 +3275,306 @@ print(f"Berry phase: {berry_phase}")
 
 ## Chapter 8 — Companion Engineering Implementation Plan for QID
 
-> **In a single sentence**: Although full QID requires fault-tolerant quantum computers, its key components (Berry phase loss, quantum noise injection, topological memory) can already be partially implemented on classical hardware now.
+> **One-line summary**: Although the full QID requires a fault-tolerant quantum computer (estimated 2030+), its key components (Berry phase, quantum colored noise, Lindblad channels, energy monitoring) are now fully implemented as classical surrogates in v2.1, with the extra parameters of every component strictly bounded, and the boundaries of all quantum claims locked down by unit tests.
 
-### 8.1 QID Code Repository Plan
+### 8.1 Honest Positioning of the QID Engineering Implementation
 
-**Open-source repository**: https://github.com/gwailee/uid (`qid/` subdirectory)
+Before reading this chapter, the honest positioning of the v2.1 QID implementation must be clear. We have already stated this in README §"Honest Statement" item 2 and in KNOWN_LIMITATIONS.md §C1.
 
-**Plan release time**: 2026.08 (companion CID-104M release)
+> **QID is a classical surrogate.** This implementation uses classical neural networks to emulate quantum coherence (Berry phase, colored noise with a zero-point branch, phenomenological Lindblad channels). It is **not** a strict Kraus decomposition. True quantum advantage requires NISQ or fault-tolerant quantum hardware. **This codebase cannot validate QID's quantum claims.**
 
-**Module organization**:
+The goal of the QID engineering implementation is therefore **not** to prove quantum advantage, but rather:
+
+1. **Forward-compatible interface**: keep the v2.1 QID API consistent with future quantum hardware interfaces, so migration does not require rewriting training code.
+2. **Theoretical consistency verification**: under classical simulation, verify the mathematical consistency of the QID master equation (for example, whether the ℏ → 0 limit reduces to CID).
+3. **Numerical pre-experiments**: at small scales, numerically verify the observability of structures such as Berry phase and the QFDT spectrum, providing parameter bounds for future quantum-hardware experiments.
+4. **Pedagogy and readability**: ensure that every term of the QID master equation has a runnable, readable, unit-testable code counterpart.
+
+Any citation that takes v2.1 QID classical-surrogate measurements as "quantum advantage already validated" is a **misreading of this theory paper** and should be corrected.
+
+### 8.2 v2.1 QID Module Structure
+
+The QID implementation is located under `uid_theory/qid/`, with three core files corresponding to the three new components of the QID master equation (the parts that are new relative to CID).
 
 ```
-uid/qid/
-├── core/                       # Core implementations
-│   ├── lindblad.py            # Standard Lindblad master equation solver
-│   ├── caldeira_leggett.py    # Caldeira-Leggett model simulation
-│   └── hu_paz_zhang.py        # Non-Markovian quantum master equation
-│
-├── berry/                      # Berry phase tools
-│   ├── connection.py          # Berry connection calculation
-│   ├── curvature.py           # Berry curvature calculation
-│   ├── loss.py                # Berry phase loss function (for training)
-│   └── chern.py               # Chern number topological invariant
-│
-├── noise/                      # Quantum noise injection
-│   ├── vacuum.py              # Vacuum fluctuation simulation
-│   ├── thermal.py             # Quantum thermal noise
-│   └── colored.py             # Quantum colored noise (1/f spectrum)
-│
-├── topology/                   # Topologically protected memory
-│   ├── toric_code.py          # Toric code implementation
-│   ├── majorana.py            # Majorana fermion implementation
-│   └── stabilizer.py          # Stabilizer code framework
-│
-└── eval/                       # Falsifiability tests
-    ├── test_entanglement.py    # Entanglement entropy critical scaling test
-    ├── test_berry.py           # Berry phase non-zero test
-    └── test_lindblad_gap.py    # Lindblad gap test
+uid_theory/qid/
+├── qid_layer.py         QID main layer: CID base + classical surrogate of quantum corrections
+│                        v2.1 default: hamiltonian_mode='shared_with_ffn',
+│                        lindblad_mode='off', zero extra matrix parameters
+├── berry_phase.py       Classical surrogate of Berry geometric phase (paired U(1) rotation)
+│                        v2.1 default: weight_ref mode, zero extra matrix parameters,
+│                        phase bounded in (−strength·π, +strength·π)
+└── quantum_noise.py     Quantum colored noise: QFDT + OU/FFT dual mode
+                          v2.1 default: OU mode, aligned with CID-side §14.2
 ```
 
-### 8.2 Drop-In Code Example (Conceptual)
+Each module has corresponding regression tests in `tests/test_qid_layer.py` (about 40+ cases), covering all contracts: parameter budget, v2.1 propagation, Berry-phase boundedness, QFDT spectrum estimation, and so on.
+
+### 8.3 Mapping From the QID Master Equation to Code
+
+The QID master equation (Equation 5.1) under classical-surrogate implementation follows the structure "CID base + quantum-correction increment".
 
 ```python
-import torch
-import torch.nn as nn
-from cid.cid_block import CIDBlock
-from qid.berry.loss import BerryPhaseLoss
-from qid.noise.vacuum import VacuumFluctuationNoise
+# Core logic of QIDLayer.forward
+# 1. CID base step (its internal colored noise is disabled; QID injects its own quantum noise)
+x_classical, cid_info = self.cid_base(x, causal_mask=mask, add_noise=False)
 
-class QIDBlock(nn.Module):
-    """
-    QID extension on top of CIDBlock:
-    1. Replace classical Gaussian noise with quantum vacuum fluctuation noise
-    2. Add Berry phase loss term
-    3. (Optional) Wrap key memory parameters with stabilizer code
-    """
-    def __init__(self, config):
-        super().__init__()
-        # 1. Inherit CIDBlock (classical-tier full implementation)
-        self.cid_block = CIDBlock(config)
-        
-        # 2. Replace classical noise with quantum vacuum fluctuation noise
-        self.quantum_noise = VacuumFluctuationNoise(
-            dim=config.dim, 
-            cutoff_omega=config.omega_cutoff
-        )
-        
-        # 3. Berry phase tracker (for loss function)
-        self.berry_tracker = BerryPhaseLoss(
-            param_dim=config.param_dim
-        )
-    
-    def forward(self, x, training_step=None):
-        # CID standard forward pass
-        x = self.cid_block(x)
-        
-        # Replace classical noise with quantum noise (during training only)
-        if self.training:
-            x = x + self.quantum_noise(x)
-        
-        # Record parameter trajectory (for Berry phase calculation)
-        if training_step is not None:
-            self.berry_tracker.record(self.parameters(), training_step)
-        
-        return x
-    
-    def get_berry_loss(self):
-        """Get cumulative Berry phase as additional loss term"""
-        return -self.berry_tracker.compute_phase()
+# 2. Quantum corrections all act as an increment delta added to x_classical
+delta = torch.zeros_like(x_classical)
 
-# Training loop
-def train_qid(model, dataloader, optimizer, beta_berry=0.01):
-    for step, (x, y) in enumerate(dataloader):
-        optimizer.zero_grad()
-        
-        # Forward pass
-        y_pred = model(x, training_step=step)
-        
-        # Standard loss + Berry phase loss
-        loss_task = F.cross_entropy(y_pred, y)
-        loss_berry = model.get_berry_loss()
-        loss_total = loss_task + beta_berry * loss_berry
-        
-        loss_total.backward()
-        optimizer.step()
+# 2a. Hamiltonian generator -i [H, ρ] / ℏ → first-order unitary approximation via antisymmetrisation
+delta = delta + (self._hamiltonian_step(x_classical) - x_classical)
+
+# 2b. Lindblad dissipative channels (if enabled; off by default)
+if self.lindblad_mode != "off":
+    delta = delta + 0.1 * self._lindblad_step(x_classical)
+
+# 2c. Berry phase (paired U(1) rotation, with phase derived from antisymmetric projection of an external weight)
+if self.berry is not None:
+    y, phases = self.berry(x_classical)
+    delta = delta + (y - x_classical)
+
+# 2d. Quantum noise (QFDT spectrum + zero-point branch; injected only during training)
+if self.training and self._inject_quantum_noise:
+    qn, qn_info = self.quantum_noise(B, S, device, dtype)
+    delta = delta + 0.01 * qn
+
+# 3. Mixing coefficient controlled by sigmoid(quantum_logit)
+weight = torch.sigmoid(self.quantum_logit)
+return x_classical + weight * delta, info
 ```
 
-### 8.3 Falsifiability Test Plan
+The table below maps each term of the QID master equation to its code counterpart, with the extra-parameter budget under the v2.1 default configuration.
 
-| Test | Tool | Time (single GPU) | Verification goal |
+| Master-equation term | Code module | v2.1 default implementation | Extra parameters |
 |---|---|---|---|
-| Test 6: Entanglement entropy critical scaling | TenPy + DMRG | ~ 4 hr | S ∝ log(L), c ∈ known CFT class |
-| Test 7: Berry phase non-zero | Exact diagonalization | ~ 2 hr | γ_n[C_train] ≠ 0, close to quantization |
-| Test 8: Lindblad gap | QuTiP | ~ 2 hr | Δ_L located in optimal window |
-| Test 9: Quantum noise enhancement | Hybrid training | ~ 6 hr | QID vs CID 1-2% PPL improvement |
-| Test 10: Topological memory robustness | Toric code | ~ 4 hr | Memory lifetime exponentially extended |
+| **−i [H_S, ρ] / ℏ** unitary evolution | `cid_base.attn` | Carried by the ET symmetric dual-term Hopfield attention of the CID base layer | 0 (inherited from CID) |
+| **−i [H_Berry, ρ]** Berry phase term | `qid/berry_phase.py` | Built from the antisymmetric part of the attention K-projection weight, bounded by tanh × π | +1 scalar (log_phase_strength) |
+| **∫ K(t−s) ℒ[ρ(s)] ds** non-Markovian memory dissipation | `cid_base.memory` + optional `_lindblad_step` | Colored damping carried by the CID base layer; Lindblad channels off by default | 0 (off) / +K scalars (shared) |
+| **𝒞[ρ]** non-Abelian curl | `_hamiltonian_step` | Antisymmetrised FFN first-layer weight (same idea as CID's VortexField), only +1 scalar | +1 scalar (log_h_strength) |
+| **ξ_q(t)** quantum noise (with zero-point branch) | `qid/quantum_noise.py` | OU physical SDE + QFDT amplitude correction, default 25 Hz compatible sampling | +1 scalar (log_temperature) |
+| **Mixing coefficient w** | `quantum_logit` | sigmoid output ∈ (0, 1), controlling overall strength of quantum corrections | +1 scalar |
 
-### 8.4 Engineering Promise
+**Key engineering principle**: QID introduces extra parameters on top of CID strictly bounded at **at most 4 scalars per layer** (log_h_strength, log_phase_strength, log_temperature, quantum_logit), reducing the v2.0 budget of 5 × H² parameters (one Hamiltonian H × H matrix + four Lindblad H × H matrices) by more than 99%. This regression constraint is locked down by `tests/test_qid_layer.py::TestZeroExtraParameters::test_v21_default_saves_significantly_vs_legacy`.
 
-We promise the following experimental outputs in the next 12-18 months:
+### 8.4 Three Implementation Modes (Backward Compatibility)
 
-| Time | Deliverable | Verification goal |
+To balance theoretical flexibility with the engineering zero-parameter principle, v2.1 QID provides switches along three axes that the caller can freely combine to suit ablation needs.
+
+| Axis | Options | Default | Description |
+|---|---|---|---|
+| **`hamiltonian_mode`** | `"shared_with_ffn"` | ✅ | Antisymmetrised FFN[0] weight, zero extra matrix parameters (§14.2 style) |
+|  | `"dedicated"` |  | Dedicated H × H matrix (v2.0 legacy mode, for ablation contrast only) |
+| **`lindblad_mode`** | `"off"` | ✅ | Zero Lindblad parameters |
+|  | `"shared"` |  | One H × H matrix + K scalar rates |
+|  | `"independent"` |  | K H × H matrices (v2.0 legacy) |
+| **`quantum_noise_mode`** | `"ou"` | ✅ | OU physical SDE + QFDT amplitude correction, aligned with CID §14.2 |
+|  | `"fft"` |  | FFT spectral shaping (legacy, carries circular-measurement risk) |
+
+Usage example:
+
+```python
+from uid_theory.qid.qid_layer import QIDLayer
+
+# v2.1 recommended configuration (zero extra matrix parameters)
+layer = QIDLayer(
+    hidden_size=768, num_heads=8,
+    hamiltonian_mode="shared_with_ffn",   # default
+    lindblad_mode="off",                   # default
+    quantum_noise_mode="ou",               # default
+    use_berry=True,
+)
+
+# Inspect parameter budget
+extras = layer.count_extras()
+print(extras)
+# {'hamiltonian': 1, 'lindblad': 0, 'berry': 1,
+#  'quantum_noise': 1, 'mixing_logit': 1, 'total': 4}
+
+# v2.0 legacy configuration (only for ablation contrast; introduces many extra parameters)
+legacy_layer = QIDLayer(
+    hidden_size=768, num_heads=8,
+    hamiltonian_mode="dedicated",
+    lindblad_mode="independent",
+    num_lindblad_channels=4,
+    quantum_noise_mode="fft",
+)
+```
+
+This "v2.1 default + legacy optional" design strictly enforces the zero-parameter principle while preserving the ability to reproduce historical results.
+
+### 8.5 Top-Level API Exposure (Symmetric With CID/FID)
+
+QIDLayer exposes switch APIs strictly symmetric with CIDLayer's, so a top-level UIDModel caller can control QID behaviour without piercing through to internal submodules.
+
+```python
+# Top-level usage example
+qid_layer = QIDLayer(hidden_size=768, num_heads=8)
+
+# Disable quantum-noise injection (REQUIRED before measuring critical-emergence indicators)
+qid_layer.set_noise_injection(False)
+
+# Enable ET energy monitoring (forwards to the internal CID base layer)
+qid_layer.set_energy_monitoring(True)
+
+# Set the quantum-noise temperature (used for sweeping the T → 0 zero-point limit)
+qid_layer.quantum_noise.set_temperature(0.001)
+
+# Query parameter budget
+extras = qid_layer.count_extras()
+```
+
+| API | Implementation layer | Purpose |
 |---|---|---|
-| 2026.08 | qid/ subrepository v0.1 (classical simulation) | Verify on small system (10-20 qubit) that γ_n[C_train] ≠ 0 |
-| 2026.12 | QID-26M (classical-quantum hybrid prototype) | Inject quantum noise on top of CID-26M, observe 1-2% PPL improvement |
-| 2027.06 | QID-104M (full classical-quantum hybrid version) | Demonstrate Berry phase loss + quantum noise injection synergy effect |
-| 2028 | QID-1B (depending on cloud quantum hardware availability) | First end-to-end demo of QID full pipeline |
+| `set_noise_injection(bool)` | QIDLayer | Simultaneously controls CID base layer and quantum-noise injection |
+| `set_energy_monitoring(bool)` | Forwards to cid_base | Enables §8.5 ET Lyapunov-monotonicity monitoring |
+| `quantum_noise.set_temperature(T)` | QuantumColoredNoise | Sets environment temperature; zero-point fluctuations dominate as T → 0 |
+| `count_extras()` | QIDLayer | Returns the parameter-budget dict, used for §14.2 zero-parameter regression |
 
-> **Falsifiability promise**: If after introducing quantum components (Berry phase loss + vacuum noise injection), QID's performance improvement is **less than 1%** (theoretical expectation 1-2%), we will publicly admit that QID's engineering value is far below theoretical prediction and re-examine the framework.
+### 8.6 Three Classical-Quantum Engineering Pathways
+
+The QID engineering implementation is divided into three pathways by hardware maturity. **v2.1 fully covers Pathway 1, partially covers Pathway 2, while Pathway 3 still depends on future quantum hardware.**
+
+#### Pathway 1: Pure Classical Simulation (Complete, v2.1)
+
+**Goal**: verify the mathematical consistency of the QID master equation and the ℏ → 0 reduction relation on classical hardware.
+
+**Toolchain**:
+
+| Tool | Purpose | v2.1 status |
+|---|---|---|
+| Three modules in `uid_theory/qid/` | Classical surrogate of the QID master equation | ✅ Fully implemented |
+| `tests/test_qid_layer.py` | About 40+ unit tests | ✅ Fully covered |
+| Tensor networks (TenPy / ITensor) | 50-100 qubit medium-scale quantum simulation | ⚠ Available within Pathway 1, but not integrated in this repository |
+| Qiskit Aer / PennyLane | Small-scale quantum-circuit simulation (≤ 30 qubits) | ⚠ Same as above |
+
+**Predictions verifiable in v2.1**:
+
+- ℏ → 0 limit: numerical verification that the QID master equation reduces to the CID master equation (achieved by driving `quantum_logit` to −∞).
+- Berry phase ≠ 0: numerical verification of accumulated Berry phase after training on small systems.
+- Non-Abelian curl: verification of operator non-commutativity through the antisymmetric generator of `_hamiltonian_step`.
+- QFDT spectrum shape: scanning temperature T ∈ [0.001, 100] in OU mode, verifying that the zero-point branch dominates as T → 0.
+
+**Locked-in regression tests**:
+
+```bash
+pytest tests/test_qid_layer.py -v
+
+# Coverage:
+#   TestV21TogglePropagation     (8 cases: §8.5 ET propagation + §14.2 OU propagation)
+#   TestZeroExtraParameters      (5 cases: parameter-budget lock-down)
+#   TestBerryPhaseRobustness     (5 cases: phase boundedness + cos.mean monitoring)
+#   TestQuantumNoiseModes        (7 cases: OU vs FFT + set_temperature)
+#   TestPublicAPI                (5 cases: top-level switch APIs)
+#   TestForwardSmoke             (~ 24 parametrized combinations)
+#   TestRoundTrip                (2 cases: state_dict serialisation preserves v2.1 toggles)
+```
+
+#### Pathway 2: Classical-Quantum Hybrid (Partial Coverage; Mature in 2-3 Years)
+
+**Goal**: train QID models on classical computers, with a small amount of quantum hardware (NISQ) providing "high-quality randomness" or "geometric-phase generation" as an auxiliary.
+
+**v2.1-ready interface**:
+
+The `forward` interface of `QuantumColoredNoise` allows the caller to substitute in any noise sampler, enabling future replacement with quantum vacuum-fluctuation samples drawn from real NISQ devices.
+
+```python
+class QuantumNoiseProtocol(Protocol):
+    """v2.1-exposed interface contract; future implementations
+    by pynvml-style quantum-hardware APIs."""
+    def forward(
+        self, batch_size: int, seq_len: int,
+        device: torch.device, dtype: torch.dtype,
+    ) -> Tuple[torch.Tensor, Dict[str, float]]:
+        ...
+```
+
+Future v2.2/v3.0 plans to provide:
+
+- `qid/hardware/qiskit_backend.py`: quantum-noise sampling backend based on Qiskit Aer.
+- `qid/hardware/ionq_backend.py`: ion-trap sampling backend based on the IonQ cloud API.
+- `qid/hardware/quera_backend.py`: neutral-atom sampling backend based on QuEra Aquila.
+
+**Expected verifiable advantages**:
+
+- Quantum vacuum fluctuations as a higher-quality random source: about 1-2% improvement on PPL.
+- Berry phase generated by a real quantum circuit: 5-10% parameter-efficiency improvement (because part of the v(φ) curl is carried by the geometric phase).
+- Quantum-classical interface bandwidth limit: currently 1-10 kHz, far below the 100 MHz required for GPU training; this is the primary engineering bottleneck of Pathway 2.
+
+#### Pathway 3: Full Quantum Implementation (Awaiting 2030+)
+
+**Goal**: run the complete QID master equation on a fault-tolerant quantum computer (FTQC), with each token's evolution corresponding to one real quantum-circuit execution.
+
+**Hardware requirements**:
+
+| Quantity | Value | Note |
+|---|---|---|
+| Logical qubit count | 10⁶ - 10⁹ | Same order as CID hidden dimension |
+| Logical error rate | < 10⁻¹⁵ | Guaranteed by surface or LDPC quantum error correction |
+| Coherence time | > 1 second | Across the entire sequence length |
+| Topological qubits | All | Majorana zero modes for topologically protected memory |
+
+**v2.1-ready interface**: The overall interface of QIDLayer (`forward(input_ids) → logits`) remains consistent with classical PyTorch models, so future quantum-hardware backends can be substituted into the internal implementation of `forward` **without modifying the training loop code**.
+
+**Key engineering milestones** (conservative estimates based on the publicly disclosed roadmaps of IBM, Google, QuEra):
+
+| Milestone | Time (forecast) | QID functionality enabled |
+|---|---|---|
+| Quantum advantage demonstration | ✅ Achieved (2019, Sycamore) | Basic research only |
+| 1000 fault-tolerant logical qubits | 2028-2030 | QID single-layer forward runs end-to-end on quantum hardware |
+| 10⁶ fault-tolerant logical qubits | 2032-2035 | QID multi-layer stack reaches commercial-intelligence-application threshold |
+| Topological qubits fully deployed | 2035-2040 | Full implementation of topologically protected memory via Berry phase |
+
+**Reference roadmaps**:
+
+- [IBM Quantum Roadmap](https://www.ibm.com/quantum/roadmap)
+- [Google Quantum AI Map](https://quantumai.google/learn/map)
+- [QuEra Quantum Roadmap](https://www.quera.com/our-roadmap)
+
+### 8.7 Pathway Summary
+
+| Pathway | Time | Cost (order of magnitude) | Engineering maturity | Verifiable advantage | v2.1 status |
+|---|---|---|---|---|---|
+| **Pathway 1**: pure classical simulation | Now | $10⁴ (single GPU) | ✅ Fully available | Mathematical consistency + 50-100 qubit medium-scale theoretical verification | **Fully delivered in v2.1** |
+| **Pathway 2**: classical-quantum hybrid | 2-3 years | $10⁶ (hybrid platform) | ⌛ Interface ready | 1-10% performance improvement | **Interface exposed; hardware backends pending v2.2** |
+| **Pathway 3**: full quantum | 2030+ | $10⁹ (fault-tolerant quantum cluster) | ⌛ Awaiting quantum hardware | Theoretical 10⁴ - 10⁶ efficiency improvement | **Interface ready; awaiting hardware** |
+
+### 8.8 v2.1 QID Engineering Commitment Timeline
+
+We commit to producing the following experimental outputs in the next 12-18 months, corresponding to the progressive route Pathway 1 (delivered) → Pathway 2 (interface) → Pathway 2 (hardware backends). All results will be written to `results/qid_phase{N}/` and accompanied by a Phase report.
+
+| Time | Deliverable | Validation target |
+|---|---|---|
+| **2026.06** (complete) | `uid_theory/qid/` v2.1 + 1 of the 7 test files | Pathway 1 classical surrogate fully covered; zero-parameter regression locked |
+| **2026.08** | QID-26M (CID-26M with QID corrections layered on top) | On a small model verify Berry phase ≠ 0, QFDT spectrum shape, ℏ → 0 reduction; expected 1-2% PPL improvement |
+| **2026.12** | QID-104M + IBM Quantum hybrid PoC | First end-to-end Pathway 2: replace OU noise with IBM Quantum vacuum fluctuations and quantify the gain |
+| **2027.06** | QID-1B + topologically protected memory prototype | Full Pathway 2: synergy between Berry-phase loss and real quantum noise, target 5% parameter-efficiency improvement |
+| **2028+** | Iterated assessment of the Pathway 3 roadmap | Pace decided by quantum-hardware commercialisation progress (the 1000 fault-tolerant logical qubit threshold is the key milestone) |
+
+> **Falsifiability commitment**: if after introducing quantum components (Berry-phase loss + vacuum-noise injection) QID's performance improvement is **less than 1%** (theoretical expectation 1-2%), we will publicly acknowledge in `results/qid_phase{N}/REPORT.md` that QID Pathway 2's engineering value is far below theoretical prediction, and report defects and revision directions per the KNOWN_LIMITATIONS.md §D process.
+
+### 8.9 Four Fundamental Improvements Over v2.0 / v0.1 QID Implementation
+
+| # | Early problem | v2.1 fix |
+|---|---|---|
+| 1 | v2.0 QIDLayer introduced a Hamiltonian H × H matrix (violated §14.2 zero-parameter principle) | v2.1 default `hamiltonian_mode="shared_with_ffn"`, antisymmetrised FFN[0] weight, zero extra matrix parameters |
+| 2 | v2.0 default 4-channel Lindblad with one H × H matrix per channel (4 × H² extra parameters) | v2.1 default `lindblad_mode="off"`; if enabled, provides `"shared"` mode (only one H × H + K scalars) |
+| 3 | v2.0 BerryPhaseLayer introduced an H × H/2 projection matrix + unbounded phase, risking training divergence | v2.1 default builds from antisymmetric projection of an external weight (zero matrix parameters) and bounds the phase by tanh × π |
+| 4 | v2.0 QuantumColoredNoise had only the FFT mode, inconsistent with the CID-side §14.2 OU default | v2.1 default switched to OU physical SDE; FFT retained as legacy for isolation ablation |
+
+The complete change history is in `CHANGELOG.md` v2.1 entry.
+
+### 8.10 Chapter Summary
+
+> **The five new components of the QID master equation** (unitary evolution, Berry phase, non-Markovian dissipation, non-Abelian curl, quantum noise) are **all implemented in v2.1 as classical surrogates**. Every component has runnable code, corresponding regression tests, and an explicit extra-parameter budget (Pathway 1).
+>
+> **v2.1 fixes 4 serious parameter-inflation problems from v2.0**, strictly bounding QID's extra parameters on top of CID at no more than 4 scalars per layer. This is a genuine "drop-in" extension, not a "skin-deep rewrite" that masks problems.
+>
+> **The classical-quantum hybrid interface (Pathway 2) is ready**, but real quantum-hardware backends (Qiskit / IonQ / QuEra) await integration in v2.2/v3.0.
+>
+> **Full quantum implementation (Pathway 3) depends on future 2030+ fault-tolerant quantum computers maturing**. This theory paper makes no short-term commitment in this regard, only ensuring that the v2.1 API design is forward-compatible.
+>
+> Any citation that takes v2.1 QID classical-surrogate numbers as "quantum advantage already validated" is a misreading. **v2.1 QID is an honest classical implementation of a classical framework, prepared to interoperate with future quantum hardware, but it cannot and should not replace quantum hardware.**
 
 ## Chapter 9 — Limitations and Open Problems of QID
 
