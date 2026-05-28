@@ -1,0 +1,405 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gwailee/uid/blob/main/results/schemas/scaling_law_v1.json",
+  "title": "UID Scaling-Law Experiment Result (v1)",
+  "description": "Per-(family, scale, seed) results from experiments/run_scaling_law.py. Conforms to the contract in results/README.md §Schema 2.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["experiment", "timestamp", "n_results", "results"],
+  "properties": {
+    "experiment": {
+      "type": "string",
+      "pattern": "^scaling_law_v",
+      "description": "Producing-experiment tag; current canonical value: 'scaling_law_v2.1'."
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Human-readable timestamp; format 'YYYY-MM-DD HH:MM:SS'."
+    },
+    "n_results": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "results": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/$defs/scalingPoint" }
+    }
+  },
+  "$defs": {
+    "scalingPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_family",
+        "scale_name",
+        "non_emb_params",
+        "train_flops",
+        "final_train_loss",
+        "final_eval_loss",
+        "final_eval_ppl",
+        "wall_clock_seconds",
+        "seed",
+        "v21_keys"
+      ],
+      "properties": {
+        "model_family": {
+          "type": "string",
+          "enum": [
+            "transformer",
+            "transformer_plus_tricks",
+            "cid_full",
+            "cid_full_no_et",
+            "cid_full_fft_noise"
+          ],
+          "description": "One of the five v2.1 supported families (see experiments/run_scaling_law.py VALID_FAMILIES)."
+        },
+        "scale_name": {
+          "type": "string",
+          "enum": ["10M", "30M", "100M", "300M", "1B"]
+        },
+        "non_emb_params": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "train_flops": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "final_train_loss": { "type": "number" },
+        "final_eval_loss": { "type": "number" },
+        "final_eval_ppl": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "wall_clock_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "v21_keys": { "$ref": "#/$defs/v21Keys" }
+      }
+    },
+    "v21Keys": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family",
+        "scale",
+        "vocab_size",
+        "max_seq_len",
+        "noise_type",
+        "noise_tau",
+        "noise_beta",
+        "use_et_symmetric"
+      ],
+      "properties": {
+        "family": { "type": "string" },
+        "scale": { "type": "string" },
+        "vocab_size": { "type": "integer", "minimum": 1 },
+        "max_seq_len": { "type": "integer", "minimum": 1 },
+        "noise_type": {
+          "type": "string",
+          "enum": ["ou", "fft"]
+        },
+        "noise_tau": { "type": "number", "exclusiveMinimum": 0 },
+        "noise_beta": { "type": "number", "minimum": 0 },
+        "use_et_symmetric": { "type": "boolean" }
+      }
+    }
+  }
+}
+```
+
+### 📄 文件 4：`results/schemas/ablation_summary_v1.json`
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gwailee/uid/blob/main/results/schemas/ablation_summary_v1.json",
+  "title": "UID Eleven-Way Ablation Summary (v1)",
+  "description": "Aggregate per-ablation summary and the three critical-contrast verdicts from experiments/run_ablation.py. Conforms to the contract in results/README.md §Schema 3.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["summary", "critical_comparisons"],
+  "properties": {
+    "summary": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ablationStat" }
+    },
+    "critical_comparisons": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/criticalContrast" }
+    }
+  },
+  "$defs": {
+    "ablationStat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ablation",
+        "n_seeds",
+        "eval_loss_mean",
+        "eval_loss_std",
+        "eval_ppl_mean",
+        "eval_ppl_std"
+      ],
+      "properties": {
+        "ablation": {
+          "type": "string",
+          "enum": [
+            "cid_no_vortex",
+            "cid_no_memory",
+            "cid_no_noise",
+            "cid_full",
+            "cid_full_no_et",
+            "cid_full_fft_noise",
+            "transformer_baseline",
+            "transformer_plus_noise",
+            "transformer_plus_conv",
+            "transformer_plus_linear",
+            "transformer_plus_all_tricks"
+          ],
+          "description": "One of the eleven v2.1 canonical ablation variant names (see uid_theory/verification/ablation_suite.py get_ablation_configs)."
+        },
+        "n_seeds": { "type": "integer", "minimum": 1 },
+        "eval_loss_mean": { "type": "number" },
+        "eval_loss_std": { "type": "number", "minimum": 0 },
+        "eval_ppl_mean": { "type": "number", "exclusiveMinimum": 0 },
+        "eval_ppl_std": { "type": "number", "minimum": 0 }
+      }
+    },
+    "criticalContrast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "name_a",
+        "name_b",
+        "loss_a",
+        "loss_b",
+        "advantage",
+        "z_score",
+        "verdict"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Human-readable title; typically 'CRITICAL COMPARISON {A|B|C}: ...'."
+        },
+        "name_a": { "type": "string" },
+        "name_b": { "type": "string" },
+        "loss_a": { "type": "number" },
+        "loss_b": { "type": "number" },
+        "advantage": {
+          "type": "number",
+          "description": "loss_b - loss_a; positive means variant 'a' is better."
+        },
+        "z_score": {
+          "type": "number",
+          "description": "Approximate two-sample z-score for difference of means; positive means 'a' beats 'b'."
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["supported", "falsified"],
+          "description": "'supported' = advantage > 0 AND |z| > 2.0; 'falsified' otherwise."
+        }
+      }
+    }
+  }
+}
+```
+
+### 📄 文件 5：`results/schemas/critical_exponents_v1.json`
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gwailee/uid/blob/main/results/schemas/critical_exponents_v1.json",
+  "title": "UID Critical-Exponent Battery Result (v1)",
+  "description": "Output of experiments/run_critical_exponents.py — contrasts noise-OFF and noise-ON measurements of beta/H/eta/tau on a trained model, with an optional baseline negative-control block and a final verdict. Conforms to results/README.md §Schema 4.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cid_emergence", "cid_with_noise", "verdict"],
+  "properties": {
+    "cid_emergence": { "$ref": "#/$defs/exponentBlock" },
+    "cid_with_noise": { "$ref": "#/$defs/exponentBlock" },
+    "baseline": {
+      "anyOf": [
+        { "$ref": "#/$defs/exponentBlock" },
+        { "type": "null" }
+      ]
+    },
+    "verdict": { "$ref": "#/$defs/verdictBlock" }
+  },
+  "$defs": {
+    "exponentBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_name",
+        "noise_injection_on",
+        "hurst",
+        "spectrum"
+      ],
+      "properties": {
+        "model_name": { "type": "string" },
+        "noise_injection_on": { "type": "boolean" },
+        "hurst": { "$ref": "#/$defs/hurstResult" },
+        "spectrum": { "$ref": "#/$defs/spectrumResult" },
+        "avalanche": {
+          "anyOf": [
+            { "$ref": "#/$defs/powerLawFit" },
+            { "type": "null" }
+          ]
+        },
+        "eta": {
+          "anyOf": [
+            { "$ref": "#/$defs/etaResult" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "hurstResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hurst_mean",
+        "hurst_std",
+        "n_series",
+        "sample_length",
+        "method"
+      ],
+      "properties": {
+        "hurst_mean": { "type": "number" },
+        "hurst_std": { "type": "number", "minimum": 0 },
+        "n_series": { "type": "integer", "minimum": 0 },
+        "sample_length": { "type": "integer", "minimum": 1 },
+        "method": {
+          "type": "string",
+          "enum": ["DFA", "R/S"]
+        }
+      }
+    },
+    "spectrumResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "beta_mean",
+        "beta_std",
+        "n_series",
+        "sample_length",
+        "r_squared_mean"
+      ],
+      "properties": {
+        "beta_mean": { "type": "number" },
+        "beta_std": { "type": "number", "minimum": 0 },
+        "n_series": { "type": "integer", "minimum": 0 },
+        "sample_length": { "type": "integer", "minimum": 1 },
+        "r_squared_mean": { "type": "number" }
+      }
+    },
+    "powerLawFit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "alpha_se",
+        "xmin",
+        "n_tail",
+        "ks_statistic",
+        "p_value",
+        "is_power_law"
+      ],
+      "properties": {
+        "alpha": { "type": "number" },
+        "alpha_se": { "type": "number" },
+        "xmin": { "type": "number" },
+        "n_tail": { "type": "integer", "minimum": 0 },
+        "ks_statistic": { "type": "number", "minimum": 0 },
+        "p_value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "is_power_law": { "type": "boolean" }
+      }
+    },
+    "etaResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eta_mean",
+        "eta_std",
+        "eta_in_range",
+        "n_samples",
+        "hidden_size",
+        "seq_len",
+        "rank_deficient"
+      ],
+      "properties": {
+        "eta_mean": { "type": "number", "minimum": 0, "maximum": 1 },
+        "eta_std": { "type": "number", "minimum": 0 },
+        "eta_in_range": { "type": "boolean" },
+        "n_samples": { "type": "integer", "minimum": 0 },
+        "hidden_size": { "type": "integer", "minimum": 1 },
+        "seq_len": { "type": "integer", "minimum": 1 },
+        "rank_deficient": { "type": "boolean" }
+      }
+    },
+    "verdictBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "beta_off",
+        "beta_on",
+        "hurst_off",
+        "hurst_on",
+        "beta_diff",
+        "hurst_diff",
+        "beta_in_range",
+        "hurst_in_range",
+        "noise_diff_tol",
+        "verdict"
+      ],
+      "properties": {
+        "beta_off": { "type": "number" },
+        "beta_on": { "type": "number" },
+        "hurst_off": { "type": "number" },
+        "hurst_on": { "type": "number" },
+        "eta_off": { "type": "number" },
+        "eta_on": { "type": "number" },
+        "beta_diff": { "type": "number", "minimum": 0 },
+        "hurst_diff": { "type": "number", "minimum": 0 },
+        "eta_diff": { "type": "number", "minimum": 0 },
+        "beta_in_range": { "type": "boolean" },
+        "hurst_in_range": { "type": "boolean" },
+        "eta_state": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail",
+            "abstain_rd",
+            "abstain_missing"
+          ]
+        },
+        "eta_threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+        "eta_rank_deficient": { "type": "boolean" },
+        "noise_diff_tol": { "type": "number", "minimum": 0 },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "emergence_confirmed",
+            "emergence_confirmed_eta_abstained",
+            "ambiguous_residual_echo",
+            "emergence_not_confirmed",
+            "emergence_not_confirmed_eta"
+          ]
+        }
+      }
+    }
+  }
+}
