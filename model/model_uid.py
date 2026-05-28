@@ -2,6 +2,12 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date:   2026-05-25
+# UPDATE: 2026-05-28
+#   * UIDConfig: add noise_type, noise_tau, use_et_symmetric so the v2.1
+#     CIDLayer defaults survive save_pretrained / from_pretrained.
+#   * UIDModel: expose set_noise_injection / set_energy_monitoring /
+#     fluctuation_dissipation_consistency at the TOP level — README's
+#     critical-exponent measurement workflow depends on these.
 #
 # This file is part of the UID Theory reference implementation.
 #
@@ -13,7 +19,7 @@
 #     see LICENSE-COMMERCIAL in the project root
 #
 # For commercial licensing inquiries, contact: lig@jodell.cn
-# 本文件采用双许可证发布；商业使用须先获得苏州机器人有限公司书面授权，
+# 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权，
 # 商业授权联系: lig@jodell.cn
 
 """Causal language model built from CID/QID/FID blocks.
@@ -23,7 +29,7 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Dict, List, Optional
 
 import torch
 import torch.nn as nn
@@ -32,6 +38,7 @@ from transformers import PretrainedConfig, PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
 from cid.cid_layer import CIDBlock
+
 
 class UIDConfig(PretrainedConfig):
     """Configuration object for :class:`UIDModel`.
@@ -51,10 +58,17 @@ class UIDConfig(PretrainedConfig):
         use_vortex: bool = True,
         use_memory: bool = True,
         use_colored_noise: bool = True,
+        # v2.1: noise configuration.
+        # OU is the physically correct default per Theory §14.2;
+        # FFT is kept available for legacy comparison.
+        noise_type: str = "ou",
         noise_beta: float = 1.0,
+        noise_tau: float = 10.0,
         mem_alpha: float = 0.3,
         memory_length: int = 64,
         dropout: float = 0.1,
+        # v2.1: §8.5 ET symmetric dual-term attention.
+        use_et_symmetric: bool = True,
         **kwargs,
     ) -> None:
         """Build the configuration.
@@ -68,12 +82,22 @@ class UIDConfig(PretrainedConfig):
             use_vortex:              Enable vortex term. 启用旋度项。
             use_memory:              Enable memory kernel. 启用记忆核。
             use_colored_noise:       Enable colored noise. 启用色噪声。
-            noise_beta:              Spectral slope of colored noise.
-                                      色噪声功率谱斜率。
+            noise_type:              "ou" (physical, §14.2 default) or
+                                     "fft" (legacy spectral shaping).
+                                     色噪声类型。
+            noise_beta:              Spectral slope of colored noise
+                                     (only used when noise_type="fft").
+                                     仅 FFT 模式使用的功率谱斜率。
+            noise_tau:               OU correlation time (only used when
+                                     noise_type="ou").
+                                     仅 OU 模式使用的相关时间。
             mem_alpha:               Sub-Ohmic exponent. 亚欧姆指数。
             memory_length:           Memory-kernel receptive field.
-                                      记忆核感受野长度。
+                                     记忆核感受野长度。
             dropout:                 Dropout. Dropout 概率。
+            use_et_symmetric:        Whether to use the ET symmetric
+                                     dual-term attention update (§8.5).
+                                     是否启用 §8.5 ET 对称双项注意力。
         """
         super().__init__(**kwargs)
         self.vocab_size = vocab_size
@@ -84,10 +108,13 @@ class UIDConfig(PretrainedConfig):
         self.use_vortex = use_vortex
         self.use_memory = use_memory
         self.use_colored_noise = use_colored_noise
+        self.noise_type = str(noise_type).lower()
         self.noise_beta = noise_beta
+        self.noise_tau = noise_tau
         self.mem_alpha = mem_alpha
         self.memory_length = memory_length
         self.dropout = dropout
+        self.use_et_symmetric = bool(use_et_symmetric)
 
 
 class UIDModel(PreTrainedModel):
@@ -122,10 +149,13 @@ class UIDModel(PreTrainedModel):
             use_vortex=config.use_vortex,
             use_memory=config.use_memory,
             use_colored_noise=config.use_colored_noise,
+            noise_type=config.noise_type,
             noise_beta=config.noise_beta,
+            noise_tau=config.noise_tau,
             mem_alpha=config.mem_alpha,
             memory_length=config.memory_length,
             dropout=config.dropout,
+            use_et_symmetric=config.use_et_symmetric,
         )
 
         self.norm: nn.LayerNorm = nn.LayerNorm(config.hidden_size)
@@ -149,6 +179,48 @@ class UIDModel(PreTrainedModel):
                 nn.init.zeros_(module.bias)
         elif isinstance(module, nn.Embedding):
             nn.init.normal_(module.weight, std=0.02)
+
+    # ------------------------------------------------------------------
+    # Top-level API (v2.1): expose backbone switches for honest
+    # measurement of emergent critical exponents and for ET Lyapunov
+    # verification per Theory §8.5.
+    # ------------------------------------------------------------------
+
+    def set_noise_injection(self, enabled: bool) -> None:
+        """Enable / disable colored-noise injection model-wide.
+
+        CRITICAL for honest measurement of emergent critical exponents:
+        before measuring 1/f spectra, Hurst, or avalanche statistics,
+        call ``model.set_noise_injection(False)`` so the measured
+        signature is NOT a circular echo of the injected noise.
+
+        关键：测量临界涌现指标前必须关闭噪声注入，否则结果将仅是
+        注入噪声的回响而非真实涌现。
+        """
+        self.backbone.set_noise_injection(enabled)
+
+    def set_energy_monitoring(self, enabled: bool) -> None:
+        """Enable / disable ET energy monitoring at every layer.
+
+        When enabled, each layer's forward fills
+        ``info[layer_i]["et_energy"]`` with the §8.5 ET energy value,
+        enabling engineering verification of Lyapunov monotonicity.
+
+        开启后，每层前向在 info 中记录 ET 能量值，
+        便于工程上验证 §8.5 Lyapunov 单调下降性质。
+        """
+        self.backbone.set_energy_monitoring(enabled)
+
+    def fluctuation_dissipation_consistency(self) -> List[Dict[str, float]]:
+        """Return per-layer fluctuation-dissipation consistency reports.
+
+        返回每一层的涨落-耗散自洽性诊断报告。
+        """
+        return self.backbone.fluctuation_dissipation_consistency()
+
+    # ------------------------------------------------------------------
+    # Forward
+    # ------------------------------------------------------------------
 
     def forward(
         self,
