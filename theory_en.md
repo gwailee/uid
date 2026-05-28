@@ -41,6 +41,7 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 <br>
 
 <div align="center">
+  
 # Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID)
 
 ## Attention Is Not All You Need: A Non-Equilibrium Physical Theory of Intelligent Architectures
