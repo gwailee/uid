@@ -1,3 +1,4 @@
+```
 <!--
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
@@ -15,43 +16,25 @@ DUAL LICENSE:
 For commercial licensing inquiries, contact: lig@jodell.cn
 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权。
 -->
-
-<div align="center">
+```
 
 ![logo](./images/logo.png)
 
-</div>
+[README（中文）](./README.md) | [README（English）](./README_en.md)
 
-<div align="center">
-<a href="./README.md">README（中文）</a> | <a href="./README_en.md">README（English）</a>
-</div>
+[30 分钟读懂 UID 理论（中文）](./30minutes_report.md) | [Understand UID in 30 Minutes（English）](./30minutes_report_en.md)
 
-<div align="center">
-<a href="./30minutes_report.md">30 分钟读懂 UID 理论（中文）</a> |
-<a href="./30minutes_report_en.md">Understand UID in 30 Minutes（English）</a>
-</div>
-
-<div align="center">
-<a href="./theory.md">UID 理论全文（中文）</a> |
-<a href="./theory_en.md">UID Theory (English)</a>
-</div>
-
-<br>
-
-<div align="center">
+[UID 理论全文（中文）](./theory.md) | [UID Theory (English)](./theory_en.md)
 
 # Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID)
 
 ## Attention Is Not All You Need: A Non-Equilibrium Physical Theory of Intelligent Architectures
 
-***Authors***: Gui LI<guilichina@163.com>, Dangyang JIE<jiedy@jodell.cn>, Haitao KANG<kanght@jodell.cn>
+***Authors***: Gui LI <guilichina@163.com>, Dangyang JIE <jiedy@jodell.cn>, Haitao KANG <kanght@jodell.cn>
 
 ***Affiliation***: Suzhou Jodell Robotics Co., Ltd., Suzhou, China
 
-***Corresponding author***: **Gui LI**, Ph.D. He received his B.Sc. in Physics from Northwest University of China, and his M.Sc. and Ph.D. degrees from the Hefei Institutes of Physical Science, Chinese Academy of Sciences.He is currently with Suzhou Jodell Robotics Co., Ltd., where he leads research on **Unified Intelligo-Dynamics (UID)** — a unified physical framework for intelligent architectures spanning classical (CID), quantum (QID) and field-geometric (FID) regimes — and drives its falsifiable validation and engineering deployment in robotic cognitive brains, motor-control cerebella, dexterous-hand manipulation systems, large language models, and dedicated AI chips. E-mail: guilichina@163.com
-
-</div>
-
+***Corresponding author***: **Gui LI**, Ph.D. He received his B.Sc. in Physics from Northwest University of China, and his M.Sc. and Ph.D. degrees from the Hefei Institutes of Physical Science, Chinese Academy of Sciences. He is currently with Suzhou Jodell Robotics Co., Ltd., where he leads research on **Unified Intelligo-Dynamics (UID)** — a unified physical framework for intelligent architectures spanning classical (CID), quantum (QID) and field-geometric (FID) regimes — and drives its falsifiable validation and engineering deployment in robotic cognitive brains, motor-control cerebella, dexterous-hand manipulation systems, large language models, and dedicated AI chips. E-mail: guilichina@163.com
 
 ## Abstract
 
@@ -87,8 +70,6 @@ All references in this paper provide clickable DOIs or open-access links, and al
 
 **Dialogue with Modern AI Progress**: Transformer complexity lower bounds; Alman-Song theorem; SETH hypothesis; JEPA world models; DeepSeek-R1 reasoning paradigm; SubQ sparse routing architecture; Logographic AI; value alignment hard constraints; neurosymbolic fusion
 
-
-
 ## Table of Contents
 
 - **Introduction**: The Intelligence Landscape in 2026
@@ -98,7 +79,6 @@ All references in this paper provide clickable DOIs or open-access links, and al
 - **Part IV**: UID and the Conditions for Cosmic Emergence of Intelligence
 - **Epilogue**: Three-Tier Lineage Overview and Open Problems
 - **Appendices**: References (with clickable DOI/URLs), symbol list, glossary
-
 
 # Introduction
 
