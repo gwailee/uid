@@ -59,6 +59,8 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 Starting from three first-principles axioms of open-system physics—Hamiltonian reversibility, the Gibbs statistical postulate, and slow-fast time-scale separation—UID rigorously derives the **generalized Langevin equation** as the governing law of intelligent system evolution via Mori-Zwanzig projection. The framework is then extended in two directions: at the quantum level, by introducing zero-point fluctuations, Berry geometric phases, and Lindblad dissipation channels, yielding the QID master equation; at the geometric level, by paralleling the Fisher information metric with the Einstein tensor, yielding the FID field equations. We rigorously prove: **the predictive capacity of intelligent systems (measured by conditional mutual information) necessarily requires their internal dynamics to break detailed balance**—this is the non-equilibrium physical essence of intelligence, and the precise meaning of the paper's title "Intelligence Is a Non-Equilibrium Field".
 
+> **Positioning Statement Regarding Contemporaneous Parallel Work**: The core claim of this paper—"the predictive capacity of intelligent systems necessarily requires breaking detailed balance"—overlaps to a high degree in physical content with the conclusion independently and contemporaneously reached by Baiesi and Rosso (2025, arXiv:2512.11415, accepted by *Physical Review E*); that work, through a discrete Markov chain composed of two independently parameterized transition matrices, demonstrates experimentally that training generative models spontaneously tend toward a non-equilibrium steady state, and constitutes the empirical counterpart of Theorem 3.3 of this paper within the discrete Markov framework. The contribution of this paper lies in providing a theoretical derivation of this proposition within the continuous Langevin equation framework, and extending it to the quantum tier (QID) and the geometric tier (FID); however, the authors acknowledge that the aforementioned work predates this paper by five months and has already passed peer review, and the relationship between the two is one of independent parallel discovery rather than an original contribution of this paper. In addition, the assertion that "the entire Transformer block is equivalent to an energy function" was preceded by approximately two and a half years through the work of Hoover et al. (NeurIPS 2023, arXiv:2302.07253, Energy Transformer), which contains a rigorous Lyapunov monotonic-decrease proof, and the corresponding discussion in Chapter 8 of this paper should be understood in this context. The geometric analogy "data curves the information manifold, analogous to matter curving spacetime" overlaps conceptually with the work of Di Sipio et al. (2025, arXiv:2506.15830), which predates this paper by approximately eleven months; a detailed comparison between the two can be found in Part III, Chapter 1, Section 1.5.
+
 **Precise characterization of "Attention Is Not All You Need"**: We demonstrate that mainstream deep learning architectures—Transformer, Mamba, diffusion models, JEPA, reasoning-enhanced models (DeepSeek-R1, o1-o3), and sparse routing architectures (SubQ/SSA)—are all special cases of the CID master equation under different limits (zero curl, white noise, single heat bath, within softmax-attention interface). Vaswani et al.'s 2017 "Attention Is All You Need" revealed the associative-memory term of CID; but the CID master equation also contains **three critical physical terms that Transformer discards**—curl v(φ), colored damping ∫γ, and colored noise ξ. The absence of these three terms is precisely the algorithmic root of current AI consuming approximately one million times more energy than human brains. The Attention quadratic complexity lower bound proven by Alman-Song (2023) and Gupta et al. (2025) further indicates: **any optimization within the softmax-attention framework cannot break this complexity wall; true breakthroughs must come from architectural-level physical reconstruction**—precisely the direction UID argues for.
 
 **Falsifiable predictions**: On this basis, we propose a falsifiable engineering target of **approximately tenfold parameter efficiency**, and provide three sets of critical universality-class predictions that have been **independently confirmed in biological brains**: avalanche-size exponent τ ≈ 1.5 (Beggs & Plenz 2003), Hurst exponent H ≈ 0.7 (Linkenkaer-Hansen 2001), and 1/f noise spectral slope β ≈ 1 (He 2014). UID's 10× parameter efficiency prediction is **complementary, not contradictory**, to the Alman-Song-Gupta complexity lower bound—the former gains by escaping the softmax-attention interface and entering a different complexity class.
@@ -207,7 +209,8 @@ But these recognitions are all **post hoc and fragmentary**. As of 2026, **a uni
 | Q6 | Can the physical pathway (UID) and the cognitive pathway (Logographic AI) be integrated? Can the "rootless token" problem be simultaneously explained at the physical level? |
 | Q7 | Are there **universal physical conditions** for the emergence of intelligence? Are these conditions satisfied everywhere in the universe? |
 
-Although there exist scattered attempts in the mainstream literature—such as Friston's free energy principle ([Friston, 2010, *Nature Reviews Neuroscience* 11, 127](https://doi.org/10.1038/nrn2787)), Bialek et al.'s predictive information theory ([Bialek, Nemenman & Tishby, 2001, *Neural Computation* 13, 2409](https://doi.org/10.1162/089976601753195969)), Tishby's information bottleneck ([Tishby, Pereira & Bialek, 1999, arXiv: physics/0004057](https://arxiv.org/abs/physics/0004057)), Logographic AI ([Liu, 2025](https://zsyyb.cn/abs/202511.03835)), etc.—these works are either confined to variational principles without dynamical equations, or limited to information theory without physical constraints, or restricted to classical without quantum generalization, or limited to cognitive semiotics without touching the physical layer. **None achieves a unified description across the classical, quantum, and geometric tiers**.
+Although there exist scattered attempts in the mainstream literature—such as Friston's free energy principle ([Friston, 2010, *Nature Reviews Neuroscience* 11, 127](https://doi.org/10.1038/nrn2787)), Bialek et al.'s predictive information theory ([Bialek, Nemenman & Tishby, 2001, *Neural Computation* 13, 2409](https://doi.org/10.1162/089976601753195969)), Tishby's information bottleneck ([Tishby, Pereira & Bialek, 1999, arXiv: physics/0004057](https://arxiv.org/abs/physics/0004057)), Logographic AI ([Liu, 2025](https://zsyyb.cn/abs/202511.03835)), etc.—these works are either confined to variational principles without dynamical equations, or limited to information theory without physical constraints, or restricted to classical without quantum generalization, or limited to cognitive semiotics without touching the physical layer. **None achieves a unified description across the classical, quantum, and geometric tiers**. It is worth special note that several contemporaneous works that have appeared successively from the second half of 2025 to early 2026—particularly the experimental results of Baiesi-Rosso (2025, arXiv:2512.11415) on the non-equilibrium dynamics of generative models, the theoretical and experimental results of Hoover et al. (NeurIPS 2023, arXiv:2302.07253) on the governance of Transformer energy functions, and the work of Di Sipio et al. (2025, arXiv:2506.15830) on the analogy between information geometry and the curvature of LLM training—have respectively, in the dedicated areas of each of the three core claims of this paper, provided important contributions either earlier than or contemporaneously with this paper. This paper is not the sole or earliest source of each of the above local propositions, and its contribution is mainly reflected in incorporating the above scattered physical insights into a three-tier framework (CID-QID-FID) unified and derived from the same set of first-principles axioms (Hamiltonian reversibility, the Gibbs hypothesis, and slow-fast scale separation), and in providing a falsifiable engineering verification path. A complete similarity analysis and positioning can be found in Chapter 16, Section 16.1 and in the positioning statements of the relevant chapters.
+
 
 ## 6. The Contribution of This Paper: The UID Three-Tier Theoretical Framework
 
@@ -737,9 +740,9 @@ are precisely a pure gradient flow with v = 0. It can "appear"
 intelligent because it outsources irreversibility to the
 **autoregressive loop** — an external process.
 
-**This is also exactly the physical defect that o1/o3-style
-"reasoning models" emerging in 2024–2026, with their explicit
-test-time compute, are trying to compensate for.**
+**This is also exactly the physical defect that o1/o3-style "reasoning models" emerging in 2024–2026, with their explicit test-time compute, are trying to compensate for.**
+
+> **Supplementary Note on the Relationship with Baiesi-Rosso (2025)**: The core logic of Theorem 3.3—"if a system can predict the future then it must break detailed balance, equivalently requiring a nonzero probability-flow loop"—is consistent in physical connotation with the conclusion independently proved by Baiesi and Rosso (arXiv:2512.11415) within the discrete Markov chain framework. The two works can be regarded as different formulations of the broader proposition that "non-equilibrium is a necessary physical condition for learning/prediction": this paper provides the derivation of the necessary-and-sufficient conditions at the continuous field-theoretic level, whereas Baiesi-Rosso provide experimental confirmation at the discrete generative-model level. In the necessary-condition direction ("predictive capacity implies non-equilibrium"), the two works mutually support each other; in the sufficient-condition direction ("how non-equilibrium capability translates into effective prediction"), the two works each provide local answers within different frameworks, and the complete sufficient conditions remain the open problem listed in Section A.6 of Appendix A.
 
 
 
@@ -1132,14 +1135,96 @@ You Need." *NeurIPS*. https://arxiv.org/abs/1706.03762
 
 ### 8.4 Implication
 
-> **Attention is not an engineering invention; it is the inevitable
-> consequence of the Langevin equation in the limit v = 0, D = 0,
-> with a maximum-entropy potential and Euler discretisation.**
+> **Attention is not an engineering invention; it is the inevitable consequence of the Langevin equation in the limit v = 0, D = 0,  with a maximum-entropy potential and Euler discretisation.**
 
-This also implies: **Transformer by default discards the curl (v),
-the colored noise, and the colored damping that appear in the CID
-master equation** — it is just the simplest limit of CID.
+What is required is to change "subsequent versions should supplement" into directly providing the corrected HopfieldAttention in the body of this paper, namely adding the additional symmetric matrix term of ET and providing a Lyapunov proof. Let me first confirm the specific technical details of ET. Now that I have the complete technical details of the ET original paper, including the precise form of the additional symmetric term and the Lyapunov proof, the corrected derivation can be given directly in the main text rather than "supplemented later".
 
+This also implies: **Transformer by default discards the curl (v),the colored noise, and the colored damping that appear in the CID master equation** — it is just the simplest limit of CID.
+
+
+### 8.5 Relationship with Energy Transformer and the Correction of the Attention Mechanism in This Paper
+
+The core assertion of this chapter—"the operating logic of the entire Transformer block is governed by a single energy function, and Attention is the gradient-descent update of this energy function"—is highly consistent in claim with the Energy Transformer (ET, arXiv:2302.07253) published by Hoover et al. at NeurIPS 2023, and ET predates this paper by approximately two and a half years. The main technical contributions of ET include: first, designing an explicit global Hopfield energy function for the entire Transformer block; second, rigorously proving via a Lyapunov function that energy is monotonically non-increasing during forward propagation; third, deriving from energy self-consistency the additional symmetric term missing from standard softmax attention, and pointing out that the absence of this term in traditional attention is a structural incompleteness.
+
+The main difference between the derivation in Chapter 8 of this paper and that of ET lies in the fact that this paper embeds the Hopfield-Transformer equivalence relation into the first-principles framework of Mori-Zwanzig, giving "what Attention is" a physical explanation from non-equilibrium statistical mechanics, and further combining the associative-memory term with the curl term, the colored damping, and the colored noise to constitute the complete CID master equation. However, the specific proposition that "the Transformer block is governed by an energy function" should not be regarded as originating with this paper; the Lyapunov proof of ET is also stronger than the descriptive derivation of this chapter in mathematical rigor.
+
+More importantly, the Attention formula derived in Section 8.2 of this paper and the HopfieldAttention implementation in the CID code repository both use standard scaled dot-product attention, omitting the second term derived by ET from energy self-consistency. The correction is given directly below.
+
+**The Complete Form of the Attention Update of the ET Energy Function**
+
+The attention energy function defined by ET is (single-head simplification, omitting the log-sum-exp derivation details):
+
+```
+E_ATT  =  -(1/beta) * sum_C  log( sum_{B!=C}  exp(beta * A_BC) )
+
+where  A_BC  =  sum_alpha  K_{alpha,B} * Q_{alpha,C}
+       K_{alpha,B}  =  sum_j  W^K_{alpha,j} * g_{j,B}
+       Q_{alpha,C}  =  sum_j  W^Q_{alpha,j} * g_{j,C}
+```
+
+Taking the negative gradient of this energy function with respect to the token representation g_{i,A} yields the complete update rule:
+
+```
+-(dE_ATT / dg_{i,A})
+
+=  sum_{C!=A}  sum_alpha  W^Q_{alpha,i} * K_{alpha,C} * softmax_C( beta * sum_gamma K_{gamma,C} * Q_{gamma,A} )
+
++  sum_{C!=A}  sum_alpha  W^K_{alpha,i} * Q_{alpha,C} * softmax_A( beta * sum_gamma K_{gamma,A} * Q_{gamma,C} )
+```
+
+The first term is standard attention (with keys as the value matrix, V = (W^Q)^T * K); **the second term is the additional symmetric term derived by ET**, completely absent in the standard Transformer. The existence of this term is a necessary condition for guaranteeing monotonic descent of the energy function under recursive application; without it, the energy of recursive attention cannot possibly enjoy a Lyapunov guarantee.
+
+**Lyapunov Monotonicity Proof**
+
+The token update of ET follows the continuous-time differential equation:
+
+```
+tau * (dx_{i,A} / dt)  =  -(dE / dg_{i,A})
+```
+
+where E = E_ATT + E_HN is the global energy. Taking the time derivative of the energy:
+
+```
+dE/dt  =  sum_{i,j,A}  (dE / dg_{i,A}) * (dg_{i,A} / dx_{j,A}) * (dx_{j,A} / dt)
+
+       =  -(1/tau) * sum_{i,j,A}  (dE / dg_{i,A}) * M^A_{i,j} * (dE / dg_{j,A})
+```
+
+where M^A_{i,j} = dg_{i,A} / dx_{j,A} = d^2 L / (dx_{i,A} * dx_{j,A}), and L is the Lagrangian corresponding to LayerNorm (see Eq. 2 of the original paper). As long as the symmetric part of M^A is positive semi-definite, the expression above is less than or equal to zero, and the energy is monotonically non-increasing. The Lagrangian of LayerNorm satisfies this condition. Q.E.D.
+
+**The Corrected Version of HopfieldAttention in This Paper**
+
+Based on the analysis above, the HopfieldAttention in the code repository of this paper should be corrected to a symmetric version containing the dual-term update, with pseudocode as follows:
+
+```python
+def symmetric_energy_attention(g, W_K, W_Q, beta):
+    """
+    ET-style energy attention: simultaneously contains the standard term and the additional symmetric term.
+    g:   token representations, shape [N, D] (already passed through LayerNorm)
+    W_K, W_Q: key/query projection matrices, shape [Y, D]
+    beta: inverse temperature
+    """
+    K = g @ W_K.T          # [N, Y]
+    Q = g @ W_Q.T          # [N, Y]
+
+    # Attention score matrix A[B, C] = sum_alpha K[B,alpha] * Q[C,alpha]
+    A = K @ Q.T            # [N, N], diagonal removed
+
+    # First term: standard attention direction (softmax over C)
+    S1 = softmax(beta * A, dim=0)   # softmax along the key dimension (rows)
+    grad_first  = S1 @ W_Q          # [N, D]
+
+    # Second term: ET additional symmetric term (softmax over A)
+    S2 = softmax(beta * A.T, dim=0) # softmax along the query dimension
+    grad_second = S2 @ W_K          # [N, D]
+
+    # Total update = sum of the two terms (negative gradient direction)
+    return grad_first + grad_second
+```
+
+At the call site corresponding to `hopfield = HopfieldAttention(...)` in the CID code of Section 14.2 of this paper, the internal implementation should be replaced with the above `symmetric_energy_attention`, in order to guarantee the energy monotonicity of forward propagation and to be completely aligned with ET mathematically.
+
+**Citation**: Hoover, B., Liang, Y., Pham, B., Panda, R., Strobelt, H., Chau, D. H., Zaki, M., and Krotov, D. (2023). Energy Transformer. *Advances in Neural Information Processing Systems 36 (NeurIPS 2023)*. arXiv:2302.07253. https://arxiv.org/abs/2302.07253
 
 
 ## Chapter 9 — Physical Identities of Residuals, LayerNorm, and Depth
@@ -1657,14 +1742,33 @@ Transformer Block:                    CID Block:
 
 ## Chapter 16 — Relation to Existing Work
 
-### 16.1 Physical-Theory Side
+### 16.1 Physical-Theory Side: Ancestral Work, Sibling Work, and Their Relation to This Paper
+
+On the physical-theory side, the relationship of this paper with existing work falls into two levels: foundational "ancestral" work that clearly predates this paper in time, and "sibling" work whose timing is close to or overlaps with the core claims of this paper. Academic norms require giving the latter equivalent literature positioning and clarification of differences.
+
+**Ancestral Foundational Work** (theoretical predecessors of this paper):
 
 | Work | Relation to CID |
 |---|---|
-| Bialek et al.'s predictability theory | CID lifts it from information theory to dynamics |
-| Friston's free-energy principle | CID is a concrete physical realisation of it |
-| Tishby's information bottleneck | CID is the dynamical version of its variational principle |
-| Neural-avalanche theory (Beggs–Plenz) | CID provides the microscopic mechanism |
+| Bialek et al.'s predictability theory (2001) | CID lifts it from information theory to dynamics |
+| Friston's free-energy principle (2010) | CID is a concrete physical realisation of it |
+| Tishby's information bottleneck (1999) | CID is the dynamical version of its variational principle |
+| Neural-avalanche theory (Beggs–Plenz, 2003) | CID provides the microscopic mechanism |
+
+**Contemporaneous Sibling Work** (with substantive overlap with the core claims of this paper, requiring explicit positioning):
+
+**(I) Baiesi and Rosso (2025, arXiv:2512.11415, accepted by PRE)**
+
+This work, by introducing a discrete Markov chain composed of two independently parameterized transition matrices (A and A-bar), demonstrates that likelihood-maximization training spontaneously drives generative models toward a non-equilibrium steady state, with the emergence of persistent probability-flow loops in latent space. This is highly consistent in physical content with Theorem 3.3 of this paper, "predictive capacity necessarily requires breaking detailed balance": both works point out the necessary role of non-equilibrium for predictive/generative capability, and the core mechanism in both is "two sets of coupled parameters that are not mutual transposes producing irreversible probability flow". The main differences are that this paper provides analytical derivation within the continuous Langevin equation framework, whereas Baiesi-Rosso provide experimental verification within the discrete Markov chain framework; this paper extends the conclusion to the quantum tier and the geometric tier, whereas Baiesi-Rosso focus on the statistical mechanics of generative models. That work was submitted approximately five months earlier than this paper and has passed formal peer review. All discussions in this paper involving "non-equilibrium is a necessary condition for generative/predictive capability" should be understood against the background of acknowledging the independent prior work of Baiesi-Rosso.
+
+**(II) Hoover et al., Energy Transformer (NeurIPS 2023, arXiv:2302.07253)**
+
+This work predates this paper by approximately two and a half years, proposing that "the entire Transformer block is equivalent to a sequence of attention layers that minimize a single global energy function", and through Lyapunov-function arguments rigorously proves that energy is monotonically non-increasing along forward propagation (dE/dt less than or equal to 0), and further derives from energy self-consistency the additional terms missing from standard scaled dot-product attention (the symmetric key-matrix contribution term). The statement "Attention is derived from physics" in Chapter 8 of this paper is highly consistent with this claim at the core-assertion level, but the HopfieldAttention implementation in this paper uses standard scaled dot-product attention, does not include the additional symmetric term derived by Energy Transformer, and does not provide an equivalent Lyapunov monotonicity proof. The derivation contribution of this paper lies in embedding the Hopfield-Transformer equivalence relation into the Mori-Zwanzig framework, and jointly deriving it together with the curl term and the colored-noise term; but on the specific claim that "the Transformer block is governed by an energy function", Energy Transformer is earlier and more rigorous at the Lyapunov-proof level.
+
+**(III) Di Sipio et al. (2025, arXiv:2506.15830)**
+
+This work predates this paper by approximately eleven months, understanding the LLM training process within the Fisher information metric framework, explicitly using the analogy of "embedding-space curvature" with general relativity, and further developing the directions of the Fubini-Study metric and quantum Fisher information. The core metaphor in Part III (FID) of this paper, "data curves the information manifold, analogous to matter curving spacetime", overlaps highly with this. The contribution of this paper lies in developing this analogy into a complete field equation with a variational action (the FID field equations), and establishing a rigorous weak-field-limit connection with the CID/QID master equations; but the core metaphor "analogy between the Fisher metric and the Einstein tensor" cannot be regarded as original to this paper, and the work of Di Sipio et al. should be regarded as one of the priority sources in this direction.
+
 
 ### 16.2 Machine-Learning Side
 
@@ -3206,15 +3310,14 @@ We **geometrise** the dynamical equations of CID/QID into a field
 theory on an information manifold, proposing the **FID field
 equations** by analogy with general relativity (GR).
 
+
 **An honest positioning of FID**:
 
 - Mathematically rigorous (based on standard variational principles).
 - The weak-field limit recovers the CID master equation (proven).
-- **Empirical calibration and experimental verification are not yet
-  complete.**
-- An analogy: the present status of FID resembles GR in 1915 — the
-  theory has been built; we await a 1919-style light-bending
-  observation.
+- **Empirical calibration and experimental verification are not yet complete.**
+- An analogy: the present status of FID resembles GR in 1915 — the theory has been built; we await a 1919-style light-bending observation.
+- **Relationship with contemporaneous work**: The core metaphor of FID—"the curvature of embedding space reflects the curvature of the data distribution, analogous to matter curving spacetime"—has substantive conceptual overlap with the formulation by Di Sipio et al. (arXiv:2506.15830, June 2025, predating this paper by approximately eleven months) within the information-geometry framework; the work of Di Sipio also further develops the directions of the Fubini-Study metric and quantum Fisher information. The original contributions of the FID part of this paper are mainly reflected in formalizing this analogy into a variational action with coupling constants (FID field equations F2.1–F2.4), establishing rigorous weak-field-limit correspondence with the CID/QID master equations (Theorem F3.1), and introducing the specific forms of the intelligence cosmological constant Lambda and the predictive energy-momentum tensor T. The "analogy between the Fisher metric and the Einstein tensor" itself is not original to FID, and readers should understand it as a systematic advancement of this metaphor.
 
 
 
@@ -3365,12 +3468,11 @@ R    =  g^ij · R_ij
 
 **Core hypothesis**:
 
-> During learning, the **distribution of curvature** on the
-> information manifold encodes the structure of learnt knowledge.
-> **Learning = the manifold's curvature being reshaped by the data
-> stream**.
+> During learning, the **distribution of curvature** on the information manifold encodes the structure of learnt knowledge. **Learning = the manifold's curvature being reshaped by the data stream**.
 
+**Statement of Relationship with Di Sipio et al. (2025)**: The core hypothesis above overlaps highly at the conceptual level with the discussion by Di Sipio, Diaz-Rodriguez, and Serrano (arXiv:2506.15830, "Rethinking LLM Training through Information Geometry and Quantum Metrics", June 2025). That work understands the LLM training process within the Fisher information metric framework, holding that optimization unfolds on a non-Euclidean parameter manifold, and that embedding-space curvature reflects the structure of the data distribution; that work further explores the application of the Fubini-Study metric and quantum Fisher information in quantum-enhanced optimization. The FID framework of this paper further provides, on the basis of this concept, complete variational field equations, weak-field-limit derivations (Theorem F3.1), and hierarchical connections with CID/QID, which constitutes the specific advancement of this paper in this direction; however, the priority of the two core metaphors—"embedding space reflects the curvature of the information manifold" and "the learning process is analogous to spacetime curvature"—belongs to the work of Di Sipio et al., and this paper should list that work as a foundational reference in this direction.
 
+**Citation**: Di Sipio, R., Diaz-Rodriguez, J., and Serrano, L. (2025). Rethinking LLM Training through Information Geometry and Quantum Metrics. arXiv:2506.15830.
 
 ### 1.6 Deep Connection with Finite Model Theory: Computability, Learnability, and Geometric Symmetry
 
@@ -4538,8 +4640,8 @@ Empirical-support grades for the claims in this theory:
 | Brain Hurst ≈ 0.7 | **A** (Linkenkaer-Hansen et al., empirical) |
 | 1/f neural noise | **A** (multiple empirical studies) |
 | Holevo bound, entanglement-assisted capacity | **A** (quantum-information standard) |
-| **The CID master equation as a complete model of intelligence** | **B** (theoretical hypothesis, awaiting large-scale experiments) |
-| **CID ~ 10× parameter efficiency** | **C** (engineering target) |
+| **The CID master equation as a complete model of intelligence** | **B** (theoretical hypothesis, awaiting large-scale experiments; note: the core claim "non-equilibrium is a necessary condition for predictive capacity" is independent of and parallel to Baiesi-Rosso 2025, and is not originated by this paper) |
+| **CID ~ 10× parameter efficiency** | **C** (target to be verified; note: this metric typically does not pass under the rapid-test mode, complete-scale verification results have not yet been obtained, and it is currently only a theoretical prediction) |
 | **Realisability of full QID** | **C** (depends on long-term hardware) |
 | **FID empirical calibration** | **C** (theoretical programme, not calibrated) |
 | **Existence of intelligence waves** | **C** (long-term speculation) |
@@ -4636,6 +4738,17 @@ next generation of theorists.
 | 4 | Mori, H. (1965). *Prog. Theor. Phys.* 33, 423. | https://doi.org/10.1143/PTP.33.423 |
 | 5 | Zwanzig, R. (1960). *J. Chem. Phys.* 33, 1338. | https://doi.org/10.1063/1.1731409 |
 | 6 | Zwanzig, R. (1973). *J. Stat. Phys.* 9, 215. | https://doi.org/10.1007/BF01008729 |
+
+
+## A.1a Contemporaneous Key Parallel Work (with substantive overlap with the core claims of this paper)
+
+The following three works are either contemporaneous with or predate this paper in time, and have substantive overlap with the core claims of this paper in physical content or conceptual framework; they should be explicitly cited and positioned in the relevant discussions in the text.
+
+| # | Citation | DOI / URL | Relationship with This Paper |
+|---|---|---|---|
+| P1 | Baiesi, M., and Rosso, A. (2025). Emergence of Nonequilibrium Latent Cycles in Unsupervised Generative Modeling. *Physical Review E* (accepted). arXiv:2512.11415. Submission date: December 12, 2025. | https://arxiv.org/abs/2512.11415 | Within the discrete Markov chain framework, experimentally demonstrates that training generative models spontaneously tend toward a non-equilibrium steady state with the emergence of latent-space probability-flow loops; is the empirical counterpart of Theorem 3.3 of this paper within the discrete framework; predates this paper by approximately five months, and has passed peer review. |
+| P2 | Hoover, B., Liang, Y., Pham, B., Panda, R., Strobelt, H., Chau, D. H., Zaki, M., and Krotov, D. (2023). Energy Transformer. *Advances in Neural Information Processing Systems 36 (NeurIPS 2023)*. arXiv:2302.07253. | https://arxiv.org/abs/2302.07253 | Proposes that "the entire Transformer block is governed by a single global energy function", proves via Lyapunov-function arguments that energy is monotonically non-increasing, and derives the additional symmetric matrix term missing from standard attention; overlaps highly with the core claims of Chapter 8 of this paper; predates this paper by approximately two and a half years. |
+| P3 | Di Sipio, R., Diaz-Rodriguez, J., and Serrano, L. (2025). Rethinking LLM Training through Information Geometry and Quantum Metrics. arXiv:2506.15830. Submission date: June 18, 2025. | https://arxiv.org/abs/2506.15830 | Understands LLM training within the Fisher information metric framework, introduces the analogy between embedding-space curvature and general relativity, and develops the directions of the Fubini-Study metric and quantum Fisher information; overlaps highly with the core metaphor of Part III (FID) of this paper; predates this paper by approximately eleven months. |
 
 ## A.2 Non-equilibrium Statistical Physics
 
