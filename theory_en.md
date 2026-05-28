@@ -36,7 +36,6 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 <br>
 
-<div align="center">
 
 # 智能是一个非平衡场：统一智动力学（UID）的三层物理理论
 
