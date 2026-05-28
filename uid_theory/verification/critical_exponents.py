@@ -2,28 +2,39 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-25
+# UPDATE: 2026-05-28
+#   * collect_hidden_states: prefer top-level set_noise_injection (v2.1),
+#     fall back to backbone.set_noise_injection (v2.0), then to scanning
+#     submodules. Save & restore the original switch state instead of
+#     blindly forcing it back to True (which corrupted user state).
 """
 Rigorous measurement of emergent critical exponents.
 
 This module FIXES the circular-logic problem of v0.1 by enforcing:
-1. Noise injection is DISABLED before measurement
-2. Sample size is large (≥10,000 sequences, length ≥4096)
-3. Power-law estimation uses Clauset-Shalizi-Newman MLE
-4. Multiple surrogate controls (shuffled activations, dead network)
-5. Both Transformer baseline AND CID are measured, for comparison
+1. Noise injection is DISABLED before measurement.
+2. Sample size is large (≥10,000 sequences, length ≥4096).
+3. Power-law estimation uses Clauset-Shalizi-Newman MLE.
+4. Multiple surrogate controls (shuffled activations, dead network).
+5. Both Transformer baseline AND CID are measured, for comparison.
 
-If CID exhibits β≈1, H≈0.7, τ≈1.5 ONLY with noise injection ON, 
-and the baseline Transformer exhibits the same (because we injected 
+If CID exhibits β≈1, H≈0.7, τ≈1.5 ONLY with noise injection ON,
+and the baseline Transformer exhibits the same (because we injected
 the same pattern into both), then there is NO emergent signature.
 
-True emergence is when CID, *after training, with injection OFF*, 
+True emergence is when CID, *after training, with injection OFF*,
 still shows these signatures while the baseline does not.
+
+v2.1 fix: ``collect_hidden_states`` now (a) prefers the top-level
+``UIDModel.set_noise_injection`` API exposed in v2.1, (b) falls back
+to ``model.backbone.set_noise_injection`` for v2.0 models, (c) saves
+and restores the caller's original noise-injection state instead of
+forcing it back to ``True``.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
-from typing import Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -43,7 +54,7 @@ class HurstResult:
     n_series: int
     sample_length: int
     method: str  # "DFA" or "R/S"
-    
+
     def to_dict(self) -> dict:
         return asdict(self)
 
@@ -56,7 +67,7 @@ class SpectrumResult:
     n_series: int
     sample_length: int
     r_squared_mean: float
-    
+
     def to_dict(self) -> dict:
         return asdict(self)
 
@@ -69,7 +80,7 @@ class CriticalExponentResult:
     hurst: HurstResult
     spectrum: SpectrumResult
     avalanche: Optional[PowerLawFit]
-    
+
     def to_dict(self) -> dict:
         return {
             "model_name": self.model_name,
@@ -80,6 +91,106 @@ class CriticalExponentResult:
         }
 
 
+# ======================================================================
+# Internal noise-injection switch helpers (v2.1)
+# ======================================================================
+
+
+def _capture_and_disable_noise_injection(
+    model: nn.Module,
+) -> Tuple[bool, List[bool]]:
+    """Try to disable noise injection on ``model``; remember prior state.
+
+    返回 (是否成功切换, 各层原始注入状态列表)，用于稍后精确恢复。
+
+    Resolution order:
+        1. ``model.set_noise_injection(False)``   (v2.1 top-level API)
+        2. ``model.backbone.set_noise_injection(False)``  (v2.0 path)
+        3. Scan submodules and call ``set_noise_injection(False)`` on
+           every one that has the method (legacy fallback).
+
+    Returns:
+        (switched, prev_states):
+          * switched     : True if ANY switch was actually flipped.
+          * prev_states  : list of original ``_inject_noise`` flags, in
+                           the same order as the layers found. Empty if
+                           no per-layer state was discoverable.
+    """
+    prev_states: List[bool] = []
+
+    # Try to find the CIDBlock-like object owning per-layer state.
+    cid_block = None
+    if hasattr(model, "backbone") and hasattr(
+        model.backbone, "set_noise_injection"
+    ):
+        cid_block = model.backbone
+    elif hasattr(model, "set_noise_injection"):
+        # Top-level API exposed (v2.1); backbone may still be present.
+        cid_block = getattr(model, "backbone", None)
+
+    if cid_block is not None and hasattr(cid_block, "layers"):
+        prev_states = [
+            bool(getattr(layer, "_inject_noise", True))
+            for layer in cid_block.layers
+        ]
+
+    # Now actually disable, preferring the highest-level API available.
+    if hasattr(model, "set_noise_injection"):
+        model.set_noise_injection(False)
+        return True, prev_states
+    if cid_block is not None and hasattr(cid_block, "set_noise_injection"):
+        cid_block.set_noise_injection(False)
+        return True, prev_states
+
+    # Last-resort scan: walk submodules and flip any ``set_noise_injection``.
+    switched_any = False
+    for sub in model.modules():
+        if hasattr(sub, "set_noise_injection") and sub is not model:
+            try:
+                sub.set_noise_injection(False)
+                switched_any = True
+            except Exception:
+                pass
+    return switched_any, prev_states
+
+
+def _restore_noise_injection(
+    model: nn.Module,
+    prev_states: List[bool],
+) -> None:
+    """Restore the per-layer noise-injection flags captured earlier.
+
+    用之前保存的状态精确还原每层注入开关；
+    若没有可用的逐层状态，则保守地什么都不做（避免破坏用户原状态）。
+    """
+    cid_block = None
+    if hasattr(model, "backbone") and hasattr(
+        model.backbone, "set_noise_injection"
+    ):
+        cid_block = model.backbone
+    elif hasattr(model, "set_noise_injection"):
+        cid_block = getattr(model, "backbone", None)
+
+    if (
+        cid_block is not None
+        and hasattr(cid_block, "layers")
+        and prev_states
+        and len(prev_states) == len(cid_block.layers)
+    ):
+        for layer, prev in zip(cid_block.layers, prev_states):
+            if hasattr(layer, "set_noise_injection"):
+                layer.set_noise_injection(prev)
+        return
+
+    # If we cannot restore per-layer state, do nothing.
+    # (Forcing back to True would corrupt callers that wanted False.)
+
+
+# ======================================================================
+# Public API
+# ======================================================================
+
+
 def collect_hidden_states(
     model: nn.Module,
     dataloader: DataLoader,
@@ -88,91 +199,95 @@ def collect_hidden_states(
     layer_idx: int = -1,
     disable_noise: bool = True,
 ) -> np.ndarray:
-    """
-    Collect hidden-state time series from a trained model.
-    
+    """Collect hidden-state time series from a trained model.
+
     Args:
-        model: Trained model with output_hidden_states support.
+        model: Trained model with ``output_hidden_states`` support.
         dataloader: Data loader providing input_ids batches.
         device: Compute device.
         n_sequences: Total number of sequences to collect.
         layer_idx: Which layer's hidden state to use (-1 = last).
-        disable_noise: If True, turn OFF noise injection (for 
-            emergence testing; this is the KEY fix from v0.1).
-    
+        disable_noise: If True, turn OFF noise injection for the
+            duration of the collection (KEY fix from v0.1) and
+            restore the original state on exit.
+
     Returns:
         Array of shape (n_collected, seq_len, hidden_dim).
     """
     model.eval()
-    
-    # CRITICAL: turn off noise injection for honest measurement
-    if disable_noise and hasattr(model, "backbone"):
-        backbone = getattr(model, "backbone", None)
-        if backbone is not None and hasattr(backbone, "set_noise_injection"):
-            backbone.set_noise_injection(False)
+
+    switched = False
+    prev_states: List[bool] = []
+    if disable_noise:
+        switched, prev_states = _capture_and_disable_noise_injection(model)
+        if switched:
             print("  [info] Noise injection DISABLED for emergence test")
-    
-    collected = []
-    total = 0
-    with torch.no_grad():
-        for batch in dataloader:
-            if total >= n_sequences:
-                break
-            input_ids = batch["input_ids"].to(device)
-            out = model(input_ids, output_hidden_states=True)
-            if out.hidden_states is None:
-                raise RuntimeError(
-                    "Model did not return hidden_states. "
-                    "Make sure output_hidden_states=True is supported."
-                )
-            h = out.hidden_states[layer_idx]  # (B, S, H)
-            collected.append(h.detach().cpu().numpy())
-            total += h.shape[0]
-    
-    # Re-enable noise injection for normal operation
-    if disable_noise and hasattr(model, "backbone"):
-        backbone = getattr(model, "backbone", None)
-        if backbone is not None and hasattr(backbone, "set_noise_injection"):
-            backbone.set_noise_injection(True)
-    
+        else:
+            print(
+                "  [warn] Model exposes no set_noise_injection API; "
+                "results may include the model's intrinsic noise."
+            )
+
+    try:
+        collected = []
+        total = 0
+        with torch.no_grad():
+            for batch in dataloader:
+                if total >= n_sequences:
+                    break
+                input_ids = batch["input_ids"].to(device)
+                out = model(input_ids, output_hidden_states=True)
+                if out.hidden_states is None:
+                    raise RuntimeError(
+                        "Model did not return hidden_states. "
+                        "Make sure output_hidden_states=True is supported."
+                    )
+                h = out.hidden_states[layer_idx]  # (B, S, H)
+                collected.append(h.detach().cpu().numpy())
+                total += h.shape[0]
+    finally:
+        # Restore caller's original noise-injection state (do NOT
+        # blindly force back to True — that would corrupt callers
+        # that intentionally set it to False).
+        if switched:
+            _restore_noise_injection(model, prev_states)
+
     arr = np.concatenate(collected, axis=0)[:n_sequences]
     return arr
 
 
 def estimate_hurst_dfa(signal: np.ndarray, min_window: int = 16) -> float:
-    """
-    Estimate Hurst exponent via Detrended Fluctuation Analysis (DFA).
-    
-    DFA is the gold-standard method for long-range correlation 
+    """Estimate Hurst exponent via Detrended Fluctuation Analysis (DFA).
+
+    DFA is the gold-standard method for long-range correlation
     analysis, more reliable than the R/S method used in v0.1.
-    
+
     Reference:
-        Peng, C.-K. et al. (1994). Mosaic organization of DNA 
+        Peng, C.-K. et al. (1994). Mosaic organization of DNA
         nucleotides. Physical Review E, 49(2), 1685.
     """
     n = len(signal)
     if n < min_window * 4:
         return float("nan")
-    
-    # Integrated profile
+
+    # Integrated profile.
     y = np.cumsum(signal - signal.mean())
-    
-    # Window sizes (logarithmically spaced)
+
+    # Window sizes (logarithmically spaced).
     max_window = n // 4
     n_scales = 20
     scales = np.unique(
         np.logspace(np.log10(min_window), np.log10(max_window), n_scales)
         .astype(int)
     )
-    
+
     fluctuations = []
     for s in scales:
         n_segments = n // s
         if n_segments < 2:
             continue
-        # Detrend each segment with linear fit
-        segments = y[:n_segments * s].reshape(n_segments, s)
-        # Use polynomial detrending order 1
+        # Detrend each segment with linear fit.
+        segments = y[: n_segments * s].reshape(n_segments, s)
         x = np.arange(s)
         rms_list = []
         for seg in segments:
@@ -181,12 +296,12 @@ def estimate_hurst_dfa(signal: np.ndarray, min_window: int = 16) -> float:
             rms = np.sqrt(np.mean((seg - trend) ** 2))
             rms_list.append(rms)
         fluctuations.append(np.mean(rms_list))
-    
+
     if len(fluctuations) < 4:
         return float("nan")
-    
-    # F(s) ~ s^H; fit log-log
-    log_s = np.log10(scales[:len(fluctuations)])
+
+    # F(s) ~ s^H; fit log-log.
+    log_s = np.log10(scales[: len(fluctuations)])
     log_f = np.log10(np.array(fluctuations) + 1e-12)
     slope, _, _, _, _ = stats.linregress(log_s, log_f)
     return float(slope)
@@ -196,21 +311,20 @@ def measure_hurst_exponent(
     hidden_states: np.ndarray,
     n_channels_per_series: int = 64,
 ) -> HurstResult:
-    """
-    Measure Hurst exponent across many hidden-state time series.
-    
+    """Measure Hurst exponent across many hidden-state time series.
+
     Args:
         hidden_states: Array (n_sequences, seq_len, hidden_dim).
         n_channels_per_series: Number of channels to sample per sequence.
-    
+
     Returns:
         HurstResult with mean and std across all measurements.
     """
     n_seq, seq_len, hidden_dim = hidden_states.shape
-    
+
     h_values = []
     rng = np.random.default_rng(42)
-    
+
     for i in range(n_seq):
         channels = rng.choice(
             hidden_dim, size=min(n_channels_per_series, hidden_dim),
@@ -221,7 +335,7 @@ def measure_hurst_exponent(
             h = estimate_hurst_dfa(signal)
             if np.isfinite(h):
                 h_values.append(h)
-    
+
     if not h_values:
         return HurstResult(
             hurst_mean=float("nan"),
@@ -230,7 +344,7 @@ def measure_hurst_exponent(
             sample_length=seq_len,
             method="DFA",
         )
-    
+
     return HurstResult(
         hurst_mean=float(np.mean(h_values)),
         hurst_std=float(np.std(h_values)),
@@ -246,26 +360,25 @@ def measure_power_spectrum(
     f_min_factor: float = 4.0,
     f_max: float = 0.4,
 ) -> SpectrumResult:
-    """
-    Measure power-spectrum slope β across many hidden-state series.
-    
-    Fits S(f) ~ f^(-β) in the inertial range.
-    
+    """Measure power-spectrum slope β across many hidden-state series.
+
+    Fits ``S(f) ~ f^(-β)`` in the inertial range.
+
     Args:
         hidden_states: Array (n_sequences, seq_len, hidden_dim).
         n_channels_per_series: Channels to sample per sequence.
-        f_min_factor: f_min = f_min_factor / seq_len.
+        f_min_factor: ``f_min = f_min_factor / seq_len``.
         f_max: Upper frequency cutoff (Nyquist = 0.5).
-    
+
     Returns:
         SpectrumResult with mean β across measurements.
     """
     n_seq, seq_len, hidden_dim = hidden_states.shape
-    
+
     beta_values = []
     r2_values = []
     rng = np.random.default_rng(42)
-    
+
     freqs = rfftfreq(seq_len)
     f_min = f_min_factor / seq_len
     valid = (freqs > f_min) & (freqs < f_max)
@@ -274,7 +387,7 @@ def measure_power_spectrum(
             beta_mean=float("nan"), beta_std=float("nan"),
             n_series=0, sample_length=seq_len, r_squared_mean=float("nan"),
         )
-    
+
     for i in range(n_seq):
         channels = rng.choice(
             hidden_dim, size=min(n_channels_per_series, hidden_dim),
@@ -283,7 +396,6 @@ def measure_power_spectrum(
         for c in channels:
             signal = hidden_states[i, :, c]
             psd = np.abs(rfft(signal)) ** 2
-            # Fit log(PSD) vs log(f)
             log_f = np.log(freqs[valid])
             log_psd = np.log(psd[valid] + 1e-12)
             slope, _, r, _, _ = stats.linregress(log_f, log_psd)
@@ -291,13 +403,13 @@ def measure_power_spectrum(
             if np.isfinite(beta) and 0 < beta < 5:
                 beta_values.append(beta)
                 r2_values.append(float(r * r))
-    
+
     if not beta_values:
         return SpectrumResult(
             beta_mean=float("nan"), beta_std=float("nan"),
             n_series=0, sample_length=seq_len, r_squared_mean=float("nan"),
         )
-    
+
     return SpectrumResult(
         beta_mean=float(np.mean(beta_values)),
         beta_std=float(np.std(beta_values)),
@@ -317,49 +429,58 @@ def run_critical_exponent_battery(
     disable_noise: bool = True,
     include_avalanche: bool = True,
 ) -> CriticalExponentResult:
+    """Run the full battery of critical-exponent measurements.
+
+    This is the entry point for honest emergence testing. Set
+    ``disable_noise=True`` (default) for the genuine emergence test:
+    the noise pattern is then NOT being fed back into the measurement.
     """
-    Run the full battery of critical-exponent measurements.
-    
-    This is the entry point for honest emergence testing. 
-    Set disable_noise=True for genuine emergence test 
-    (the noise pattern is NOT being fed back to the measurement).
-    """
-    print(f"\n[critical exponents] Measuring {model_name} "
-          f"(noise_injection={'ON' if not disable_noise else 'OFF'})")
-    
-    # Step 1: Collect hidden states
+    print(
+        f"\n[critical exponents] Measuring {model_name} "
+        f"(noise_injection={'ON' if not disable_noise else 'OFF'})"
+    )
+
+    # Step 1: Collect hidden states.
     print(f"  Collecting hidden states from {n_sequences} sequences...")
     hidden = collect_hidden_states(
         model, dataloader, device, n_sequences, layer_idx, disable_noise,
     )
     print(f"  Collected shape: {hidden.shape}")
-    
-    # Step 2: Hurst exponent
+
+    # Step 2: Hurst exponent.
     print("  Computing Hurst exponent (DFA)...")
     hurst = measure_hurst_exponent(hidden)
-    print(f"  Hurst: {hurst.hurst_mean:.3f} ± {hurst.hurst_std:.3f} "
-          f"(n={hurst.n_series})")
-    
-    # Step 3: Power spectrum
+    print(
+        f"  Hurst: {hurst.hurst_mean:.3f} ± {hurst.hurst_std:.3f} "
+        f"(n={hurst.n_series})"
+    )
+
+    # Step 3: Power spectrum.
     print("  Computing power-spectrum slope β...")
     spectrum = measure_power_spectrum(hidden)
-    print(f"  β: {spectrum.beta_mean:.3f} ± {spectrum.beta_std:.3f} "
-          f"(n={spectrum.n_series}, R²={spectrum.r_squared_mean:.3f})")
-    
-    # Step 4: Avalanche analysis (optional)
+    print(
+        f"  β: {spectrum.beta_mean:.3f} ± {spectrum.beta_std:.3f} "
+        f"(n={spectrum.n_series}, R²={spectrum.r_squared_mean:.3f})"
+    )
+
+    # Step 4: Avalanche analysis (optional).
     avalanche_fit = None
     if include_avalanche:
         from .avalanche_detector import detect_avalanches
         print("  Detecting avalanches...")
         sizes = detect_avalanches(hidden)
         if len(sizes) >= 100:
-            print(f"  Detected {len(sizes)} avalanches; "
-                  f"fitting power law (Clauset MLE)...")
+            print(
+                f"  Detected {len(sizes)} avalanches; "
+                "fitting power law (Clauset MLE)..."
+            )
             avalanche_fit = fit_power_law(sizes)
             print(f"  Avalanche fit: {avalanche_fit}")
         else:
-            print(f"  Insufficient avalanches ({len(sizes)} < 100); skipping")
-    
+            print(
+                f"  Insufficient avalanches ({len(sizes)} < 100); skipping"
+            )
+
     return CriticalExponentResult(
         model_name=model_name,
         noise_injection_on=not disable_noise,
