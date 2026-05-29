@@ -1,0 +1,286 @@
+# =============================================================================
+# UID Theory reference implementation — Development dependencies
+# =============================================================================
+#
+# Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
+# Author: Gui LI <guilichina@163.com>
+# Date:   2026-05-28
+#
+# DUAL LICENSE:
+#   - PolyForm Noncommercial License 1.0.0  (academic / personal use)
+#     see LICENSE-NONCOMMERCIAL in the project root
+#   - Commercial License from Suzhou Jodell Robotics Co., Ltd.
+#     (required for any commercial / for-profit / production use)
+#     see LICENSE-COMMERCIAL in the project root
+#
+# For commercial licensing inquiries, contact: lig@jodell.cn
+# 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权。
+# =============================================================================
+#
+# This file lists dependencies needed ONLY for development / testing /
+# documentation. Runtime dependencies are in `requirements.txt`.
+#
+# Install via:
+#     pip install -r requirements-dev.txt
+#
+# This file pins MINIMUM versions where the v2.1 codebase requires a
+# specific feature, and leaves upper bounds unpinned to maximise
+# compatibility. For exact reproducibility of published Phase 1
+# results, refer to the lockfile in `results/phase1/MANIFEST.json`.
+#
+# Convention:
+#   - Direct dependencies are pinned to a minimum version (>=).
+#   - Optional sub-categories are clearly marked.
+#   - Comments explain WHY each dependency is required, with a
+#     pointer to the v2.1 test file or experiment that uses it.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Runtime dependencies (transitive — see requirements.txt for the canonical
+# list; we re-list the most-tested versions here so that `pip install -r
+# requirements-dev.txt` alone is sufficient for a developer environment).
+# -----------------------------------------------------------------------------
+
+-r requirements.txt
+
+
+# -----------------------------------------------------------------------------
+# §1 — Test framework
+# -----------------------------------------------------------------------------
+# v2.1 ships ~200+ unit tests across 7 test files. pytest is the
+# canonical runner.
+
+pytest>=7.4.0,<9.0.0
+# Justification: every `tests/test_*.py` file uses pytest fixtures,
+# parametrize markers, and pytest.raises. We require >=7.4 for the
+# `tmp_path` fixture's typed return value and improved -m marker
+# parsing (used by `pytest -m "not gpu"`).
+
+pytest-cov>=4.1.0
+# Justification: produces coverage reports for CI. Used by
+# .github/workflows/ci.yml's `pytest --cov=uid_theory` step.
+
+pytest-xdist>=3.5.0
+# Justification: parallel test execution via `pytest -n auto`.
+# CPU-only test runs benefit ~3-5x speedup; the GPU test suite
+# (TestEndToEndGPU in test_energy_meter.py) opts out via @pytest.mark.gpu.
+
+pytest-timeout>=2.2.0
+# Justification: prevents stuck tests from blocking CI. The
+# `_xi_for_channel` test in test_correlation_length.py and the
+# pynvml-backed energy tests can occasionally hang if external
+# hardware is unresponsive.
+
+
+# -----------------------------------------------------------------------------
+# §2 — JSON Schema validation
+# -----------------------------------------------------------------------------
+# Used by:
+#   - `tests/test_run_scaling_law.py::TestUnifiedCheckpoint::
+#     test_init_kwargs_complete` (validates v2.1 checkpoint schema)
+#   - The validation scripts under `results/schemas/` mentioned in
+#     `results/README.md` §"Verifying result-file integrity"
+
+jsonschema>=4.20.0
+# Justification: required to validate the 6 v2.1 result-file schemas
+# (manifest_v1.json, scaling_law_v1.json, ablation_summary_v1.json,
+# critical_exponents_v1.json, energy_v2.1_batch4.json, report_md.json,
+# correlation_length_v1.json). v2.1 uses Draft 2020-12, which
+# requires jsonschema >= 4.18.
+
+
+# -----------------------------------------------------------------------------
+# §3 — Linting and formatting
+# -----------------------------------------------------------------------------
+# Required by `.github/workflows/ci.yml`'s lint stage.
+
+ruff>=0.4.0
+# Justification: the canonical linter for this project. Configuration
+# is in pyproject.toml under [tool.ruff]. Enforces:
+#   - line length 80
+#   - import sorting
+#   - no unused imports
+#   - no f-string in logging calls
+
+mypy>=1.8.0
+# Justification: optional static type checking. The codebase uses
+# from __future__ import annotations + Dict/List/Optional everywhere,
+# so mypy can verify type contracts. Run via `mypy uid_theory/ model/`.
+
+types-requests>=2.31.0
+# Justification: type stubs for the requests library (transitively
+# pulled in by the transformers tokenizer download path).
+
+
+# -----------------------------------------------------------------------------
+# §4 — Dataset and tokenizer (for end-to-end tests)
+# -----------------------------------------------------------------------------
+# Many tests need a real tokenizer and dataset. We require these even
+# for "dev" because the experiments/run_*.py smoke tests in CI use
+# wikitext-2-raw-v1 + gpt2 tokenizer.
+
+datasets>=2.18.0
+# Justification: used by README.md §"CPU smoke test" to download
+# wikitext-2. Required by `data_loaders.py` integration tests.
+
+# transformers is in requirements.txt; we just re-pin a min version
+# here to highlight v2.1 compatibility constraint.
+transformers>=4.40.0
+# Justification: v2.1 UIDConfig inherits from PretrainedConfig and
+# UIDModel from PreTrainedModel; the `save_pretrained` round-trip
+# test (test_run_scaling_law.py::test_config_dict_present_for_cid_model)
+# requires the HF API stability of 4.40+.
+
+
+# -----------------------------------------------------------------------------
+# §5 — Power measurement (for tests/test_energy_meter.py)
+# -----------------------------------------------------------------------------
+# OPTIONAL: only needed on machines with NVIDIA GPUs for the
+# end-to-end energy benchmark tests (TestEndToEndGPU and the
+# real-hardware runs of experiments/run_energy_benchmark.py).
+
+nvidia-ml-py>=12.535.108
+# Justification: this is the official Python binding for NVML.
+# `uid_theory/verification/energy_meter.py` (v2.1 batch 4) uses
+# pynvml.nvmlDeviceGetPowerUsage to achieve 25 Hz power sampling.
+# On CPU-only machines, energy_meter.py falls back to the
+# nvidia-smi subprocess sampler at 10 Hz max; pynvml is strongly
+# recommended for any quantitative energy measurement.
+
+
+# -----------------------------------------------------------------------------
+# §6 — Numerical / scientific (for verification suite tests)
+# -----------------------------------------------------------------------------
+# These are runtime deps that the verification suite needs at
+# elevated versions for reproducibility.
+
+scipy>=1.11.0
+# Justification: required by
+#   - `uid_theory/verification/critical_exponents.py` (uses
+#     scipy.stats.linregress, scipy.fft.rfft, scipy.special.digamma)
+#   - `uid_theory/verification/correlation_length.py` (uses
+#     scipy.spatial.cKDTree for the KSG MI estimator,
+#     scipy.special.digamma for the KSG correction term)
+#   - `uid_theory/verification/powerlaw_estimator.py` (uses
+#     scipy.stats.norm for the LR test p-value).
+# v1.11 is the first version with the stable scipy.fft module that
+# v2.1 relies on; earlier versions used scipy.fftpack (deprecated).
+
+numpy>=1.26.0
+# Justification: the numerical foundation. v1.26 is the first version
+# with the stable np.random.default_rng() API used throughout
+# the v2.1 test suite. Avoid v2.0 for now — it dropped
+# `np.float128` which some downstream tools still reference.
+
+
+# -----------------------------------------------------------------------------
+# §7 — Plotting (for experiments/run_scaling_law.py)
+# -----------------------------------------------------------------------------
+# Required by `plot_scaling_curves` in run_scaling_law.py; the
+# scaling-law experiment produces `results/phase1/scaling_law/
+# scaling_curves.png`.
+
+matplotlib>=3.8.0
+# Justification: v3.8 is the first version with the stable
+# `pyplot.subplots(layout="constrained")` API used in v2.1 plots.
+# Optional in pure unit-test runs (no test imports matplotlib),
+# but required for the full experiments/ pipeline.
+
+
+# -----------------------------------------------------------------------------
+# §8 — Documentation (optional)
+# -----------------------------------------------------------------------------
+# Required only if you intend to regenerate the API documentation
+# from docstrings (planned for v2.2; not used by v2.1 publishing
+# pipeline). Comment out if you have no need.
+
+# sphinx>=7.2.0
+# sphinx-rtd-theme>=2.0.0
+# sphinx-autodoc-typehints>=1.25.0
+# myst-parser>=2.0.0   # for parsing the markdown CHANGELOG into Sphinx
+
+
+# -----------------------------------------------------------------------------
+# §9 — Notebook tooling (optional)
+# -----------------------------------------------------------------------------
+# For users who want to explore CID/QID/FID interactively. Not
+# required by any v2.1 test or experiment.
+
+# jupyter>=1.0.0
+# ipykernel>=6.29.0
+
+
+# -----------------------------------------------------------------------------
+# §10 — Git pre-commit hook (optional but strongly recommended)
+# -----------------------------------------------------------------------------
+# Pre-commit hook configuration is in .pre-commit-config.yaml.
+# Hooks include:
+#   - ruff --fix
+#   - trailing-whitespace removal
+#   - end-of-file-fixer
+#   - check-yaml on .github/workflows/
+#   - mypy on uid_theory/
+
+pre-commit>=3.6.0
+# Justification: developers should run `pre-commit install` once
+# after cloning. This prevents PRs from failing the CI lint stage.
+
+
+# -----------------------------------------------------------------------------
+# §11 — Reproducibility metadata
+# -----------------------------------------------------------------------------
+# Used by experiments/run_energy_benchmark.py to populate the
+# metadata block in results.json (see results/schemas/
+# energy_v2.1_batch4.json §"metadata" required fields).
+
+# These are stdlib in Python 3.11+, no install needed:
+#   - platform
+#   - sys
+#   - subprocess
+#
+# But for older Pythons (3.10 in our supported range), some
+# typing_extensions features used in v2.1 dataclasses are needed:
+
+typing_extensions>=4.9.0
+# Justification: backport of typing.Protocol's runtime_checkable
+# decorator and the Self type hint, used by:
+#   - `uid_theory/qid/quantum_noise.py::QuantumNoiseProtocol`
+#     (the v2.1-ready interface contract for future quantum hardware
+#     backends; see theory.md §8.6 path 2)
+#   - `uid_theory/fid/curvature.py::ScalarCurvatureProbe`
+#     (uses Self in classmethod factory)
+# Stdlib typing has these from 3.11+ but we support 3.10 too.
+
+
+# -----------------------------------------------------------------------------
+# §12 — End notes
+# -----------------------------------------------------------------------------
+#
+# Pinning strategy:
+#   - Direct deps pinned with `>=` minimum versions reflecting v2.1
+#     API requirements.
+#   - No upper bounds, except where a known breaking release exists
+#     (e.g. numpy 2.0 may break np.float128 consumers downstream).
+#
+# Reproducibility:
+#   - For exact reproduction of Phase 1 results, see
+#     `results/phase1/MANIFEST.json` "environment" block, which
+#     pins exact versions used to produce each published result.
+#   - This `requirements-dev.txt` is for the DEVELOPMENT environment
+#     only, not for reproducing specific published numbers.
+#
+# CI compatibility:
+#   - Tested against Python 3.10, 3.11, 3.12 on Ubuntu 22.04.
+#   - GPU tests additionally require CUDA 12.1+ and a compatible
+#     PyTorch wheel (the `torch` line in requirements.txt is
+#     intentionally unpinned for CUDA version, so users must install
+#     the appropriate wheel via the PyTorch install matrix:
+#     https://pytorch.org/get-started/locally/).
+#
+# Reporting an environment problem:
+#   - File an issue at https://github.com/gwailee/uid/issues with the
+#     `environment` label, including the output of `pip freeze` and
+#     the failing test name.
+#
+# =============================================================================
