@@ -675,4 +675,3 @@ Please include in your enquiry: licensee legal name and registration, intended u
 > CID is codeable, QID is simulable, FID is explorable. **All results are falsifiable — which is the heart of science.**
 
 </div>
-```
