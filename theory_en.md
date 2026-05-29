@@ -3861,7 +3861,7 @@ However, the specific claim of "data curves the information manifold, analogous 
 
 The position of Chapter 1 of this paper should be amended to: building on the basic framework of information geometry of LLMs that has already been empirically established, further extending it to a closed field-theoretic system parallel to Einstein gravity, and pointing out unique strong-field predictions and falsifiable engineering targets. Readers interested in the empirical foundation should refer to the work of Di Sipio et al. directly.
 
-**Citation**: Di Sipio, R., Pestun, V., et al. (2025). Information Geometry of Large Language Models. arXiv:2506.15830. https://arxiv.org/abs/2506.15830
+**Citation**: Di Sipio, R. 2025. Rethinking LLM Training through Information Geometry and Quantum Metrics. arXiv 2506.15830. https://arxiv.org/abs/2506.15830
 
 ### 0.3 The Naive Question of Field-Geometric Tier
 
