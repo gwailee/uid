@@ -3847,7 +3847,7 @@ g_ij(θ) = E[ (∂ log p(x|θ) / ∂θ_i) × (∂ log p(x|θ) / ∂θ_j) ]
 
 ### 1.5 与既有工作的重要对比：信息几何与大语言模型训练动力学
 
-在"信息流形被数据弯曲，类比时空被物质弯曲"这一基本主张上，Di Sipio、Pestun 等人于 2025 年 6 月在 arXiv:2506.15830 发表的 "Information Geometry of Large Language Models" 比本文早约十一个月。该工作的主要技术贡献包括：
+在"信息流形被数据弯曲，类比时空被物质弯曲"这一基本主张上，Di Sipio 等人于 2025 年 6 月在 arXiv:2506.15830 发表的 "Information Geometry of Large Language Models" 比本文早约十一个月。该工作的主要技术贡献包括：
 
 第一，将语言模型的参数空间 θ ∈ R^N 视为高维统计流形，度量张量正是 Fisher 信息矩阵 g_ij(θ) = E[(∂_i log p)(∂_j log p)]，这与本文 FID 信息流形的度量定义在形式上完全一致。
 
@@ -3863,7 +3863,7 @@ g_ij(θ) = E[ (∂ log p(x|θ) / ∂θ_i) × (∂ log p(x|θ) / ∂θ_j) ]
 
 本文第 1 章的定位应修正为：在已有实证基础的 LLM 信息几何框架之上，进一步将其扩展为一个与 Einstein 引力相平行的闭合场论体系，并指出独有的强场预言与可证伪工程目标。读者关心实证基础的应直接参考 Di Sipio 等人的工作。
 
-**引用**：Di Sipio, R., Pestun, V., et al. (2025). Information Geometry of Large Language Models. arXiv:2506.15830. https://arxiv.org/abs/2506.15830
+**引用**：Di Sipio, R. 2025. Rethinking LLM Training through Information Geometry and Quantum Metrics. arXiv 2506.15830. https://arxiv.org/abs/2506.15830
 
 #### 优势 2：信息曲率张量反映数据的"弯曲"结构
 
