@@ -662,4 +662,3 @@ x = x + grad_term + vortex_term + mem_term + noise_term
 > CID 可编码，QID 可模拟，FID 可探索。**所有结果都是可证伪的——这是科学的核心。**
 
 </div>
-```
