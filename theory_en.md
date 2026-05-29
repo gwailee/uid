@@ -3845,7 +3845,7 @@ states that "**data curves the information manifold**". Just as the Einstein equ
 
 ### 1.5 Important Comparison with Pre-existing Work: Information Geometry and Large Language Model Training Dynamics
 
-Within the basic claim of "information manifolds being curved by data, analogous to spacetime being curved by matter", Di Sipio, Pestun, and others published "Information Geometry of Large Language Models" in arXiv:2506.15830 in June 2025, approximately eleven months earlier than this paper. The main technical contributions of this paper include:
+Within the basic claim of "information manifolds being curved by data, analogous to spacetime being curved by matter", Di Sipio, and others published "Information Geometry of Large Language Models" in arXiv:2506.15830 in June 2025, approximately eleven months earlier than this paper. The main technical contributions of this paper include:
 
 First, regarding the parameter space of language models θ ∈ R^N as a high-dimensional statistical manifold, the metric tensor being precisely the Fisher information matrix g_ij(θ) = E[(∂_i log p)(∂_j log p)], this is in complete formal agreement with the metric definition of the FID information manifold of this paper.
 
@@ -5721,7 +5721,7 @@ This is part of "Problem 1" listed in Chapter 2 of the Epilogue (Quantitative Ti
 - Depue, W. (2026.05). SubQ Architecture Critique. https://x.com/willdepue/status/2051740399597760626
 - Liu (2025). Logographic AI: From Tokens to Morpho-Roots. PSSXiv. https://zsyyb.cn/abs/202511.03835
 - Liu (2026). Phonographic AI Dilemma and Logographic AI Cognitive Architecture. ChinaXiv: T202604.00433. https://chinaxiv.org/businessFile/T202604/T202604.00433v1/T202604.00433v1.pdf
-- Di Sipio, R., Pestun, V., et al. (2025). Information Geometry of Large Language Models. arXiv:2506.15830. https://arxiv.org/abs/2506.15830
+- Di Sipio, R. 2025. Rethinking LLM Training through Information Geometry and Quantum Metrics. arXiv 2506.15830. https://arxiv.org/abs/2506.15830
 
 ### D.7 Complexity Theory and Logic
 
