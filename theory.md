@@ -52,7 +52,7 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 <div align="center">
 
 # 智能是一个非平衡场：统一智动力学（UID）的三层物理理论
-## 注意力并不够（Attention Is Not All You Need）——智能架构的非平衡物理基础
+## ——注意力并不够（Attention Is Not All You Need）：智能架构的非平衡物理基础
 
 ***作者***: 李贵（Gui LI）<guilichina@163.com>，介党阳（Dangyang JIE）<jiedy@jodell.cn>，康海涛（Haitao KANG）<kanght@jodell.cn>
 
