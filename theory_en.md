@@ -4,6 +4,18 @@ Author: Gui LI <guilichina@163.com>
 Date:   2026-05-25
 Update: 2025-05-30
 
+@article{li2026uid,
+  title  = {Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical 
+            Theory of Unified Intelligo-Dynamics (UID)},
+  author = {LI, Gui and JIE, Dangyang and KANG, Haitao},
+  year   = {2026},
+  publisher = {Zenodo},
+  doi    = {10.5281/zenodo.20372493},
+  url    = {https://github.com/gwailee/uid}
+}
+
+> LI, Gui, JIE, Dangyang, & KANG, Haitao. (2026). Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID). Zenodo. https://doi.org/10.5281/zenodo.20372493
+
 This README is part of the UID Theory reference implementation.
 
 DUAL LICENSE:
