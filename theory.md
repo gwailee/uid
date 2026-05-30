@@ -530,6 +530,7 @@ Transformer 对应 CID 主方程 (6.1) 在以下三重极限下的特解：
 **物理结论**：Transformer 揭示了 CID 的联想记忆项 −∇U，但砍掉了旋度 v、色阻尼 ∫γ、色噪声 ξ 三项。这正是副标题"注意力并不够"的精确物理含义。
 
 ![cid_vs_transformer](./images/cid_vs_transformer.png)
+CID vs Transformer
 
 #### 8.4 残差连接与 LayerNorm 的物理身份
 
