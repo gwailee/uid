@@ -425,7 +425,7 @@ Chapter 3 proved that the curl v(φ) is the sole source of non-equilibrium, but 
 
 where Ω is the antisymmetric part of the non-commutative coupling matrix between the coupled degrees of freedom. If and only if the temperature difference T₁ − T₂ ≠ 0 and the coupling is non-commutative (Ω ≠ 0), J_ss ≠ 0, i.e., curl appears.
 
-**Key Points of the Proof**: For a linear multi-bath system, the steady-state covariance Σ satisfies the Lyapunov equation 𝐀Σ + Σ𝐀ᵀ = 2𝐃, where the drift matrix 𝐀 and the diffusion matrix 𝐃 are determined by the temperatures of the respective baths. When 𝐀𝐃 is asymmetric (i.e., 𝐀𝐃 ≠ 𝐃𝐀ᵀ), the steady-state current J_ss = (𝐀 + 𝐃Σ^(−1)) φ P_ss is nonzero. The asymmetry of 𝐃 originates precisely from the different temperatures of the respective degrees of freedom. The detailed calculation is given in Appendix A.
+**Key Points of the Proof**: For a linear multi-bath system, the steady-state covariance Σ satisfies the Lyapunov equation 𝐀Σ + Σ𝐀ᵀ = 2𝐃, where the drift matrix 𝐀 and the diffusion matrix 𝐃 are determined by the temperatures of the respective baths. When 𝐀𝐃 is asymmetric (i.e., 𝐀𝐃 ≠ 𝐃𝐀ᵀ), the steady-state current J_ss = (𝐀 + 𝐃Σ^(−1)) φ P_ss is nonzero. The asymmetry of 𝐃 originates precisely from the different temperatures of the respective degrees of freedom. 
 
 **Physical Interpretation**: The two necessary conditions for curl—the temperature difference and the non-commutative coupling—are exactly the microscopic counterparts of the two necessary conditions for the emergence of intelligence, "multi-bath temperature differences" and "non-commutative coupling," in Part IV (Multi-Agent Intelligo-Dynamics).
 
