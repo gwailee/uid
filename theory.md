@@ -2,7 +2,7 @@
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
 Date:   2026-05-30
-
+Update: 2025-05-30
 This README is part of the UID Theory reference implementation (v2.0).
 
 DUAL LICENSE:
