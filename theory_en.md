@@ -54,7 +54,7 @@ This file is released under a dual license; commercial use requires prior writte
 
 # Intelligence Is a Non-Equilibrium Field: A Three-Tier Physical Theory of Unified Intelligo-Dynamics (UID)
 
-## Attention Is Not All You Need — The Non-Equilibrium Physical Foundations of Intelligent Architectures
+## Attention Is Not All You Need: The Non-Equilibrium Physical Foundations of Intelligent Architectures
 
 ***Authors***: Gui LI <guilichina@163.com>, Dangyang JIE <jiedy@jodell.cn>, Haitao KANG <kanght@jodell.cn>
 
