@@ -197,33 +197,52 @@ These four terms are all indispensable. Removing any one of them severely weaken
 
 #### 0.4 The Logical Skeleton of Part I
 
-```
-        Naïve question: How does a living thing learn the most knowledge with the least energy?
-                          │
-                          ▼
-        Three first-principles axioms (memory + non-equilibrium + information geometry)
-                          │
-                          ▼
-        The Mori-Zwanzig projection-operator formalism
-                          │
-                          ├──→ Q1: Why is there curl? → Multi-bath setting
-                          ├──→ Q2: Why colored noise? → Sub-Ohmic environment
-                          └──→ Q3: Shape of the potential? → Maximum-entropy principle
-                          │
-                          ▼
-        The complete CID master equation (structure determined by axioms, details require additional physical assumptions)
-                          │
-                          ▼
-        All architectures are its special solutions
-        │         │         │         │
-        ▼         ▼         ▼         ▼
-    Transformer  Mamba   Diffusion  Reasoning
-                          │
-                          ▼
-              Falsifiable predictions
-        │           │             │
-        ▼           ▼             ▼
-    Hurst≈0.7   τ≈1.5     ~5–10× efficiency
+```mermaid
+graph TD
+    A["Naïve question: How does a living thing<br/>learn the most knowledge with the least energy?"]
+    B["Three first-principles axioms<br/>(memory + non-equilibrium + information geometry)"]
+    C["The Mori-Zwanzig projection-operator formalism"]
+    D1["Q1: Why is there curl?<br/>→ Multi-bath setting"]
+    D2["Q2: Why colored noise?<br/>→ Sub-Ohmic environment"]
+    D3["Q3: Shape of the potential?<br/>→ Maximum-entropy principle"]
+    E["The complete CID master equation<br/>(structure determined by axioms,<br/>details require additional physical assumptions)"]
+    F["All architectures are its special solutions"]
+    G1["Transformer"]
+    G2["Mamba"]
+    G3["Diffusion"]
+    G4["Reasoning"]
+    H["Falsifiable predictions"]
+    I1["Hurst≈0.7"]
+    I2["τ≈1.5"]
+    I3["~5–10× efficiency"]
+
+    A --> B
+    B --> C
+    C --> D1
+    C --> D2
+    C --> D3
+    D1 --> E
+    D2 --> E
+    D3 --> E
+    E --> F
+    F --> G1
+    F --> G2
+    F --> G3
+    F --> G4
+    G1 --> H
+    G2 --> H
+    G3 --> H
+    G4 --> H
+    H --> I1
+    H --> I2
+    H --> I3
+
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1f5
+    style E fill:#e1ffe1
+    style F fill:#f5e1ff
+    style H fill:#ffe1e1
 ```
 
 ### Chapter 1: Setting the Physical Picture—A Driven Stochastic Field
