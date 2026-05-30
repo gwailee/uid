@@ -531,6 +531,9 @@ The Transformer corresponds to a special solution of the CID master equation (6.
 
 **Physical Conclusion**: The Transformer revealed the associative-memory term −∇U of CID, but it cut away the three terms of curl v, colored damping ∫γ, and colored noise ξ. This is precisely the rigorous physical meaning of the subtitle "Attention Is Not All You Need."
 
+![cid_vs_transformer](./images/cid_vs_transformer.png)
+CID vs Transformer
+
 #### 8.4 The Physical Identity of Residual Connections and LayerNorm
 
 - **Residual Connection**: x_{l+1} = x_l + f(x_l) is the first-order Euler discretization of the continuous dynamics dφ/dt = f(φ) ([Chen et al. 2018, Neural ODE](https://arxiv.org/abs/1806.07366)); hence a residual network is the temporal discretization of the CID master equation.
