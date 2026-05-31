@@ -8,7 +8,7 @@ UID 训练 / 评估管道的数据加载工具。
 
 This module name (``data_loaders.py``) is HISTORICAL: it predates
 v2.1 and is referenced by ``experiments/run_*.py`` via
-``from test_uid_on_minimind import PretrainJsonl``. Despite the
+``from data_loaders import PretrainJsonl``. Despite the
 ``test_`` prefix, it is NOT a pytest test module — it is a data-
 loader module. Pytest will skip it automatically because it defines
 no ``test_*`` functions or ``Test*`` classes.
@@ -567,47 +567,54 @@ def make_collate_fn(
 # ======================================================================
 
 
-def _self_test(path: str, tokenizer_path: str, max_length: int) -> None:
-    """Quick CLI sanity check; run via ``python test_uid_on_minimind.py``."""
+def _self_test(path: Path, tokenizer_path: str, max_length: int) -> None:
+    """Self-test: load a few samples and print stats."""
+    import sys
     from transformers import AutoTokenizer
 
-    print(f"Loading tokenizer {tokenizer_path!r} ...")
+    print(f"Loading tokenizer '{tokenizer_path}' ...")
     tok = AutoTokenizer.from_pretrained(tokenizer_path)
-    if tok.pad_token is None:
-        tok.pad_token = tok.eos_token
 
-    print(f"Building PretrainJsonl({path}, max_length={max_length}) ...")
-    ds = PretrainJsonl(path, tok, max_length=max_length)
-    print(f"  {len(ds):,} records indexed")
+    # 自动检测数据格式
+    print(f"Detecting data format from {path} ...")
+    with open(path, 'r', encoding='utf-8') as f:
+        first_line = f.readline().strip()
+        if first_line:
+            try:
+                sample = json.loads(first_line)
+                if 'prompt' in sample and 'response' in sample:
+                    print(f"Detected SFT format (prompt/response)")
+                    dataset_class = SftJsonl
+                elif 'text' in sample:
+                    print(f"Detected pretrain format (text)")
+                    dataset_class = PretrainJsonl
+                else:
+                    print(f"⚠️  Unknown format, fields: {list(sample.keys())}")
+                    print(f"Trying PretrainJsonl...")
+                    dataset_class = PretrainJsonl
+            except:
+                print(f"Failed to parse first line, using PretrainJsonl")
+                dataset_class = PretrainJsonl
+        else:
+            dataset_class = PretrainJsonl
 
-    print("Pulling 3 samples ...")
-    for i in (0, len(ds) // 2, len(ds) - 1):
-        sample = ds[i]
-        ids = sample["input_ids"]
-        lbl = sample["labels"]
-        msk = sample["attention_mask"]
-        n_real = int(msk.sum().item())
-        n_ignored = int((lbl == IGNORE_INDEX).sum().item())
-        decoded = tok.decode(ids[:n_real].tolist())
-        snippet = decoded[:80].replace("\n", " ")
-        print(
-            f"  [{i:>6d}] real_tokens={n_real:>4d} "
-            f"ignored_labels={n_ignored:>4d}  "
-            f"text~ {snippet!r}"
-        )
+    print(f"Building {dataset_class.__name__}({path}, max_length={max_length}) ...")
+    ds = dataset_class(path, tok, max_length=max_length)
+    
+    print(f"✓ Loaded {len(ds)} samples from {path}")
+    if len(ds) == 0:
+        sys.exit(1)
 
-    # DataLoader smoke test.
-    from torch.utils.data import DataLoader
-    print("DataLoader smoke test (batch_size=2) ...")
-    loader = DataLoader(
-        ds, batch_size=2, shuffle=False, collate_fn=make_collate_fn(),
-    )
-    batch = next(iter(loader))
-    print(
-        f"  batch shape input_ids={tuple(batch['input_ids'].shape)} "
-        f"labels={tuple(batch['labels'].shape)} "
-        f"mask={tuple(batch['attention_mask'].shape)}"
-    )
+    # Sample a few records
+    indices = [0, len(ds) // 2, len(ds) - 1] if len(ds) > 2 else [0]
+    for i in indices:
+        rec = ds[i]
+        print(f"\nSample {i}:")
+        print(f"  input_ids shape : {rec['input_ids'].shape}")
+        print(f"  labels shape    : {rec['labels'].shape}")
+        print(f"  first 20 tokens : {rec['input_ids'][:20].tolist()}")
+
+    print(f"\n✓ Tokenization OK, max_length={max_length}")
 
 
 if __name__ == "__main__":
