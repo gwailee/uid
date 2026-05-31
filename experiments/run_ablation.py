@@ -16,13 +16,15 @@
 Run the full 11-way ablation suite (v2.1).
 
 Usage:
-    python experiments/run_ablation.py \\
-        --data_path ./data/wikitext-2/train.jsonl \\
-        --tokenizer_path gpt2 \\
-        --scale 30M \\
-        --epochs 3 \\
-        --seeds 42 43 44 \\
-        --output_dir ./results/ablation_v2.1
+python experiments/run_ablation.py \
+    --data_path data/minimind/pretrain.jsonl \
+    --tokenizer_path tokenizers/bert-base-chinese/tiansz/bert-base-chinese \
+    --scale 10M \
+    --epochs 1 \
+    --seeds 42 \
+    --batch_size 64 \
+    --max_seq_len 512 \
+    --output_dir ./output/minimind_ablation
 
 This script runs all 11 ablation variants at a fixed scale, with
 multiple seeds, and computes THREE critical comparisons that map
@@ -213,7 +215,7 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    from test_uid_on_minimind import PretrainJsonl
+    from data_loaders import PretrainJsonl
     full_dataset = PretrainJsonl(
         Path(args.data_path), tokenizer, max_length=args.max_seq_len
     )
