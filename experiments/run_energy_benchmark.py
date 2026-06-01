@@ -2,17 +2,17 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-25
+# UPDATE: 2026-06-01 (resumable)
+#   * --resume: skip families whose results already exist in results.json,
+#     and skip the whole stage if all requested families are present.
+#     Results are MERGED (not overwritten), so an interrupted run continues
+#     from where it stopped (per-family granularity).
 # UPDATE: 2026-05-28 (v2.1 batch 4)
-#   * Print all new EnergyMeasurement fields (idle, above-idle,
-#     peak power, sampler, achieved rate, notes).
-#   * Energy comparison now reports BOTH raw and above-idle ratios,
-#     and loudly warns when the idle floor dominates (> 30% of total).
-#   * Add CLI: --mode {prefill, decode}, --new_tokens_per_decode,
-#     --sample_rate_hz, --idle_window_seconds, --sampler_preference.
-#   * Add top-level metadata block to results.json for reproducibility.
+#   * Print all new EnergyMeasurement fields; raw + above-idle ratios;
+#     --mode {prefill,decode}; reproducibility metadata block.
 """
 Run real hardware energy benchmark (v2.1 unified checkpoint schema,
-energy_meter v2.1 batch 4).
+energy_meter v2.1 batch 4) — RESUMABLE.
 
 Usage:
     python experiments/run_energy_benchmark.py \\
@@ -21,13 +21,15 @@ Usage:
         --scale 100M \\
         --seeds 42 \\
         --mode decode --new_tokens_per_decode 64 \\
-        --batch_size 16 \\
-        --seq_len 1024 \\
-        --output_dir ./results/energy_v2.1
+        --batch_size 16 --seq_len 1024 \\
+        --output_dir ./results/energy_v2.1 \\
+        --resume
 
-This script replaces v0.1's theoretical Landauer-limit arithmetic with
-actual nvidia-smi / pynvml power measurements during inference, and
-reports both raw and above-idle energy-per-token in the verdict.
+RESUME BEHAVIOR (--resume):
+  * Families already present in <output_dir>/results.json are skipped.
+  * If ALL requested families are present, the stage is skipped entirely.
+  * New family results are merged into the existing results.json.
+  * Delete results.json (or output_dir) to force a full re-run.
 """
 
 from __future__ import annotations
@@ -118,6 +120,23 @@ def _find_checkpoint(
 
 
 # ======================================================================
+# Resume helpers
+# ======================================================================
+
+
+def _load_existing_output(output_path: Path) -> Dict[str, Any]:
+    """Load an existing results.json output blob (or an empty skeleton)."""
+    if not output_path.exists():
+        return {}
+    try:
+        return json.loads(output_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"[resume] WARNING: could not parse {output_path} ({e}); "
+              f"starting fresh.")
+        return {}
+
+
+# ======================================================================
 # Pretty printing
 # ======================================================================
 
@@ -127,9 +146,7 @@ def _print_measurement(em: EnergyMeasurement) -> None:
     print()
     print(f"  --- {em.model_name} ({em.mode}) ---")
     print(f"  Sampler            : {em.sampler}")
-    print(
-        f"  GPU                : {em.gpu_name} ({em.device})"
-    )
+    print(f"  GPU                : {em.gpu_name} ({em.device})")
     print(
         f"  Sampling rate      : {em.sample_rate_hz:.1f} Hz "
         f"({em.n_samples} samples in {em.wall_clock_seconds:.3f} s)"
@@ -147,16 +164,12 @@ def _print_measurement(em: EnergyMeasurement) -> None:
         f"  Avg power (work)   : {em.avg_power_watts:>7.2f} W "
         f"  (peak {em.max_power_watts:>7.2f} W)"
     )
-    print(
-        f"  Above-idle power   : {em.power_above_idle_watts:>7.2f} W"
-    )
+    print(f"  Above-idle power   : {em.power_above_idle_watts:>7.2f} W")
     print(
         f"  Total energy       : {em.total_energy_joules:>10.4f} J  "
         f"(above idle: {em.energy_above_idle_joules:>10.4f} J)"
     )
-    print(
-        f"  Total tokens       : {em.total_tokens:,}"
-    )
+    print(f"  Total tokens       : {em.total_tokens:,}")
     print(
         f"  Energy / token     : {em.energy_per_token_joules*1e3:>10.4f} mJ"
         f"  (above idle: "
@@ -191,7 +204,6 @@ def _print_comparison(results: Dict[str, Dict[str, Any]]) -> None:
         f"  above-idle   = {baseline_eptj_above*1e3:.4f} mJ/token"
     )
 
-    # Sanity check on the baseline: idle dominance.
     if baseline_eptj > 0:
         idle_frac = 1.0 - (baseline_eptj_above / baseline_eptj)
         if idle_frac > 0.30:
@@ -221,7 +233,6 @@ def _print_comparison(results: Dict[str, Dict[str, Any]]) -> None:
         raw_ratio = baseline_eptj / eptj
         above_ratio = baseline_eptj_above / eptj_above
 
-        # UID-specific verdict (per README prediction 5: >= 3x).
         if name == "cid_full":
             verdict = (
                 "PASS A4 (>=3x)" if above_ratio >= 3.0
@@ -284,18 +295,15 @@ def main():
         "--mode", type=str, default="prefill",
         choices=["prefill", "decode"],
         help="prefill: one full forward per iteration; "
-             "decode: token-by-token greedy decode "
-             "(closer to README prediction 5's deployment regime).",
+             "decode: token-by-token greedy decode.",
     )
     parser.add_argument(
         "--new_tokens_per_decode", type=int, default=32,
-        help="Number of new tokens per decode iteration "
-             "(ignored in prefill mode).",
+        help="New tokens per decode iteration (ignored in prefill mode).",
     )
     parser.add_argument(
         "--sample_rate_hz", type=float, default=25.0,
-        help="Power sampling rate; pynvml supports up to ~100 Hz, "
-             "nvidia-smi fallback is capped at 10 Hz.",
+        help="Power sampling rate; pynvml ~100 Hz, nvidia-smi ~10 Hz.",
     )
     parser.add_argument(
         "--idle_window_seconds", type=float, default=2.0,
@@ -309,6 +317,13 @@ def main():
     parser.add_argument(
         "--output_dir", type=str, default="./results/energy_v2.1",
     )
+    # ---- Resume support (for run_all.py end-to-end resume) ----
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="Skip families already in results.json; merge new results. "
+             "Skip the whole stage if all requested families are present. "
+             "Delete results.json (or output_dir) to force a re-run.",
+    )
     args = parser.parse_args()
 
     if not torch.cuda.is_available():
@@ -320,6 +335,27 @@ def main():
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / "results.json"
+
+    # ---- RESUME: load existing results & decide what to skip ----
+    existing_blob = _load_existing_output(output_path) if args.resume else {}
+    existing_results: Dict[str, Dict[str, Any]] = (
+        existing_blob.get("results", {}) if existing_blob else {}
+    )
+    if args.resume and existing_results:
+        present = set(existing_results.keys())
+        requested = set(args.families)
+        if requested.issubset(present):
+            print(f"[resume] All requested families already in "
+                  f"{output_path.name} ({sorted(present)}); "
+                  f"nothing to do. Delete it to re-run.")
+            # Still print the comparison from existing results.
+            _print_comparison(existing_results)
+            return
+        else:
+            todo = requested - present
+            print(f"[resume] {len(present)} families already done "
+                  f"({sorted(present)}); will run remaining: {sorted(todo)}")
 
     # Generate input batch.
     input_ids = torch.randint(
@@ -329,14 +365,13 @@ def main():
     )
 
     ckpt_dir = Path(args.checkpoint_dir)
-    results: Dict[str, Dict[str, Any]] = {}
+    # Start from existing results (merge), or empty.
+    results: Dict[str, Dict[str, Any]] = dict(existing_results)
 
-    print(f"\nEnergy benchmark v2.1 batch 4")
+    print(f"\nEnergy benchmark v2.1 batch 4 (resume={args.resume})")
     print(f"  mode          = {args.mode}")
     if args.mode == "decode":
-        print(
-            f"  new_tokens    = {args.new_tokens_per_decode} per iter"
-        )
+        print(f"  new_tokens    = {args.new_tokens_per_decode} per iter")
     print(f"  sampler_pref  = {args.sampler_preference}")
     print(f"  sample_rate   = {args.sample_rate_hz} Hz")
     print(f"  idle_window   = {args.idle_window_seconds} s")
@@ -344,6 +379,11 @@ def main():
     print(f"  warmup/measur = {args.n_warmup} / {args.n_measure}")
 
     for name in args.families:
+        # ---- RESUME: skip families already measured ----
+        if args.resume and name in results:
+            print(f"\n[resume] skip family '{name}' — already in results.json")
+            continue
+
         ckpt_path = _find_checkpoint(
             ckpt_dir, family=name, scale=args.scale,
             seed_preference=args.seeds,
@@ -385,10 +425,33 @@ def main():
             "loaded_family": loaded_family,
         }
 
+        # ---- INCREMENTAL SAVE after each family (resume-safe) ----
+        output = {
+            "schema_version": "energy_v2.1_batch4",
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "metadata": {
+                "python_version": sys.version.split()[0],
+                "platform": platform.platform(),
+                "torch_version": torch.__version__,
+                "cuda_version": (
+                    torch.version.cuda if torch.cuda.is_available() else None
+                ),
+                "device_name": torch.cuda.get_device_name(0)
+                if torch.cuda.is_available() else None,
+                "cli_args": vars(args),
+            },
+            "results": results,
+        }
+        output_path.write_text(
+            json.dumps(output, indent=2), encoding="utf-8"
+        )
+        print(f"  [save] results.json updated "
+              f"({len(results)} families so far)")
+
         del model
         torch.cuda.empty_cache()
 
-    # ----- Save with reproducibility metadata -------------------------
+    # ----- Final save (ensures metadata present even if loop empty) ----
     output = {
         "schema_version": "energy_v2.1_batch4",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -405,7 +468,6 @@ def main():
         },
         "results": results,
     }
-    output_path = output_dir / "results.json"
     output_path.write_text(
         json.dumps(output, indent=2), encoding="utf-8"
     )
