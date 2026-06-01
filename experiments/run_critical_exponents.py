@@ -2,37 +2,38 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-25
+# UPDATE: 2026-06-01 (resumable)
+#   * --resume: if results.json already contains a final verdict, skip the
+#     whole measurement (re-print the saved verdict). Otherwise run fresh.
+#     This is a coarse (stage-level) resume — the measurement itself is a
+#     single atomic pass and is not sub-divided.
 # UPDATE: 2026-05-28 (v2.1 batch 3)
-#   * Add eta (Fisher anisotropy, Theory §6.1 / README prediction 4)
-#     to the verdict block. eta is now contrasted noise-OFF vs noise-ON
-#     in the same spirit as beta and Hurst.
-#   * The "emergence_confirmed" verdict now requires beta, H AND eta
-#     to all pass — but if the eta estimate is rank-deficient
-#     (seq_len < hidden_size), eta is ABSTAINED (treated as
-#     uninformative) rather than counted as a pass.
-#   * Emit a clear data-quality note when the user accidentally ran
-#     with max_seq_len < hidden_size, which is the only way to get
-#     a rank-deficient eta.
+#   * eta (Fisher anisotropy) in the verdict; noise-OFF vs noise-ON;
+#     three-state eta verdict (pass/fail/abstain).
 """
-Run rigorous critical-exponent measurement (with noise injection OFF).
+Run rigorous critical-exponent measurement (with noise injection OFF) —
+RESUMABLE at stage level.
 
 Usage:
     python experiments/run_critical_exponents.py \\
         --checkpoint results/scaling_law_v2.1/checkpoints/cid_full_100M_seed42.pt \\
         --data_path ./data/wikitext-2/test.jsonl \\
         --tokenizer_path gpt2 \\
-        --output_dir results/critical_exponents_v2.1
+        --output_dir results/critical_exponents_v2.1 \\
+        --resume
+
+RESUME BEHAVIOR (--resume):
+  * If <output_dir>/results.json already contains a 'verdict' block, the
+    measurement is skipped and the saved verdict is re-printed.
+  * Otherwise the full measurement runs and writes results.json.
+  * Delete results.json (or output_dir) to force a re-run.
 
 This script:
 1. Loads a trained model (v2.1 unified checkpoint schema).
 2. Disables noise injection (CRITICAL — otherwise circular).
-3. Collects hidden states from >=10,000 sequences.
-4. Measures Hurst exponent (DFA), spectrum slope beta, avalanche tau,
-   AND Fisher anisotropy eta (Theory §6.1 / README prediction 4).
-5. Uses Clauset-Shalizi-Newman MLE for power-law fitting.
-6. Also runs the SAME measurement with noise injection ON, then
-   contrasts the two to detect circular-measurement artifacts.
-7. Reports whether emergence is genuine.
+3. Collects hidden states; measures Hurst (DFA), beta, tau, eta.
+4. Also runs noise-ON; contrasts to detect circular-measurement artifacts.
+5. Reports whether emergence is genuine.
 """
 
 from __future__ import annotations
@@ -59,15 +60,7 @@ from uid_theory.verification.critical_exponents import (
 def _load_model_from_unified_ckpt(ckpt_path: Path, device: str):
     """Rebuild a model from the v2.1 unified checkpoint schema.
 
-    Schema:
-        {"schema_version": "v2.1",
-         "model_family":   "cid_full" | "transformer" | ...,
-         "init_kwargs":    {family, scale, vocab_size, max_seq_len, ...},
-         "config_dict":    {UIDConfig.to_dict()} | None,
-         "model_state":    state_dict, ...}
-
-    Falls back gracefully to the legacy v0.1 schema for backward
-    compatibility (assuming ``ckpt["config"]`` is a plain kwargs dict).
+    Falls back gracefully to the legacy v0.1 schema for backward compat.
     """
     ckpt = torch.load(ckpt_path, map_location=device)
 
@@ -75,7 +68,6 @@ def _load_model_from_unified_ckpt(ckpt_path: Path, device: str):
     if ckpt.get("schema_version") == "v2.1":
         family = ckpt["model_family"]
         init_kwargs = ckpt["init_kwargs"]
-        # Lazy import to avoid hard deps when scripts are run standalone.
         from experiments.run_scaling_law import build_model  # type: ignore
         model = build_model(
             family=init_kwargs["family"],
@@ -124,19 +116,43 @@ def _eta_verdict(
     eta_off: Optional[EtaResult],
     eta_threshold: float = 0.5,
 ) -> str:
-    """Classify the eta result into one of three verdicts.
-
-    Returns one of:
-        "pass"             — eta_off > threshold and not rank-deficient
-        "fail"             — eta_off <= threshold
-        "abstain_rd"       — rank-deficient (seq_len < hidden_size)
-        "abstain_missing"  — eta not computed
-    """
+    """Classify the eta result into one of three verdicts."""
     if eta_off is None:
         return "abstain_missing"
     if eta_off.rank_deficient:
         return "abstain_rd"
     return "pass" if eta_off.eta_mean > eta_threshold else "fail"
+
+
+def _print_saved_verdict(all_results: Dict[str, Any]) -> None:
+    """Re-print a previously saved verdict block (for --resume)."""
+    v = all_results.get("verdict")
+    if not v:
+        print("[resume] results.json present but has no verdict block.")
+        return
+    print("\n" + "=" * 60)
+    print("VERDICT (loaded from existing results.json)")
+    print("=" * 60)
+    print(
+        f"\n  {'':30s} {'noise OFF':>12s} {'noise ON':>12s} {'|diff|':>10s}"
+    )
+    print(
+        f"  {'beta (spectrum slope)':30s} {v['beta_off']:>12.3f} "
+        f"{v['beta_on']:>12.3f} {v['beta_diff']:>10.3f}"
+    )
+    print(
+        f"  {'H (Hurst exponent)':30s} {v['hurst_off']:>12.3f} "
+        f"{v['hurst_on']:>12.3f} {v['hurst_diff']:>10.3f}"
+    )
+    eo = v.get("eta_off", float("nan"))
+    en = v.get("eta_on", float("nan"))
+    de = v.get("eta_diff", float("nan"))
+    print(
+        f"  {'eta (Fisher anisotropy)':30s} {eo:>12.3f} {en:>12.3f} "
+        f"{de:>10.3f}"
+    )
+    print(f"\n  verdict: {v['verdict']}")
+    print(f"  eta_state: {v.get('eta_state')}")
 
 
 # ======================================================================
@@ -179,11 +195,36 @@ def main():
         "--output_dir", type=str,
         default="./results/critical_exponents_v2.1",
     )
+    # ---- Resume support (for run_all.py end-to-end resume) ----
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="If results.json already has a verdict block, skip the whole "
+             "measurement and re-print the saved verdict. Delete "
+             "results.json (or output_dir) to force a re-run.",
+    )
     args = parser.parse_args()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / "results.json"
+
+    # ---- RESUME: if a completed verdict exists, skip and re-print ----
+    if args.resume and output_path.exists():
+        try:
+            prior = json.loads(output_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"[resume] could not parse {output_path} ({e}); "
+                  f"running fresh.")
+            prior = {}
+        if isinstance(prior, dict) and prior.get("verdict"):
+            print(f"[resume] {output_path.name} already contains a verdict "
+                  f"— skipping measurement.")
+            _print_saved_verdict(prior)
+            return
+        else:
+            print(f"[resume] {output_path.name} present but incomplete "
+                  f"(no verdict) — running fresh.")
 
     # Load tokenizer and data.
     from transformers import AutoTokenizer
@@ -191,7 +232,7 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    from test_uid_on_minimind import PretrainJsonl
+    from data_loaders import PretrainJsonl
     dataset = PretrainJsonl(
         Path(args.data_path), tokenizer, max_length=args.max_seq_len,
     )
@@ -262,7 +303,6 @@ def main():
             dataloader=dataloader,
             device=device,
             n_sequences=args.n_sequences,
-            # Baseline has no noise injection to disable.
             disable_noise=True,
             include_eta=True,
             eta_threshold=args.eta_threshold,
@@ -270,12 +310,11 @@ def main():
         )
         all_results["baseline"] = baseline_result.to_dict()
 
-    # ----- Save raw results -------------------------------------------
-    output_path = output_dir / "results.json"
+    # ----- Save raw results (pre-verdict) -----------------------------
     output_path.write_text(
         json.dumps(all_results, indent=2), encoding="utf-8"
     )
-    print(f"\n[ok] Results saved to {output_path}")
+    print(f"\n[ok] Raw results saved to {output_path}")
 
     # ------------------------------------------------------------------
     # VERDICT: contrast noise-OFF vs noise-ON to detect circular echo
@@ -284,7 +323,6 @@ def main():
     print("VERDICT: Is CID's emergence genuine?")
     print("=" * 60)
 
-    # ----- Scalar extracts -------------------------------------------
     b_off = float(cid_emergence.spectrum.beta_mean)
     h_off = float(cid_emergence.hurst.hurst_mean)
     b_on = float(cid_with_noise.spectrum.beta_mean)
@@ -309,7 +347,6 @@ def main():
         else float("nan")
     )
 
-    # ----- Print the contrast table ----------------------------------
     print(
         f"\n  {'':30s} {'noise OFF':>12s} {'noise ON':>12s} "
         f"{'|diff|':>10s}"
@@ -333,18 +370,14 @@ def main():
         f"eta > {args.eta_threshold}."
     )
 
-    # ----- Per-prediction passes -------------------------------------
     beta_in_range = 0.7 <= b_off <= 1.3
     hurst_in_range = 0.6 <= h_off <= 0.8
     eta_state = _eta_verdict(eta_off_obj, args.eta_threshold)
 
-    # ----- Data-quality flags ----------------------------------------
     rank_deficient = bool(
         eta_off_obj is not None and eta_off_obj.rank_deficient
     )
     if rank_deficient:
-        # Make this LOUD because it usually means the user
-        # accidentally ran with max_seq_len < hidden_size.
         print(
             "\n  [data-quality WARNING] eta was estimated on a "
             "rank-deficient covariance (seq_len < hidden_size).\n"
@@ -355,12 +388,7 @@ def main():
             f"hidden_size={eta_off_obj.hidden_size})."
         )
 
-    # ----- Combined verdict ------------------------------------------
     NOISE_DIFF_TOL = float(args.noise_diff_tol)
-
-    # When eta is rank-deficient or missing, we ABSTAIN — i.e. require
-    # beta and H to carry the verdict alone (and do not count eta as
-    # a free pass).
     eta_passes = eta_state == "pass"
     eta_abstains = eta_state in ("abstain_rd", "abstain_missing")
 
@@ -368,16 +396,14 @@ def main():
     if not (beta_in_range and hurst_in_range):
         print(
             "  [fail] EMERGENCE NOT CONFIRMED: beta and/or H out of "
-            "the UID-predicted ranges with noise OFF. "
-            "v0.1's 'verified' claim was likely circular."
+            "the UID-predicted ranges with noise OFF."
         )
         verdict = "emergence_not_confirmed"
     elif (not eta_passes) and (not eta_abstains):
         print(
             f"  [fail] EMERGENCE NOT CONFIRMED: eta = {e_off:.3f} <= "
             f"threshold {args.eta_threshold:.2f}. "
-            "README prediction 4 (Theory §6.1) is FALSIFIED at this "
-            "scale; the trained representation is not anisotropic enough."
+            "README prediction 4 (Theory §6.1) is FALSIFIED at this scale."
         )
         verdict = "emergence_not_confirmed_eta"
     elif db < NOISE_DIFF_TOL and dh < NOISE_DIFF_TOL:
@@ -385,10 +411,7 @@ def main():
             "  [warn] beta and H in range, BUT noise-OFF and noise-ON "
             "are nearly identical "
             f"(|d_beta|={db:.3f}, |d_H|={dh:.3f} < {NOISE_DIFF_TOL}). "
-            "The noise-OFF measurement may be a residual echo of "
-            "training-time noise rather than a true intrinsic "
-            "signature. Re-run with longer eval or after additional "
-            "noise-OFF fine-tuning before claiming emergence."
+            "The noise-OFF measurement may be a residual echo."
         )
         verdict = "ambiguous_residual_echo"
     else:
@@ -404,9 +427,7 @@ def main():
         print(
             "  [ok] EMERGENCE CONFIRMED: critical exponents are in "
             "range with noise injection OFF, AND they differ "
-            f"meaningfully from the noise-ON case "
-            f"(|d_beta|>= {NOISE_DIFF_TOL} or |d_H|>= {NOISE_DIFF_TOL})."
-            + extra
+            f"meaningfully from the noise-ON case." + extra
         )
         verdict = (
             "emergence_confirmed"
@@ -414,7 +435,7 @@ def main():
             else "emergence_confirmed_eta_abstained"
         )
 
-    # ----- Append verdict to results ---------------------------------
+    # ----- Append verdict to results (final atomic write) ------------
     all_results["verdict"] = {
         "beta_off": b_off,
         "beta_on": b_on,
@@ -436,6 +457,7 @@ def main():
     output_path.write_text(
         json.dumps(all_results, indent=2), encoding="utf-8"
     )
+    print(f"\n[ok] Final results (with verdict) saved to {output_path}")
 
 
 if __name__ == "__main__":
