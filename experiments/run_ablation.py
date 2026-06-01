@@ -2,33 +2,27 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-25
+# UPDATE: 2026-06-01 (resumable)
+#   * Add --resume: skip (variant, seed) combos already in results.json
+#     and APPEND new results instead of overwriting. Enables run_all.py
+#     to resume an interrupted ablation stage at (variant, seed) grain.
 # UPDATE: 2026-05-28
-#   * Now consumes the full 11-variant v2.1 ablation matrix
-#     (4 traditional + 2 §8.5/§14.2 isolations + 5 baselines).
-#   * Reports THREE critical comparisons, not just one:
-#       A. cid_full vs transformer_plus_all_tricks
-#          (UID physical framework vs known tricks)
-#       B. cid_full vs cid_full_no_et
-#          (§8.5 ET symmetric term's engineering contribution)
-#       C. cid_full vs cid_full_fft_noise
-#          (§14.2 OU vs FFT noise's engineering contribution)
+#   * Full 11-variant v2.1 ablation matrix; THREE critical comparisons.
 """
-Run the full 11-way ablation suite (v2.1).
+Run the full 11-way ablation suite (v2.1) — RESUMABLE.
 
 Usage:
-python experiments/run_ablation.py \
-    --data_path data/minimind/pretrain.jsonl \
-    --tokenizer_path tokenizers/bert-base-chinese/tiansz/bert-base-chinese \
-    --scale 10M \
-    --epochs 1 \
-    --seeds 42 \
-    --batch_size 64 \
-    --max_seq_len 512 \
-    --output_dir ./output/minimind_ablation
+    python experiments/run_ablation.py \\
+        --data_path data/minimind/pretrain.jsonl \\
+        --tokenizer_path tokenizers/bert-base-chinese/tiansz/bert-base-chinese \\
+        --scale 10M --epochs 1 --seeds 42 43 44 \\
+        --batch_size 64 --max_seq_len 512 \\
+        --output_dir ./output/minimind_ablation \\
+        --resume
 
-This script runs all 11 ablation variants at a fixed scale, with
-multiple seeds, and computes THREE critical comparisons that map
-directly to the predictions of Theory §8.5 / §14.2.
+With --resume, any (variant, seed) already present in
+<output_dir>/results.json is skipped, and new results are appended.
+Delete results.json (or the whole output_dir) to start fresh.
 """
 
 from __future__ import annotations
@@ -38,7 +32,7 @@ import json
 import time
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import numpy as np
 import torch
@@ -132,12 +126,7 @@ def _print_critical_comparison(
     failure_msg: str,
     z_threshold: float = 2.0,
 ) -> Optional[Dict[str, Any]]:
-    """Print one critical comparison between two ablation variants.
-
-    Returns:
-        A dict with the comparison fields, or None if either variant
-        is missing from the summary.
-    """
+    """Print one critical comparison between two ablation variants."""
     a = next((s for s in summary if s["ablation"] == name_a), None)
     b = next((s for s in summary if s["ablation"] == name_b), None)
     if a is None or b is None:
@@ -177,6 +166,36 @@ def _print_critical_comparison(
     }
 
 
+# ----------------------------------------------------------------------
+# Resume helpers
+# ----------------------------------------------------------------------
+
+def _load_existing_results(
+    results_path: Path,
+) -> Tuple[List[Dict[str, Any]], Set[Tuple[str, int]]]:
+    """Load existing results.json and return (records, completed_pairs).
+
+    completed_pairs is a set of (ablation_name, seed) already finished.
+    Returns ([], set()) if the file is missing or unreadable.
+    """
+    if not results_path.exists():
+        return [], set()
+    try:
+        records = json.loads(results_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"[resume] WARNING: could not parse {results_path} ({e}); "
+              f"starting fresh.")
+        return [], set()
+
+    completed: Set[Tuple[str, int]] = set()
+    for r in records:
+        name = r.get("ablation_name")
+        seed = r.get("seed")
+        if name is not None and seed is not None:
+            completed.add((name, int(seed)))
+    return records, completed
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data_path", type=str, required=True)
@@ -196,6 +215,13 @@ def main():
         "--output_dir", type=str,
         default="./results/ablation_v2.1",
     )
+    # ---- Resume support (for run_all.py end-to-end resume) ----
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="Skip (variant, seed) combos already in results.json and "
+             "APPEND new results instead of overwriting. Delete "
+             "results.json (or output_dir) to start fresh.",
+    )
     args = parser.parse_args()
 
     SCALE_CONFIGS = {
@@ -208,6 +234,7 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    results_path = output_dir / "results.json"
 
     # Load tokenizer and data.
     from transformers import AutoTokenizer
@@ -229,15 +256,33 @@ def main():
     )
     eval_loader = DataLoader(eval_ds, batch_size=args.batch_size)
 
-    # Run all ablations.
+    # ---- RESUME: load existing results & completed (variant, seed) ----
     configs = get_ablation_configs()
-    print(f"\n[info] Running {len(configs)} ablation variants "
-          f"x {len(args.seeds)} seeds = "
-          f"{len(configs) * len(args.seeds)} total runs")
-    all_results: List[Dict[str, Any]] = []
+    if args.resume:
+        all_results, completed = _load_existing_results(results_path)
+        if completed:
+            print(f"[resume] Loaded {len(all_results)} existing records; "
+                  f"{len(completed)} (variant, seed) pairs already done.")
+        else:
+            print("[resume] No prior results found; starting fresh.")
+    else:
+        all_results = []
+        completed = set()
 
+    total_runs = len(configs) * len(args.seeds)
+    print(f"\n[info] {len(configs)} variants x {len(args.seeds)} seeds "
+          f"= {total_runs} total runs "
+          f"({len(completed)} already done, "
+          f"{total_runs - len(completed)} remaining)")
+
+    # ---- Main ablation loop (skips completed when --resume) ----
     for config in configs:
         for seed in args.seeds:
+            if args.resume and (config.name, seed) in completed:
+                print(f"[resume] skip {config.name} (seed={seed}) "
+                      f"— already in results.json")
+                continue
+
             print(f"\n{'=' * 60}")
             print(f"Ablation: {config.name} (seed={seed})")
             print(f"  {config.description}")
@@ -282,14 +327,17 @@ def main():
                 "wall_seconds": wall,
             }
             all_results.append(result)
+            completed.add((config.name, seed))
             print(
                 f"  Result: train={train_loss:.4f}, eval={eval_loss:.4f}, "
                 f"ppl={result['eval_ppl']:.2f}"
             )
 
-            # Save incrementally.
-            (output_dir / "results.json").write_text(
-                json.dumps(all_results, indent=2), encoding="utf-8"
+            # Save incrementally (append-safe: all_results already includes
+            # prior records when --resume).
+            results_path.write_text(
+                json.dumps(all_results, indent=2, ensure_ascii=False),
+                encoding="utf-8",
             )
 
             del model
@@ -297,7 +345,7 @@ def main():
                 torch.cuda.empty_cache()
 
     # ------------------------------------------------------------------
-    # Aggregate
+    # Aggregate (over ALL records, including resumed ones)
     # ------------------------------------------------------------------
     print("\n" + "=" * 60)
     print("ABLATION SUMMARY (sorted by eval loss, lower = better)")
@@ -405,7 +453,7 @@ def main():
     (output_dir / "summary.json").write_text(
         json.dumps(
             {"summary": summary, "critical_comparisons": comparisons},
-            indent=2,
+            indent=2, ensure_ascii=False,
         ),
         encoding="utf-8",
     )
