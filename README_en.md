@@ -49,7 +49,7 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 </div>
 
-***Corresponding Author***: Gui LI, Ph.D. Bachelor's degree from the School of Physics, Northwest University; Master's and Ph.D. from Hefei Institutes of Physical Science, Chinese Academy of Sciences. Currently at Suzhou Jodell Robotics Co., Ltd., focusing on theoretical and engineering research of **Unified Intelligo-Dynamics (UID)**. Proposed and developed the three-tier physical framework (CID/QID/FID) for intelligent architectures, leading its falsifiable validation and engineering deployment in robotic cognitive brains, motor control cerebellums, dexterous hand manipulation systems, large language models, and specialized AI chips. E-mail: guilichina@163.com
+***Corresponding Author***: Gui LI, Ph.D. Bachelor's degree from the School of Physics, Northwest University; Master's and Ph.D. from Hefei Institutes of Physical Science, Chinese Academy of Sciences. Currently at Suzhou Jodell Robotics Co., Ltd., focusing on theoretical and engineering research of Unified Intelligo-Dynamics (UID). Proposed and developed the three-tier physical framework (CID/QID/FID) for intelligent architectures, leading its falsifiable validation and engineering deployment in robotic cognitive brains, motor control cerebellums, dexterous hand manipulation systems, large language models, and specialized AI chips. E-mail: guilichina@163.com
 
 ---
 
