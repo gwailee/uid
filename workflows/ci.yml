@@ -1,14 +1,18 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date: 2026-05-25
+# UPDATE: 2026-05-31 — add causality regression gate (prevent ET future-token
+#                      leakage from recurring); bump to v2.1.
 #
-# Continuous Integration for UID v2.0
+# Continuous Integration for UID v2.1
 #
 # Runs on every push and PR:
-#   - Linting (ruff)
+#   - Causality regression (CRITICAL gate — must pass before anything else)
+#   - Linting (ruff, black)
 #   - Type checking (mypy)
-#   - Unit tests (pytest)
-#   - Smoke tests on tiny models (CPU only)
+#   - Unit tests (pytest, multi-Python)
+#   - Smoke tests on tiny models (CPU only) + causality re-check
+#   - Honest-claims check on README
 
 name: CI
 
@@ -20,9 +24,42 @@ on:
   workflow_dispatch:
 
 jobs:
+  # ==========================================================================
+  # CRITICAL GATE: causality regression.
+  # This runs FIRST and FAST. If the ET / standard / full-CID branches leak
+  # future tokens (the bug class that produced spurious PPL≈1 results), the
+  # entire pipeline fails immediately — no point running anything else.
+  # ==========================================================================
+  causality:
+    name: Causality Regression (CRITICAL GATE)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install minimal deps for causality test
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest torch --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers
+      - name: Run causality regression tests
+        run: |
+          pytest tests/test_uid_causality.py -v --tb=short
+      - name: Causality gate summary
+        if: always()
+        run: |
+          echo "Causality gate ensures no future-token leakage in ET/standard/"
+          echo "full-CID branches. A failure here means a causal-masking bug —"
+          echo "fix hopfield_potential.py / cid_layer.py before merging."
+
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
+    needs: causality
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -42,6 +79,7 @@ jobs:
   test:
     name: Unit Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    needs: causality
     strategy:
       fail-fast: false
       matrix:
@@ -58,7 +96,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-      - name: Run pytest
+      - name: Run pytest (full suite, causality included)
         run: |
           pytest tests/ -v --cov=uid_theory --cov=model \
             --cov-report=xml --cov-report=term --maxfail=5
@@ -83,6 +121,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -e .
           pip install -r requirements.txt
       - name: Download WikiText-2 (small real corpus)
         run: |
@@ -96,7 +135,7 @@ jobs:
                   if ex['text'].strip():
                       f.write(json.dumps({'text': ex['text']}) + chr(10))
           "
-      - name: Run tiny-model smoke test
+      - name: Run tiny-model smoke test (ablation)
         run: |
           python experiments/run_ablation.py \
             --data_path data/wikitext-2/train.jsonl \
@@ -113,27 +152,83 @@ jobs:
           python -c "
           import json
           r = json.load(open('/tmp/smoke/results.json'))
-          assert len(r) >= 5, f'Expected ≥5 ablation runs, got {len(r)}'
-          print(f'Smoke test passed: {len(r)} ablation runs completed')
+          assert len(r) >= 5, f'Expected >=5 ablation runs, got {len(r)}'
+          # Sanity: PPL must be in a PLAUSIBLE range for a tiny under-trained LM.
+          # A PPL near 1.0 would indicate a future-token-leakage regression
+          # (the bug class guarded by the causality job). We require PPL > 1.5
+          # for every run as a coarse leakage tripwire on real data.
+          ppls = [x['eval_ppl'] for x in r]
+          print(f'Smoke PPLs: min={min(ppls):.2f}, max={max(ppls):.2f}')
+          assert min(ppls) > 1.5, (
+              f'Suspiciously low PPL {min(ppls):.3f} (<1.5) — possible '
+              f'future-token leakage regression. See tests/test_uid_causality.py.'
+          )
+          print(f'Smoke test passed: {len(r)} ablation runs, all PPL>1.5')
+          "
+      - name: Re-verify causality on the smoke model
+        run: |
+          # Independent, model-level leakage tripwire (does not depend on the
+          # unit-test config). Perturb the last token; earlier-position logits
+          # must not change for a causal model.
+          python -c "
+          import torch
+          from model.model_uid import UIDConfig, UIDModel
+          torch.manual_seed(0)
+          cfg = UIDConfig(vocab_size=100, hidden_size=64, num_hidden_layers=2,
+                          num_attention_heads=4, use_et_symmetric=True,
+                          use_vortex=True, use_memory=True,
+                          use_colored_noise=True, dropout=0.0)
+          m = UIDModel(cfg).eval()
+          x = torch.randint(0, 100, (1, 16))
+          o1 = m(x).logits
+          x2 = x.clone(); x2[0, -1] = (x2[0, -1] + 1) % 100
+          o2 = m(x2).logits
+          d = (o1[0, :-1] - o2[0, :-1]).abs().max().item()
+          print(f'smoke causality max future influence = {d:.3e}')
+          assert d < 1e-5, f'Future-token leakage detected (d={d:.3e})!'
+          print('smoke causality check passed (no future-token leakage)')
           "
 
   honest-claims-check:
     name: Verify Honest Claims in README
     runs-on: ubuntu-latest
+    needs: causality
     steps:
       - uses: actions/checkout@v4
       - name: Check KNOWN_LIMITATIONS.md exists
         run: test -f KNOWN_LIMITATIONS.md
       - name: Check ROADMAP.md exists
         run: test -f ROADMAP.md
+      - name: Check Phase 1 report exists
+        run: |
+          if [ -f results/phase1/REPORT.md ]; then
+            echo "Phase 1 report found."
+          else
+            echo "::warning::results/phase1/REPORT.md not found (ok if Phase 1 not yet published)."
+          fi
       - name: Check README does not claim unverified results
         run: |
-          # Fail if README claims "verified" without referencing real results
+          # Fail-soft: warn if README makes unqualified verification claims.
           if grep -i "verified\|proven\|demonstrated" README.md | \
-             grep -v "to be verified\|pending\|not yet" | \
+             grep -v "to be verified\|pending\|not yet\|未测\|待验证\|待补" | \
              grep -v "v0.1.*verified" > /tmp/suspicious.txt; then
-            echo "Warning: README contains unqualified verification claims:"
+            echo "::warning::README contains possibly-unqualified verification claims:"
             cat /tmp/suspicious.txt
-            # Don't fail the build; just warn
+            # Don't fail the build; just warn.
           fi
-          echo "Honest-claims check completed"
+          echo "Honest-claims (unqualified-verification) check completed."
+      - name: Guard against re-introducing spurious PPL≈1 / huge-multiplier claims
+        run: |
+          # The earlier leakage bug produced PPL≈1 and ~72x/79x multipliers.
+          # If those exact spurious figures reappear in README, warn loudly so
+          # a reviewer can confirm they are not a regression artifact.
+          PATTERN='PPL.?≈.?1\b|79[×x]|72\.6[×x]|55\.6[×x]|z=3712|z=732'
+          if grep -E "$PATTERN" README.md README_en.md 2>/dev/null > /tmp/spurious.txt; then
+            echo "::warning::README mentions figures historically associated with the"
+            echo "::warning::future-token-leakage bug (PPL≈1 / 72x / 79x / 55x / z=3712)."
+            echo "::warning::Confirm these are NOT a regression before merging:"
+            cat /tmp/spurious.txt
+          else
+            echo "No historically-spurious figures found in README files."
+          fi
+          echo "Spurious-claims guard completed."
