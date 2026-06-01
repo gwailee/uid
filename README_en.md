@@ -67,7 +67,6 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 | `run_critical_exponents.py` verdict table adds η row + three-state judgment | §6.1 |
 | `energy_meter.py` upgraded to v2.1: idle baseline + above-idle field + prefill/decode modes | §0.1 / §11.4 |
 
-The v0.1 validation suite had methodological flaws that made its "validated" claims scientifically untenable. Details in [KNOWN_LIMITATIONS.md](./KNOWN_LIMITATIONS.md). **Any empirical claims from v0.1 and v2.0 should be re-run under v2.1 before citation**.
 
 v2.1 version:
 - ✅ Provides **complete infrastructure** for rigorous validation (7 new test files with full-stack coverage)
