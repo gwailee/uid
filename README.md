@@ -69,8 +69,6 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 | `run_critical_exponents.py` verdict 表加入 η 行 + 三态判定 | §6.1 |
 | `energy_meter.py` 升级到 v2.1：idle 基线 + above-idle 字段 + prefill/decode 模式 | §0.1 / §11.4 |
 
-v0.1 版本的验证套件存在方法学缺陷，使其"已验证"声明在科学上站不住脚。详情见 [KNOWN_LIMITATIONS.md](./KNOWN_LIMITATIONS.md)。**v0.1 与 v2.0 的任何实证主张都应在 v2.1 下重跑后才可引用**。
-
 v2.1 版本：
 - ✅ 提供了进行严格验证所需的**完整基础设施**（含 7 个新测试文件全栈覆盖）
 - ✅ 完成了理论 §8.5 ET 修正、§14.2 零参数旋度、§14.2 OU 噪声、§6.1 η 直接可测等所有承诺
