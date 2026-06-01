@@ -2,7 +2,8 @@
 # Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 # Author: Gui LI <guilichina@163.com>
 # Date:   2026-05-25
-# UPDATE: 2026-05-28 — implement ET symmetric second term per Theory §8.5
+# UPDATE: 2026-05-31 — FIX: ET future-token leakage bug (causal-safe rewrite)
+#                      + restore _forward_standard for ablation variants
 #
 # This file is part of the UID Theory reference implementation.
 #
@@ -20,6 +21,17 @@
 """Modern Hopfield attention with Energy Transformer (ET) symmetric term.
 
 Modern Hopfield 注意力 —— 完整实现论文 §8.5 要求的 ET 对称双项更新。
+
+v2.1-fixed (2026-05-31):
+    修复 ET 分支的未来 token 泄漏 bug。原实现用 scores[B,C]=K_B·Q_C
+    ([key,query] 布局) + 双向 softmax，导致 term_1 依赖未来位置
+    （扰动测试证实：改变最后一个 token 影响所有更早位置）。
+    
+    现统一为标准 [query,key] 布局 + 单向因果 softmax，两项都只
+    依赖 ≤ 当前位置的输入，通过因果性扰动测试（diff 全为 0）。
+    
+    注意：此修复牺牲了原 §8.5 双向 softmax 的严格能量形式，
+    仅保证因果性。正确的 §8.5 因果离散形式需与理论作者确认。
 
 Theory (Hoover et al. 2023, arXiv:2302.07253):
     E_ATT(g) = -(1/beta) * sum_C  log sum_{B!=C}  exp(beta * K_B . Q_C)
@@ -50,13 +62,13 @@ import torch.nn as nn
 class HopfieldAttention(nn.Module):
     """Multi-head ET-style energy attention with dual symmetric updates.
 
-    多头 ET 式能量注意力 —— 含双项对称更新。
+    多头 ET 式能量注意力 —— 含双项对称更新（v2.1-fixed 因果安全版）。
 
     Notes:
-        - 当 ``use_et_symmetric=True``（默认）时实现 §8.5 完整双项更新，
-          享有 ET 能量函数单调下降的 Lyapunov 保证。
+        - 当 ``use_et_symmetric=True``（默认）时实现 §8.5 完整双项更新。
+          v2.1-fixed: 已修复未来 token 泄漏 bug，通过因果性扰动测试。
         - 当 ``use_et_symmetric=False`` 时退化为标准 Transformer attention，
-          仅供消融实验使用，**不享有 Lyapunov 保证**。
+          仅供消融实验使用（cid_full_no_et 等变体）。
         - 符号约定：``causal_mask`` 中 ``True`` 表示 *禁止* 注意，
           与 PyTorch ``masked_fill`` 约定一致。
     """
@@ -74,9 +86,9 @@ class HopfieldAttention(nn.Module):
             num_heads:        Number of attention heads. 注意力头数。
                               必须整除 ``hidden_size``。
             use_et_symmetric: If True (default), include the ET symmetric
-                              second term (§8.5 requirement). If False,
-                              fall back to standard scaled dot-product
-                              attention (ablation only).
+                              second term (§8.5 requirement, v2.1-fixed).
+                              If False, fall back to standard scaled
+                              dot-product attention (ablation only).
                               是否启用 ET 对称项，默认 True。
         """
         super().__init__()
@@ -115,7 +127,7 @@ class HopfieldAttention(nn.Module):
         )
 
     # ------------------------------------------------------------------
-    # ET-symmetric branch (default, §8.5)
+    # ET-symmetric branch (v2.1-fixed: causal-safe)
     # ------------------------------------------------------------------
 
     def _forward_et(
@@ -123,17 +135,28 @@ class HopfieldAttention(nn.Module):
         x: torch.Tensor,
         causal_mask: Optional[torch.Tensor],
     ) -> torch.Tensor:
-        """ET-style dual-term attention (§8.5 of the Theory).
+        """ET-style dual-term attention (v2.1-fixed: causal-safe).
 
-        ET 式双项注意力：term_1 + term_2，保证能量单调下降。
+        ET 式双项注意力（v2.1-fixed 因果安全版）。
 
-        Per head:
-            A[B, C]   = K_B . Q_C / sqrt(d_k)
-            S1[B, C]  = softmax_B(beta * A)    softmax over key dim (rows)
-            S2[B, C]  = softmax_C(beta * A)    softmax over query dim (cols)
-            term_1[C] = sum_B  S1[B, C] * q[B]   (i.e.  S1^T @ q)
-            term_2[B] = sum_C  S2[B, C] * k[C]   (i.e.  S2  @ k)
-            out_token = term_1 + term_2
+        FIX 说明 (2026-05-31):
+            原实现用 scores[B,C]=K_B·Q_C（[key,query] 布局）+ 双向
+            softmax，导致 term_1 = s1^T @ q 依赖未来位置（扰动测试
+            证实：改变最后一个 token 影响所有更早位置的输出）。
+            
+            现统一为标准 [query,key] 布局 + 单向因果 softmax，两项
+            都只依赖 ≤ 当前位置的输入。通过因果性扰动测试（diff
+            全为 0）。
+            
+            注意：此版本牺牲了原 §8.5 双向 softmax 的严格能量形式，
+            仅保证因果性。正确的 §8.5 因果离散形式需与理论作者确认。
+
+        Per head (v2.1-fixed):
+            scores[i,j] = Q_i · K_j / sqrt(d_k)   (标准 [query,key] 布局)
+            attn[i,j]   = softmax_j(scores[i,:])  (对 key 归一化，因果正确)
+            term_1[i]   = sum_j attn[i,j] * v[j]  (标准注意力，依赖 ≤i)
+            term_2[i]   = sum_j attn[i,j] * k[j]  (ET 对称项，依赖 ≤i)
+            out[i]      = 0.5 * (term_1[i] + term_2[i])
         """
         b, s, h = x.shape
 
@@ -148,40 +171,37 @@ class HopfieldAttention(nn.Module):
             .view(b, s, self.num_heads, self.head_dim)
             .transpose(1, 2)
         )
+        v = (
+            self.v_proj(x)
+            .view(b, s, self.num_heads, self.head_dim)
+            .transpose(1, 2)
+        )
 
-        # Energy attention scores A[B, C] = K_B . Q_C  (per head).
-        # Shape: (B, num_heads, S, S) — rows = key index B, cols = query index C.
-        scores = torch.matmul(k, q.transpose(-2, -1)) * self.scale
+        # 标准 [query, key] 布局，因果掩码语义正确
+        # scores[i,j] = Q_i · K_j，query 位置 i 只能看到 key 位置 ≤i
+        scores = torch.matmul(q, k.transpose(-2, -1)) * self.scale
 
         # Causal mask: True means *forbidden*.
-        # For ET, causality is applied to BOTH softmax directions to
-        # preserve energy monotonicity under autoregressive use.
+        # causal_mask[i,j]=True 当 i<j（上三角），表示 query_i 不能看 key_j
         if causal_mask is not None:
             mask = causal_mask[None, None, :, :]  # (1, 1, S, S)
             scores = scores.masked_fill(mask, float("-inf"))
 
-        # --- Term 1: standard attention direction (softmax over keys) ---
-        # S1[B, C] = exp(scores[B, C]) / sum_B' exp(scores[B', C])
-        s1 = torch.softmax(scores, dim=-2)  # softmax over key dim (rows)
-        # term_1[C] = sum_B  s1[B, C] * q[B]   ==   s1^T @ q
-        term_1 = torch.matmul(
-            s1.transpose(-2, -1), q
-        )  # (B, num_heads, S, head_dim)
+        # 单向因果 softmax（对 key 维度归一化）
+        attn = torch.softmax(scores, dim=-1)  # (B, num_heads, S, S)
 
-        # --- Term 2: ET symmetric term (softmax over queries) ---
-        # S2[B, C] = exp(scores[B, C]) / sum_C' exp(scores[B, C'])
-        s2 = torch.softmax(scores, dim=-1)  # softmax over query dim (cols)
-        # term_2[B] = sum_C  s2[B, C] * k[C]   ==   s2 @ k
-        term_2 = torch.matmul(s2, k)  # (B, num_heads, S, head_dim)
+        # 两项都用同一因果 attn，分别作用于 v 和 k —— 都只依赖过去
+        term_1 = torch.matmul(attn, v)  # (B, num_heads, S, head_dim)
+        term_2 = torch.matmul(attn, k)  # (B, num_heads, S, head_dim)
 
-        # Total update = sum of two terms = -dE/dg (energy descent).
-        # ET 总更新 = 两项之和，对应能量函数的负梯度。
-        out = term_1 + term_2  # (B, num_heads, S, head_dim)
+        # Total update = 0.5 * (term_1 + term_2)
+        # 系数 0.5 保持输出尺度与标准注意力一致
+        out = 0.5 * (term_1 + term_2)  # (B, num_heads, S, head_dim)
         out = out.transpose(1, 2).contiguous().view(b, s, h)
         return self.o_proj(out)
 
     # ------------------------------------------------------------------
-    # Standard branch (fallback / ablation only)
+    # Standard branch (fallback / ablation only) — RESTORED
     # ------------------------------------------------------------------
 
     def _forward_standard(
@@ -191,7 +211,9 @@ class HopfieldAttention(nn.Module):
     ) -> torch.Tensor:
         """Standard scaled dot-product attention (FALLBACK / ABLATION ONLY).
 
-        标准缩放点积注意力 —— 仅供消融实验使用，不享有 Lyapunov 保证。
+        标准缩放点积注意力 —— 仅供消融实验使用（cid_full_no_et 等变体）。
+        
+        此分支因果正确（scores=Q·Kᵀ，标准布局，掩码语义一致）。
         """
         b, s, h = x.shape
         q = (
