@@ -1581,7 +1581,7 @@ $$
 其中第一项是系统自身的幺正演化；第二项是耗散-涨落超算符 $\mathcal{K}$ 作用的记忆卷积，其显式形式为下式，标记 (Q2.11)：
 
 $$
-\mathcal{K}(t-s)[\hat{\rho}] = \frac{1}{\hbar^2} \bigl\{ \gamma(t-s) \cdot \frac{[\hat{\varphi}, \{\hat{p}, \hat{\rho}\}]}{2m} + \nu(t-s) \cdot [\hat{\varphi}, [\hat{\varphi}, \hat{\rho}]] \bigr\}
+\mathcal{K}(t-s)[\hat{\rho}] = \frac{1}{\hbar^2} \bigl\lbrace \gamma(t-s) \cdot \frac{[\hat{\varphi}, \{\hat{p}, \hat{\rho}\}]}{2m} + \nu(t-s) \cdot [\hat{\varphi}, [\hat{\varphi}, \hat{\rho}]] \bigr\rbrace
 $$
 
 
