@@ -524,7 +524,7 @@ $$\Sigma^{-1}\Omega = \frac{1}{2}\left( A^{\mathsf{T}}\Sigma^{-1} - \Sigma^{-1} 
 
 $$\Omega = 0 \iff D\Sigma^{-1} = A \iff A^{\mathsf{T}}\Sigma^{-1} = \Sigma^{-1}A \iff D\ \text{与}\ A\ \text{共享单一有效温度}$$
 
-证明等价链：第一个等价由 $\Omega$ 定义 (C4.5b) 直接给出；第二个由 (C4.5e) 的反对称性给出（$\Sigma^{-1}\Omega = 0 \iff A^{\mathsf{T}}\Sigma^{-1} = \Sigma^{-1}A$）；第三个等价是核心——若所有自由度共享单一温度 $T$，则 $D = k_B T\,\Gamma$（$\Gamma$ 为对称正定阻尼矩阵），代入 Lyapunov 方程可直接验证 $\Sigma = k_B T\, (\text{由}\ A,\Gamma\ \text{确定的对称矩阵})$ ，从而 $\Sigma^{-1}A$ 对称；反之，若各自由度温度 $T_a$ 不全相等，则 $D$ 的对角块比例与 $\Gamma$ 不成单一比例，Lyapunov 解给出的 $\Sigma^{-1}A$ 一般非对称，$\Omega \ne 0$ 。
+证明等价链：第一个等价由 $\Omega$ 定义 (C4.5b) 直接给出；第二个由 (C4.5e) 的反对称性给出（ $\Sigma^{-1}\Omega = 0 \iff A^{\mathsf{T}}\Sigma^{-1} = \Sigma^{-1}A$ ）；第三个等价是核心——若所有自由度共享单一温度 $T$，则 $D = k_B T\,\Gamma$（$\Gamma$ 为对称正定阻尼矩阵），代入 Lyapunov 方程可直接验证 $\Sigma = k_B T\, (\text{由}\ A,\Gamma\ \text{确定的对称矩阵})$ ，从而 $\Sigma^{-1}A$ 对称；反之，若各自由度温度 $T_a$ 不全相等，则 $D$ 的对角块比例与 $\Gamma$ 不成单一比例，Lyapunov 解给出的 $\Sigma^{-1}A$ 一般非对称，$\Omega \ne 0$ 。
 
 **结论（命题 C4.1，旋度的温差来源）**：对线性 CID 系统，稳态旋度 $v(\varphi) = \Omega\varphi \ne 0$（即细致平衡破缺）当且仅当系统所耦合的多个热浴不共享单一有效温度。温差是旋度的物理来源。这一结论把抽象的"旋度项"还原为可工程操控的物理量——温差。须诚实标注边界：以上为线性（OU）情形的严格结果；非线性力场的一般充要条件仍是开放问题，但温差作为旋度的充分驱动来源在非线性情形依然成立。
 
