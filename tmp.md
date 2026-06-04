@@ -439,11 +439,11 @@ $$P(X_p, X_q, X_f) = P(X_f, X_q, X_p)$$
 
 此式对任意（含强非马尔可夫）稳态过程均成立，是细致平衡的定义本身，不附加任何马尔可夫前提。
 
-**第二步（时间反演不对称度量）。** 稳态熵产生率 $\sigma$ 度量过程偏离时间反演对称的程度，可写为正向路径测度 $\mathbb{P}$ 与其时间反演路径测度 $\Theta_\#\mathbb{P}$ 之间的 Kullback-Leibler 散度率（[Lynn 等，2021](https://doi.org/10.1073/pnas.2109889118)）（C3.12）：
+**第二步（时间反演不对称度量）。** 稳态熵产生率 $\sigma$ 度量过程偏离时间反演对称的程度。记 $\mathbb{P}$ 为正向路径测度，$\tilde{\mathbb{P}}$ 为其在时间反演算子 $\Theta$ 作用下的路径测度（即 $\tilde{\mathbb{P}} = \Theta_{*}\mathbb{P}$，下标 $*$ 表示测度的推前）。则 $\sigma$ 可写为两者之间的 Kullback-Leibler 散度率（[Lynn 等，2021](https://doi.org/10.1073/pnas.2109889118)）（C3.12）：
 
-$$\sigma = \lim_{T \to \infty} \frac{1}{T} D_{KL}\left( \mathbb{P}_{[0,T]} \,\big\|\, \Theta_\#\mathbb{P}_{[0,T]} \right) \ge 0$$
+$$\sigma = \lim_{T \to \infty} \frac{1}{T} D_{KL}\left( \mathbb{P}_{[0,T]} \,\|\, \tilde{\mathbb{P}}_{[0,T]} \right) \ge 0$$
 
-由式 (C3.11)，细致平衡当且仅当 $\mathbb{P} = \Theta_\#\mathbb{P}$，即 $\sigma = 0$。因此（C3.13）：
+由式 (C3.11)，细致平衡当且仅当 $\mathbb{P} = \tilde{\mathbb{P}}$，即 $\sigma = 0$。因此（C3.13）：
 
 $$\text{细致平衡} \iff \sigma = 0 \iff J_{ss} \equiv 0$$
 
