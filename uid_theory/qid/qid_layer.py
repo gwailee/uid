@@ -86,7 +86,7 @@ class QIDLayer(nn.Module):
         lindblad_mode: str = "off",
         num_lindblad_channels: int = 4,
         # ------ Quantum-noise selection --------------------------------
-        quantum_noise_mode: str = "fft",  # "fft" or "ou"
+        quantum_noise_mode: str = "ou",  # "fft" or "ou"
         quantum_noise_tau: float = 10.0,
         quantum_noise_init_temperature: float = 1.0,
         # ------ FFN dropout --------------------------------------------
