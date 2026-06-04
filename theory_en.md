@@ -883,37 +883,84 @@ where $\nabla_\varphi \log p_t(\varphi)$ is the score function, and $d\bar{W}$ i
 
 **Conclusion**: the diffusion model is a special solution of the CID master equation in the limit of "curl off, δ memory, single-scale white noise, quadratic potential." It retains the noise term that both the Transformer and Mamba discard, but this is **single-scale white noise** (a constant power spectrum), not the **multi-scale colored noise** of CID (a 1/f spectrum, Equation C5.4). This explains the physical root of why diffusion-model sampling requires a large number of denoising steps—single-scale noise cannot explore synchronously at multiple time scales.
 
-#### C6.5 The Unified Picture: Three Architectures, Three Excisions, One Common Defect
 
-Combining C6.2–C6.4, the positions of the three major mainstream architectures in the CID limit coordinates are clear at a glance.
+#### C6.4-bis World Models, JEPA, Reasoning-Augmented and Sparse-Routing Architectures: Further Special Solutions Within the Same Limit Family
 
-The position of the Transformer, the following equation labeled (C6.18):
+C6.2–C6.4 have rigorously reduced the three most basic architectures: Transformer, Mamba, and diffusion models. Following the same term-by-term limit strategy, this section locates world models, JEPA, reasoning-augmented models (DeepSeek-R1, o1–o3), and sparse-routing architectures (MoE) on the CID limit coordinates. This section claims no single design of these architectures as original to this paper; it only marks their location and the physical terms they cut away.
 
-$$
-\text{Transformer} = \text{CID} \mid (v = 0,\ \delta\ \text{memory},\ \text{no noise})
-$$
+##### C6.4-bis.1 World Models
 
-The position of Mamba, the following equation labeled (C6.19):
+The core of world models ([Ha & Schmidhuber, 2018](https://arxiv.org/abs/1803.10122); [Hafner et al., 2023](https://arxiv.org/abs/2301.04104)) is a state-transition distribution $p( z_{t+1} \mid z_t , a_t )$ learned in a latent space $z$ . In CID this corresponds to setting the curl $v \equiv 0$ , taking an exponential (Ohmic) memory kernel, single-scale Gaussian noise, and a quadratic potential defined by the reconstruction loss. Its latent-space evolution is Eq. (C6.20a):
 
 $$
-\text{Mamba} = \text{CID} \mid (v = 0,\ \text{exponential memory},\ \text{single-scale noise})
+\frac{dz}{dt} = -\nabla U(z) - \int_0^t \gamma_0 \, e^{-(t-s)/\tau_c} \, \dot z(s) \, ds + \xi_{\mathrm{white}}(t) , \qquad v \equiv 0
 $$
 
-The position of the diffusion model, the following equation labeled (C6.20):
+A world model retains both short memory and white noise yet still switches the curl off; it is the closest of the three basic architectures to the complete CID, but still lacks the crucial curl. Its location is Eq. (C6.20b):
 
 $$
-\text{diffusion model} = \text{CID} \mid (v = 0,\ \delta\ \text{memory},\ \text{white noise})
+\mathrm{WorldModel} = \mathrm{CID} \mid \left( v = 0 ,\ \text{exponential memory} ,\ \text{single-scale white noise} \right)
 $$
 
-The **common defect** of all three is clearly visible: the curl term v is uniformly set to zero. By Proposition C3.2, v ≡ 0 means the system satisfies detailed balance; by Proposition C3.3, detailed balance means zero intrinsic predictive information. This is the complete physical argument chain of "Attention Is Not All You Need," the following equation labeled (C6.21):
+##### C6.4-bis.2 JEPA
+
+JEPA ([LeCun, 2022](https://openreview.net/forum?id=BZ5a1r-kVsf); [Assran et al., 2023](https://arxiv.org/abs/2301.08243)) predicts target representations in latent space, measuring the mismatch between predicted and target embeddings with an energy function. In CID this corresponds to setting $v \equiv 0$ , $\gamma \to \delta$ kernel, and $\xi \to 0$ , yielding a pure gradient flow, Eq. (C6.20c):
 
 $$
-\text{softmax attention} \subset \text{pure gradient flow (C6.10)} \;\Rightarrow\; v \equiv 0 \;\Rightarrow\; \text{detailed balance (C3.2)} \;\Rightarrow\; \sigma = 0 \;\Rightarrow\; I_{\mathrm{pred}} = 0
+\frac{dz}{dt} = -\nabla U_{\mathrm{JEPA}}(z) , \qquad v \equiv 0 ,\ \xi \equiv 0
 $$
 
-where the last step is given by Proposition C3.3 via the entropy-production-rate lower bound (C3.14), without relying on the Markov assumption.
+JEPA is completely isomorphic to the Transformer at the level of the dynamical skeleton, differing only in the specific form of the potential. Its location is Eq. (C6.20d):
 
-Chain (C6.21) shows: any architecture remaining within the softmax-attention framework (or, more generally, any purely conservative gradient flow), no matter how much the parameters grow or the data increase, has the physical upper bound of its intrinsic predictive ability locked by detailed balance. The only way out to break this upper bound is to re-install the three terms that CID had cut away—first of all the curl v(φ). This is precisely the architecture-level physical-reconstruction direction that UID argues for, and it is also complementary to the complexity lower bounds of [Alman-Song (2023)](https://arxiv.org/abs/2302.13214) and [Gupta et al. (2025)](https://arxiv.org/abs/2502.16963): the latter shows that optimization within the softmax interface cannot break through the quadratic complexity wall, while the former (this paper) shows that breaking through requires leaving that interface and re-installing non-conservative dynamics.
+$$
+\mathrm{JEPA} = \mathrm{CID} \mid \left( v = 0 ,\ \delta\ \text{memory} ,\ \text{no noise} \right)
+$$
+
+##### C6.4-bis.3 Reasoning-Augmented Models
+
+In reasoning-augmented models (DeepSeek-R1, o1–o3), the forward computation of each step is still a standard Transformer, i.e., a special solution of CID with $v \equiv 0$ ; multi-step reasoning is a discrete outer loop $z^{(k+1)} = G( z^{(k)} )$ stacked outside this single-step solution. The composition $G^{\circ k}$ of the discrete outer loop is still a composition of conservative maps and produces no steady-state circulation at the continuous dynamics layer. Its location is Eq. (C6.20e):
+
+$$
+\mathrm{ReasoningModel} = \left[ \, \mathrm{CID} \mid \left( v = 0 ,\ \delta\ \text{memory} ,\ \text{no noise} \right) \right]^{\circ k}
+$$
+
+##### C6.4-bis.4 Sparse Routing (MoE)
+
+MoE ([Shazeer et al., 2017](https://arxiv.org/abs/1701.06538)) sparsely selects among multiple experts via a gating network, corresponding to a block-partitioned potential $U( \varphi ) = \sum_e g_e ( \varphi ) \, U_e ( \varphi )$ . No matter how the gating switches, the weighted total flow is still a conservative field and introduces no curl. Its location is Eq. (C6.20f):
+
+$$
+\mathrm{MoE} = \mathrm{CID} \mid \left( v = 0 ,\ \delta\ \text{memory} ,\ U = \sum_e g_e \, U_e \right)
+$$
+
+#### C6.5 The Unified Picture: Seven Classes of Architectures, Seven Trade-offs, One Common Deficiency
+
+Combining C6.2–C6.4 and C6.4-bis, the location of nearly all current mainstream deep-learning architectures on the CID limit coordinates is seen at a glance.
+
+The location of the Transformer is Eq. (C6.18):
+
+$$
+\mathrm{Transformer} = \mathrm{CID} \mid \left( v = 0 ,\ \delta\ \text{memory} ,\ \text{no noise} \right)
+$$
+
+The location of Mamba is Eq. (C6.19):
+
+$$
+\mathrm{Mamba} = \mathrm{CID} \mid \left( v = 0 ,\ \text{exponential memory} ,\ \text{single-scale noise} \right)
+$$
+
+The location of the diffusion model is Eq. (C6.20):
+
+$$
+\mathrm{DiffusionModel} = \mathrm{CID} \mid \left( v = 0 ,\ \delta\ \text{memory} ,\ \text{white noise} \right)
+$$
+
+The seven classes of architectures make different trade-offs under the three switches (curl $v$ , memory kernel $\gamma$ , noise $\xi$ ), but their common deficiency is clear: the curl term $v$ is uniformly set to zero. By Proposition C3.2, $v \equiv 0$ implies detailed balance; by Proposition C3.3, detailed balance implies zero intrinsic predictive information. This is the complete physical argument chain of "Attention Is Not All You Need," Eq. (C6.21):
+
+$$
+\text{softmax attention} \subset \text{pure conservative flow} \ ( v \equiv 0 ) \;\Rightarrow\; \text{detailed balance} \;\Rightarrow\; \sigma = 0 \;\Rightarrow\; I_{\mathrm{pred}} = 0
+$$
+
+The premise of chain (C6.21) has been relaxed by C6.4-bis from softmax attention to any pure conservative flow with $v \equiv 0$ , so it applies equally to the other six classes of architectures. The only way to break through this ceiling is to reinstall the three terms CID cut away, first of all the curl $v ( \varphi )$ . Its engineerable realization and the order-of-magnitude origin of the 5–10× parameter efficiency are given in Chapter 14.
 
 #### C6.6 A Final Clarification of the "Uniquely Determines" Wording
 
@@ -1214,6 +1261,50 @@ $$
 $$
 
 By Proposition C3.3, this zero-parameter curl directly brings nonzero predictive information $I_{\mathrm{pred}}$; whereas in a pure gradient flow, obtaining equal predictive ability can only rely on stacking more parameters to approximate the non-conservative flow that the dynamics should provide for free. This is precisely the physical explanation of the 5-to-10-fold efficiency gap, and is also complementary to the complexity lower bounds of [Alman-Song (2023)](https://arxiv.org/abs/2302.13214) and [Gupta et al. (2025)](https://arxiv.org/abs/2502.16963)—the latter shows that one cannot break through by optimization within the softmax interface, and the efficiency gain must come from leaving that interface and re-installing the curl.
+
+#### C14.2-bis Order-of-Magnitude Derivation of the 5–10× Interval
+
+This section gives the order-of-magnitude origin of the 5–10× commitment. This is an order-of-magnitude estimate under explicit assumptions, not a theorem rigorously derived from axioms; its final verdict is left to the decisive experiment of C14.4 (Test 2).
+
+##### C14.2-bis.1 Argument One (Degree-of-Freedom Counting)
+
+In a $d$ -dimensional latent space, the steady state of a conservative gradient flow is characterized by a symmetric positive-definite matrix with $d ( d + 1 ) / 2$ independent degrees of freedom; reinstalling the curl gains an additional $d ( d - 1 ) / 2$ degrees of freedom from the antisymmetric part, requiring no new trainable parameters under the zero-parameter curl mechanism. The improvement ratio under the same parameter budget is Eq. (C14.8):
+
+$$
+R_{\mathrm{dof}} = \frac{ \dfrac{d ( d + 1 )}{2} + \dfrac{d ( d - 1 )}{2} }{ \dfrac{d ( d + 1 )}{2} } = \frac{2d}{d + 1} \;\xrightarrow{\ d \gg 1\ }\; 2
+$$
+
+This gives a single-layer lower bound of about 2×, landing above 2–3× after depth accumulation.
+
+##### C14.2-bis.2 Argument Two (Complexity Class)
+
+Softmax attention has an $\Omega ( n^2 )$ complexity lower bound in sequence length $n$ , while the non-conservative circulation of the curl has complexity $O ( n \, d )$ . Let the effective number of tokens corresponding to the target correlation length be $m$ ; the magnitude of the parameter ratio required to match the equivalent long-range ability is Eq. (C14.9):
+
+$$
+R_{\mathrm{cplx}} \;\sim\; \frac{m^2}{m} = m
+$$
+
+In typical language tasks the effective mid-range window is $m \sim 5\text{–}10$ , giving the upper end of about 5–10×.
+
+##### C14.2-bis.3 Argument Three (Information Capacity)
+
+By Proposition C3.3, the curl directly contributes nonzero predictive information, which a pure gradient flow must approximate by parameter stacking. In an $L$ -layer network the total predictive information accumulates linearly across layers, while the parameters a pure gradient flow needs are amplified multiplicatively. The magnitude of the parameter-efficiency ratio is Eq. (C14.10):
+
+$$
+R_{\mathrm{info}} \;\sim\; R_{\mathrm{dof}}^{(1)} \times f(L) \;\approx\; 2 \times f(L)
+$$
+
+where $f(L) \in [ 1.5 , 5 ]$ , so $R_{\mathrm{info}} \in [ 3 , 10 ]$ .
+
+##### C14.2-bis.4 Convergence of the Three Arguments
+
+The three independent arguments converge to the same order-of-magnitude interval $[ 3 , 10 ]$ . This paper takes their robust intersection as the falsifiable commitment, Eq. (C14.11):
+
+$$
+R_{\mathrm{param}} = \left. \frac{ \text{baseline parameter count} }{ \text{CID parameter count} } \right|_{\text{equivalent performance}} \approx 5\text{–}10
+$$
+
+It must be honestly stated: (C14.11) is an order-of-magnitude estimate, not a theorem, and its three arguments each rely on one falsifiable assumption. If the $R_{\mathrm{param}}$ given by the multi-scale equi-compute curve of C14.4 Test 2 is significantly below 5×, this commitment is falsified.
 
 #### C14.3 The Minimal Engineering Realization
 
