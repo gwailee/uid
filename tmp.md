@@ -1581,8 +1581,9 @@ $$
 其中第一项是系统自身的幺正演化；第二项是耗散-涨落超算符 $\mathcal{K}$ 作用的记忆卷积，其显式形式为下式，标记 (Q2.11)：
 
 $$
-\mathcal{K}(t-s)\left[ \hat{\rho} \right] = \frac{1}{\hbar^2} \left\{ \gamma(t-s) \cdot \frac{\left[ \hat{\varphi}, \{ \hat{p}, \hat{\rho} \} \right]}{2m} + \nu(t-s) \cdot \left[ \hat{\varphi}, \left[ \hat{\varphi}, \hat{\rho} \right] \right] \right\}
+\mathcal{K}(t-s)\left[ \hat{\rho} \right] = \frac{1}{\hbar^2} \left\{ \gamma(t-s) \cdot \frac{\left[ \hat{\varphi}, \left\{ \hat{p}, \hat{\rho} \right\} \right]}{2m} + \nu(t-s) \cdot \left[ \hat{\varphi}, \left[ \hat{\varphi}, \hat{\rho} \right] \right] \right\}
 $$
+
 
 这里 γ(t−s) 是阻尼核 (Q2.6)（决定耗散），ν(t−s) 是噪声核（(Q2.8) 的实空间形式，决定退相干与涨落）。式 (Q2.10) 即 **QID 主方程**。
 
