@@ -1584,8 +1584,6 @@ $$
 \mathcal{K}(t-s)[\hat{\rho}] = \frac{1}{\hbar^2} \Big\{ \gamma(t-s) \cdot \frac{[\hat{\varphi}, \{\hat{p}, \hat{\rho}\}]}{2m} + \nu(t-s) \cdot [\hat{\varphi}, [\hat{\varphi}, \hat{\rho}]] \Big\}
 $$
 
-
-
 这里 γ(t−s) 是阻尼核 (Q2.6)（决定耗散），ν(t−s) 是噪声核（(Q2.8) 的实空间形式，决定退相干与涨落）。式 (Q2.10) 即 **QID 主方程**。
 
 QID 主方程的三段式结构（小结），下式标记 (Q2.12)：
