@@ -2248,41 +2248,52 @@ For ease of verification, all references provide DOIs or open-access links reach
 
 16. Song, Y., et al. (2021). Score-Based Generative Modeling through SDEs. *ICLR*. https://arxiv.org/abs/2011.13456
 
-17. Alman, J., & Song, Z. (2023). Fast Attention Requires Bounded Entries. *NeurIPS*. https://arxiv.org/abs/2302.13214
+17. Ha, D., & Schmidhuber, J. (2018). World Models. *NeurIPS*. https://arxiv.org/abs/1803.10122
 
-18. Gupta, A., et al. (2025). Lower Bounds for Attention Complexity. *arXiv preprint* (preprint, status: unpublished). https://arxiv.org/abs/2502.16963
+18. Hafner, D., et al. (2023). Mastering Diverse Domains through World Models (DreamerV3). *arXiv preprint*. https://arxiv.org/abs/2301.04104
 
-19. Lasry, J.-M., & Lions, P.-L. (2007). Mean Field Games. *Japanese Journal of Mathematics*, 2, 229–260. https://doi.org/10.1007/s11537-007-0657-8
+19. LeCun, Y. (2022). A Path Towards Autonomous Machine Intelligence (JEPA). *OpenReview*. https://openreview.net/forum?id=BZ5a1r-kVsf
 
-20. Caldeira, A. O., & Leggett, A. J. (1983). Quantum Tunnelling in a Dissipative System. *Annals of Physics*, 149(2), 374–456. https://doi.org/10.1016/0003-4916(83)90202-6
+20. Assran, M., et al. (2023). Self-Supervised Learning from Images with a Joint-Embedding Predictive Architecture (I-JEPA). *CVPR*. https://arxiv.org/abs/2301.08243
 
-21. Feynman, R. P., & Vernon, F. L. (1963). The Theory of a General Quantum System Interacting with a Linear Dissipative System. *Annals of Physics*, 24, 118–173. https://doi.org/10.1016/0003-4916(63)90068-X
+21. Shazeer, N., et al. (2017). Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer. *ICLR*. https://arxiv.org/abs/1701.06538
 
-22. Lindblad, G. (1976). On the Generators of Quantum Dynamical Semigroups. *Communications in Mathematical Physics*, 48(2), 119–130. https://doi.org/10.1007/BF01608499
+22. Alman, J., & Song, Z. (2023). Fast Attention Requires Bounded Entries. *NeurIPS*. https://arxiv.org/abs/2302.13214
 
-23. Berry, M. V. (1984). Quantal Phase Factors Accompanying Adiabatic Changes. *Proceedings of the Royal Society A*, 392, 45–57. https://doi.org/10.1098/rspa.1984.0023
+23. Gupta, A., et al. (2025). Lower Bounds for Attention Complexity. *arXiv preprint* (preprint, status: unpublished). https://arxiv.org/abs/2502.16963
 
-24. Calabrese, P., & Cardy, J. (2004). Entanglement Entropy and Quantum Field Theory. *JSTAT*, P06002. https://doi.org/10.1088/1742-5468/2004/06/P06002
+24. Lasry, J.-M., & Lions, P.-L. (2007). Mean Field Games. *Japanese Journal of Mathematics*, 2, 229–260. https://doi.org/10.1007/s11537-007-0657-8
 
-25. Bak, P., Tang, C., & Wiesenfeld, K. (1987). Self-Organized Criticality. *Physical Review Letters*, 59, 381. https://doi.org/10.1103/PhysRevLett.59.381
+25. Caldeira, A. O., & Leggett, A. J. (1983). Quantum Tunnelling in a Dissipative System. *Annals of Physics*, 149(2), 374–456. https://doi.org/10.1016/0003-4916(83)90202-6
 
-26. Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. *Physical Review*, 106, 620. https://doi.org/10.1103/PhysRev.106.620
+26. Feynman, R. P., & Vernon, F. L. (1963). The Theory of a General Quantum System Interacting with a Linear Dissipative System. *Annals of Physics*, 24, 118–173. https://doi.org/10.1016/0003-4916(63)90068-X
 
-27. Landauer, R. (1961). Irreversibility and Heat Generation in the Computing Process. *IBM Journal of Research and Development*, 5(3), 183–191. https://doi.org/10.1147/rd.53.0183
+27. Lindblad, G. (1976). On the Generators of Quantum Dynamical Semigroups. *Communications in Mathematical Physics*, 48(2), 119–130. https://doi.org/10.1007/BF01608499
 
-28. He, K., et al. (2016). Deep Residual Learning for Image Recognition. *CVPR*. https://doi.org/10.1109/CVPR.2016.90
+28. Berry, M. V. (1984). Quantal Phase Factors Accompanying Adiabatic Changes. *Proceedings of the Royal Society A*, 392, 45–57. https://doi.org/10.1098/rspa.1984.0023
 
-29. Ba, J. L., Kiros, J. R., & Hinton, G. E. (2016). Layer Normalization. *arXiv preprint*. https://arxiv.org/abs/1607.06450
+29. Calabrese, P., & Cardy, J. (2004). Entanglement Entropy and Quantum Field Theory. *JSTAT*, P06002. https://doi.org/10.1088/1742-5468/2004/06/P06002
 
-30. Mandelbrot, B. B., & Van Ness, J. W. (1968). Fractional Brownian Motions, Fractional Noises and Applications. *SIAM Review*, 10(4), 422–437. https://doi.org/10.1137/1010093
+30. Bak, P., Tang, C., & Wiesenfeld, K. (1987). Self-Organized Criticality. *Physical Review Letters*, 59, 381. https://doi.org/10.1103/PhysRevLett.59.381
 
-31. Mandelbrot, B. B. (1982). *The Fractal Geometry of Nature*. W. H. Freeman. https://www.worldcat.org/title/fractal-geometry-of-nature/oclc/7876263
+31. Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. *Physical Review*, 106, 620. https://doi.org/10.1103/PhysRev.106.620
 
-32. Anderson, B. D. O. (1982). Reverse-Time Diffusion Equation Models. *Stochastic Processes and Their Applications*, 12(3), 313–326. https://doi.org/10.1016/0304-4149(82)90051-5
+32. Landauer, R. (1961). Irreversibility and Heat Generation in the Computing Process. *IBM Journal of Research and Development*, 5(3), 183–191. https://doi.org/10.1147/rd.53.0183
 
-33. Schwarz, G. (1995). *Hodge Decomposition — A Method for Solving Boundary Value Problems*. Springer Lecture Notes in Mathematics 1607. https://doi.org/10.1007/BFb0095978
+33. He, K., et al. (2016). Deep Residual Learning for Image Recognition. *CVPR*. https://doi.org/10.1109/CVPR.2016.90
 
-34. Holevo, A. S. (1973). Bounds for the Quantity of Information Transmitted by a Quantum Communication Channel. *Problems of Information Transmission*, 9(3), 177–183.
+34. Ba, J. L., Kiros, J. R., & Hinton, G. E. (2016). Layer Normalization. *arXiv preprint*. https://arxiv.org/abs/1607.06450
 
-35. Liu (2025–2026). The Logographic AI Paradigm. https://zsyyb.cn/abs/202511.03835
+35. Mandelbrot, B. B., & Van Ness, J. W. (1968). Fractional Brownian Motions, Fractional Noises and Applications. *SIAM Review*, 10(4), 422–437. https://doi.org/10.1137/1010093
+
+36. Mandelbrot, B. B. (1982). *The Fractal Geometry of Nature*. W. H. Freeman. https://www.worldcat.org/title/fractal-geometry-of-nature/oclc/7876263
+
+37. Anderson, B. D. O. (1982). Reverse-Time Diffusion Equation Models. *Stochastic Processes and Their Applications*, 12(3), 313–326. https://doi.org/10.1016/0304-4149(82)90051-5
+
+38. Schwarz, G. (1995). *Hodge Decomposition — A Method for Solving Boundary Value Problems*. Springer Lecture Notes in Mathematics 1607. https://doi.org/10.1007/BFb0095978
+
+39. Holevo, A. S. (1973). Bounds for the Quantity of Information Transmitted by a Quantum Communication Channel. *Problems of Information Transmission*, 9(3), 177–183.
+
+40. Liu (2025–2026). The Logographic AI Paradigm. https://zsyyb.cn/abs/202511.03835
+
 
