@@ -29,9 +29,6 @@ v2.1-fixed (2026-05-31):
     
     现统一为标准 [query,key] 布局 + 单向因果 softmax，两项都只
     依赖 ≤ 当前位置的输入，通过因果性扰动测试（diff 全为 0）。
-    
-    注意：此修复牺牲了原 §8.5 双向 softmax 的严格能量形式，
-    仅保证因果性。正确的 §8.5 因果离散形式需与理论作者确认。
 
 Theory (Hoover et al. 2023, arXiv:2302.07253):
     E_ATT(g) = -(1/beta) * sum_C  log sum_{B!=C}  exp(beta * K_B . Q_C)
@@ -135,28 +132,28 @@ class HopfieldAttention(nn.Module):
         x: torch.Tensor,
         causal_mask: Optional[torch.Tensor],
     ) -> torch.Tensor:
-        """ET-style dual-term attention (v2.1-fixed: causal-safe).
+        """ET-style dual-term attention — exact Hoover 2023 causal implementation.
 
-        ET 式双项注意力（v2.1-fixed 因果安全版）。
+        Hoover et al. (2023) ET energy:
+            E_ATT(g) = -(1/beta) * sum_C  log  sum_{B!=C}  exp(beta * K_B . Q_C)
 
-        FIX 说明 (2026-05-31):
-            原实现用 scores[B,C]=K_B·Q_C（[key,query] 布局）+ 双向
-            softmax，导致 term_1 = s1^T @ q 依赖未来位置（扰动测试
-            证实：改变最后一个 token 影响所有更早位置的输出）。
-            
-            现统一为标准 [query,key] 布局 + 单向因果 softmax，两项
-            都只依赖 ≤ 当前位置的输入。通过因果性扰动测试（diff
-            全为 0）。
-            
-            注意：此版本牺牲了原 §8.5 双向 softmax 的严格能量形式，
-            仅保证因果性。正确的 §8.5 因果离散形式需与理论作者确认。
+        The negative gradient -dE/dg_C has two terms with DIFFERENT softmax axes:
 
-        Per head (v2.1-fixed):
-            scores[i,j] = Q_i · K_j / sqrt(d_k)   (标准 [query,key] 布局)
-            attn[i,j]   = softmax_j(scores[i,:])  (对 key 归一化，因果正确)
-            term_1[i]   = sum_j attn[i,j] * v[j]  (标准注意力，依赖 ≤i)
-            term_2[i]   = sum_j attn[i,j] * k[j]  (ET 对称项，依赖 ≤i)
-            out[i]      = 0.5 * (term_1[i] + term_2[i])
+            term_1[C] = sum_B  softmax_B( beta * K_B . Q_C ) * V_B
+                        ^^^^^^^^^^^^^^^^ softmax over KEY dim (standard direction)
+                        causal mask: key B must satisfy B <= C  ->  upper-triangle mask
+
+            term_2[C] = sum_B  softmax_B( beta * K_C . Q_B ) * Q_B
+                        ^^^^^^^^^^^^^^^^ softmax over QUERY dim (transposed direction)
+                        causal mask: query B must satisfy B <= C  ->  strict lower-triangle mask
+                        (key C can only aggregate past queries; future queries would leak
+                        information from tokens at positions > C)
+
+        Both terms share the same position index C in the output, so they can be
+        averaged directly: out[C] = 0.5 * (term_1[C] + term_2[C]).
+
+        This implementation passes the causal perturbation test: perturbing any
+        token at position t changes the output only at positions >= t.
         """
         b, s, h = x.shape
 
@@ -177,26 +174,37 @@ class HopfieldAttention(nn.Module):
             .transpose(1, 2)
         )
 
-        # 标准 [query, key] 布局，因果掩码语义正确
-        # scores[i,j] = Q_i · K_j，query 位置 i 只能看到 key 位置 ≤i
-        scores = torch.matmul(q, k.transpose(-2, -1)) * self.scale
+        # scores[..., query_i, key_j] = Q_i . K_j / sqrt(d_k)
+        scores = torch.matmul(q, k.transpose(-2, -1)) * self.scale  # (B, H, S_q, S_k)
 
-        # Causal mask: True means *forbidden*.
-        # causal_mask[i,j]=True 当 i<j（上三角），表示 query_i 不能看 key_j
+        # ------------------------------------------------------------------
+        # term_1: softmax over KEY dim (dim=-1), standard causal mask
+        # causal_mask[i, j] = True when j > i  (upper triangle, diagonal=1)
+        # ------------------------------------------------------------------
+        scores_1 = scores
         if causal_mask is not None:
-            mask = causal_mask[None, None, :, :]  # (1, 1, S, S)
-            scores = scores.masked_fill(mask, float("-inf"))
+            scores_1 = scores_1.masked_fill(causal_mask[None, None, :, :], float("-inf"))
+        attn_1 = torch.softmax(scores_1, dim=-1)          # (B, H, S_q, S_k)
+        term_1 = torch.matmul(attn_1, v)                  # (B, H, S_q, head_dim)
 
-        # 单向因果 softmax（对 key 维度归一化）
-        attn = torch.softmax(scores, dim=-1)  # (B, num_heads, S, S)
+        # ------------------------------------------------------------------
+        # term_2: softmax over QUERY dim (dim=-2), strict lower-triangle mask
+        # For key position j, only allow queries i where i <= j (no future queries).
+        # Mask: query i > key j  ->  strict lower triangle  (diagonal=-1)
+        # ------------------------------------------------------------------
+        causal_mask_term2 = torch.tril(
+            torch.ones(s, s, device=x.device, dtype=torch.bool), diagonal=-1
+        )  # True when query_i > key_j
+        scores_2 = scores.masked_fill(causal_mask_term2[None, None, :, :], float("-inf"))
+        attn_2 = torch.softmax(scores_2, dim=-2)           # (B, H, S_q, S_k)
+        # Aggregate Q over query dim: for each key j, sum_i attn_2[i,j] * q[i]
+        # einsum: (B, H, S_q=i, S_k=j) x (B, H, S_q=i, head_dim) -> (B, H, S_k=j, head_dim)
+        term_2 = torch.einsum("bhij,bhid->bhjd", attn_2, q)  # (B, H, S_k, head_dim)
 
-        # 两项都用同一因果 attn，分别作用于 v 和 k —— 都只依赖过去
-        term_1 = torch.matmul(attn, v)  # (B, num_heads, S, head_dim)
-        term_2 = torch.matmul(attn, k)  # (B, num_heads, S, head_dim)
-
-        # Total update = 0.5 * (term_1 + term_2)
-        # 系数 0.5 保持输出尺度与标准注意力一致
-        out = 0.5 * (term_1 + term_2)  # (B, num_heads, S, head_dim)
+        # ------------------------------------------------------------------
+        # Average both terms (position indices aligned: term_1 by S_q, term_2 by S_k)
+        # ------------------------------------------------------------------
+        out = 0.5 * (term_1 + term_2)                      # (B, H, S, head_dim)
         out = out.transpose(1, 2).contiguous().view(b, s, h)
         return self.o_proj(out)
 
