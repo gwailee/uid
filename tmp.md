@@ -744,7 +744,7 @@ $$h_t = \bar{A}_t\, h_{t-1} + \bar{B}_t\, x_t, \qquad y_t = C_t\, h_t$$
 
 #### C11.2 Mamba 对应的极限
 
-Mamba 对应 CID 主方程在如下极限下的特解：力场线性化（$-\nabla U \to A h$）、旋度归零（$v \equiv 0$）、记忆核退化为指数衰减（$\gamma(t) \propto e^{-t/\tau}$，对应欧姆环境 $s = 1$ 而非亚欧姆 $s < 1$）。因此 Mamba 相比 Transformer 在记忆上有所改进（具备隐状态递推），但仍是欧姆极限——指数记忆而非幂律长记忆，且仍缺旋度与色噪声（C11.2）：
+Mamba 对应 CID 主方程在如下极限下的特解：力场线性化（ $-\nabla U \to A h$ ）、旋度归零（ $v \equiv 0$ ）、记忆核退化为指数衰减（ $\gamma(t) \propto e^{-t/\tau}$ ，对应欧姆环境 $s = 1$ 而非亚欧姆 $s < 1$ ）。因此 Mamba 相比 Transformer 在记忆上有所改进（具备隐状态递推），但仍是欧姆极限——指数记忆而非幂律长记忆，且仍缺旋度与色噪声（C11.2）：
 
 $$\dot{h} = A h + B x \quad \Longleftarrow \quad \text{CID}\ (v \equiv 0,\ \gamma \propto e^{-t/\tau},\ \xi \equiv 0)$$
 
