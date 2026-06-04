@@ -2183,7 +2183,7 @@ Just as the displacement current vanishes in the static limit yet is a necessary
 The three tiers are connected by two thawings and closed by two limit reductions, with the reduction chain being the following equation, labeled (Final.2):
 
 $$
-\text{FID} \xrightarrow{\text{metric fixed}} \text{QID} \xrightarrow[t \gg \tau_\varphi]{\hbar \to 0} \text{CID} \xrightarrow{v = 0,\ \delta\ \text{memory},\ \text{white noise}} \text{Transformer / Mamba / diffusion model}
+\text{FID} \xrightarrow{\text{metric fixed}} \text{QID} \xrightarrow[t \gg \tau_\varphi]{\hbar \to 0} \text{CID} \xrightarrow{v = 0,\ \delta\ \text{memory},\ \text{white noise}} \text{Transformer / Mamba / diffusion model...}
 $$
 
 It must be honestly annotated: the reduction CID→existing architectures is rigorous (Chapter C6 taking limits term by term); the QID→CID reduction relies on the Wigner-convergence assumption (Q9.6); the FID→CID/QID reduction relies on the metric-fixed limit (F8). The rigorous convergence conditions of the latter two are open problems.
