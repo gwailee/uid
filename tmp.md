@@ -1686,4 +1686,487 @@ $$
 
 这意味着**朴素 $2^n$ 优势会被 Holevo 界抹掉**——若仅取单次终态测量，可提取预测信息上限仅为 n，红利退化为线性 ∝ n。然而，量子红利并不完全消失，原因有二：（其一）耗散仍只随 n 线性增长（第三步），故即便可提取信息为 n 比特，单位耗散的可提取预测信息仍较经典有 O(n / log n) 量级的改善；（其二）在结构化任务中，经多轮相干处理后再测量，量子算法（如振幅放大、相位估计）可使**有效可提取信息**逼近态空间的对数深度优势，从而 f(n) 介于 n 与 $2^n$ 之间，具体取值依任务结构与测量协议而定。
 
-第五步（受 Holevo 约束的标度比较）。综合第一至四步：在 $t < \tau_\varphi$ 内，QID 用线性耗散（∝ n）演化 $2^n$ 维态空间，但可提取预测信息受 (Q4.5a) 约束。故单位耗散的可提取预测信息相对经典的优势为下
+第五步（受 Holevo 约束的标度比较）。综合第一至四步：在 $t < \tau_\varphi$ 内，QID 用线性耗散（∝ n）演化 $2^n$ 维态空间，但可提取预测信息受 (Q4.5a) 约束。故单位耗散的可提取预测信息相对经典的优势为下式，标记 (Q4.5)：
+
+$$
+\frac{(I_{\mathrm{pred}} / \Delta E)_{\mathrm{QID}}}{(I_{\mathrm{pred}} / \Delta E)_{\mathrm{CID}}} \gtrsim f(n), \qquad n \le f(n) \le 2^n
+$$
+
+其中**可保证的下界为线性 n**（任意任务与单次测量协议下均成立），指数上界 $2^n$ 仅在特定结构化任务与最优测量协议下可逼近。证毕。
+
+**强度的诚实标注（贯穿全文的措辞约定）**：命题 Q4.1 的可保证内容是 f(n) ≥ n 这一**线性下界**；指数上界 $2^n$ 不是可保证红利，而是受 Holevo 界约束的区间上端。因此本文（含摘要）凡涉及"量子相干红利"一律按此弱化：它是一个受 Holevo 界约束的标度区间 [n, 2ⁿ]，其稳健、可保证的部分仅为线性 n。这一弱化是经审阅修正后的诚实表述，不应被反向引用为指数级硬核红利。
+
+#### Q4.3 命题 Q4.1 的失效边界
+
+命题 Q4.1 仅在相干区 $t < \tau_\varphi$ 成立。一旦 $t > \tau_\varphi$ ，退相干使非对角元衰减，叠加态塌缩为经典混合态，红利消失，系统回退 CID。退相干时间随系统-浴耦合增强、温度升高而缩短，下式标记 (Q4.6)：
+
+$$
+\tau_\varphi \sim \frac{\hbar^2}{2 m\, \gamma_0\, k_B T\, (\Delta \varphi)^2}
+$$
+
+其中 Δφ 为叠加态的空间展度。(Q4.6) 表明：宏观叠加（Δφ 大）退相干极快，这解释了为何宏观经典系统观测不到量子红利，也给出 QID 工程实现的硬约束——须在 $\tau_\varphi$ 内完成相干计算。
+
+### Q 第 5 章：几何相位即旋度的量子起源
+
+#### Q5.1 命题 Q5.1：Berry 曲率贡献非保守力
+
+本章建立 QID 与第一部分最深刻的对应：第一部分由多热浴温差唯象引入的旋度项 v(φ)（C 第 4 章），在 QID 中有第一性的量子几何起源——Berry 几何相位（[Berry，1984](https://doi.org/10.1098/rspa.1984.0023)）。
+
+**命题 Q5.1（几何相位-旋度对应）**：设 QID 系统的慢变量 φ 绝热驱动快变量（浴或内部量子自由度），则快变量的 Berry 几何相位在慢变量的有效动力学中贡献一个非保守力，该力恰为第一部分旋度项 v(φ)，其"旋度强度"由 Berry 曲率给出。
+
+**证明**：设快变量瞬时本征态为 $\lvert n(\varphi) \rangle$ ，随慢变量 φ 绝热变化。绝热定理下，快变量获得 Berry 几何相位，下式标记 (Q5.1)：
+
+$$
+\gamma_n = \oint_C \mathcal{A}_n(\varphi) \cdot d\varphi, \qquad \mathcal{A}_n(\varphi) = i \langle n(\varphi) \mid \nabla_\varphi \mid n(\varphi) \rangle
+$$
+
+其中 $\mathcal{A}_n$ 为 Berry 联络。这一几何相位在慢变量 φ 的有效哈密顿中等效为一个规范势，慢变量感受到的有效力含一项由 Berry 联络的旋度（Berry 曲率）给出的几何力，下式标记 (Q5.2)：
+
+$$
+\mathcal{F}_n(\varphi) = \nabla \times \mathcal{A}_n(\varphi)
+$$
+
+Berry 曲率 $\mathcal{F}_n$ 是规范不变的几何量。在有效动力学中，该几何力以非保守力形式进入，下式标记 (Q5.3)：
+
+$$
+v(\varphi) = \dot{\varphi} \times \mathcal{F}_n(\varphi)
+$$
+
+(Q5.3) 形如洛伦兹力，本质非保守（不能写成任何标量势的梯度），其散度为零（因 $\mathcal{F}_n$ 是某联络的旋度，旋度场无散），与第一部分旋度项的无散约束 ∇·v = 0（C 第 2 章公理 2、命题 C3.2）精确吻合。证毕。
+
+#### Q5.2 物理意义：旋度的两种起源在 QID 中统一
+
+命题 Q5.1 揭示了一个深层统一：第一部分把旋度归于多热浴温差（C 第 4 章，宏观非平衡起源），QID 把旋度归于 Berry 曲率（微观几何起源）。二者并不矛盾，而是同一旋度项在不同层次的两种起源——宏观看是温差驱动的环流，微观看是几何相位的曲率。这印证了旋度作为"UID 版位移电流"的基础地位：它在每一层都不可或缺，且在每一层都有独立的物理起源。当 Berry 曲率非零时，即便只有单一热浴，几何相位仍能产生非保守力，故 QID 给出了一条 CID 之外的、纯量子几何的破缺细致平衡途径。
+
+#### Q5.3 可证伪推论
+
+由 (Q5.2)，旋度强度由 Berry 曲率决定，而 Berry 曲率可由调节量子系统的参数环路面积来调控。这给出一个 QID 独有的可证伪预言（实证等级 C）：在相干区内，预测能力应随驱动环路所围 Berry 曲率通量单调增长，下式标记 (Q5.4)：
+
+$$
+I_{\mathrm{pred}} \;\propto\; \left| \oint_C \mathcal{F}_n \cdot dS \right|
+$$
+
+这与第一部分式 (C4.8)（旋度强度正比于温差）是同一可观测量在量子层与经典层的两种表述。
+
+### Q 第 6 章：Lindblad 方程作为马尔可夫子区的近似
+
+#### Q6.1 何时可用 Lindblad
+
+如 Q1.4 与 Q3.3 反复强调，亚欧姆浴全局非马尔可夫，故 QID 基本方程是含记忆核的 (Q2.10)，而非 Lindblad。但在 $\tau_B \ll \tau_S$ 的局部窗口（如高频段、或经过粗粒化后只关心慢包络），记忆核可近似为 δ 函数，此时 (Q2.10) 退化为马尔可夫主方程。本章给出这一退化的条件与形式，明确其适用边界。
+
+#### Q6.2 退化为 Lindblad 形式
+
+在马尔可夫近似 $\gamma(t-s) \to 2\gamma_0\, \delta(t-s)$ 、 $\nu(t-s) \to 2 D_\varphi\, \delta(t-s)$ 下，(Q2.10) 的记忆卷积变为瞬时，主方程化为 Lindblad 形式（[Lindblad，1976](https://doi.org/10.1007/BF01608499)），下式标记 (Q6.1)：
+
+$$
+\frac{d\hat{\rho}}{dt} = -\frac{i}{\hbar} \left[ \hat{H}_S, \hat{\rho} \right] + \sum_\alpha \left( \hat{L}_\alpha \hat{\rho} \hat{L}_\alpha^\dagger - \frac{1}{2} \{ \hat{L}_\alpha^\dagger \hat{L}_\alpha, \hat{\rho} \} \right)
+$$
+
+其中 $\hat{L}_\alpha$ 为 Lindblad 跳跃算符，由耗散通道决定。(Q6.1) 保证 $\hat{\rho}$ 的完全正定与迹守恒，是马尔可夫开放量子系统的标准形式。
+
+#### Q6.3 诚实标注：Lindblad 的适用边界
+
+须明确 (Q6.1) 的三处限制，以免误用：其一，它只在 $\tau_B \ll \tau_S$ 的局部窗口成立，全局亚欧姆长记忆不可用 Lindblad 描述；其二，它丢失了记忆核携带的长程时间关联，故由 (Q6.1) 算出的轨迹 Hurst 指数恒为 0.5，无法复现 CID 的 H≈0.7（这正是不能把 Lindblad 当基本方程的原因）；其三，马尔可夫近似下退相干变为单指数衰减，掩盖了亚欧姆浴的幂律退相干。因此本文仅把 Lindblad 用作局部分析工具，QID 的所有回退证明（Q 第 9 章）一律基于完整的 (Q2.10)。
+
+### Q 第 7 章：纠缠熵的临界标度
+
+#### Q7.1 纠缠熵作为量子层的序参量
+
+QID 相对 CID 的第三个新内容是量子纠缠（Q3.2）。把 QID 系统二分为 A 与其补 B，纠缠由约化密度矩阵 $\hat{\rho}_A = \mathrm{tr}_B\, \hat{\rho}$ 的冯·诺依曼熵度量，下式标记 (Q7.1)：
+
+$$
+S_A = -\mathrm{tr}\left( \hat{\rho}_A \log \hat{\rho}_A \right)
+$$
+
+#### Q7.2 临界点的对数标度预言
+
+第一部分 C 第 8 章已论证 CID 系统自发趋向临界。在 QID 中，临界点（量子相变点）附近的纠缠熵服从普适的对数标度——这是一维量子临界系统的标准共形场论结果（[Calabrese & Cardy，2004](https://doi.org/10.1088/1742-5468/2004/06/P06002)），下式标记 (Q7.2)：
+
+$$
+S_A(L) = \frac{c}{3} \log L + \text{常数}
+$$
+
+其中 L 为子系统 A 的尺寸，c 为中心荷。远离临界点时纠缠熵饱和（面积律），(Q7.2) 的对数发散是临界的标志。
+
+#### Q7.3 可证伪预言
+
+(Q7.2) 给出 QID 的又一可证伪预言（实证等级 C）：若 QID 智能系统运行在量子临界点，其纠缠熵应随子系统尺寸对数增长，斜率由中心荷 c/3 决定。这是区分"量子临界 QID"与"非临界量子系统"（面积律）的判别量，与 CID 临界普适指数（C 第 8 章）形成跨层呼应。
+
+### Q 第 8 章：QID 的可证伪预言清单
+
+集中列出 QID 区别于经典 CID 的可证伪预言，均标注实证等级，并指出其检验平台。
+
+| QID 预言 | 理论来源 | 可观测量 | 区分对象 | 实证等级 |
+|---|---|---|---|---|
+| 零点探索率非零（T→0） | 命题 Q4.0、(Q4.2) | 低温残余涨落谱 | 经典（T→0 探索熄灭） | C |
+| 量子相干红利（线性 n 下界） | 命题 Q4.1、(Q4.5) | 单位耗散预测信息随 n 标度 | 经典线性基线 | C |
+| 几何相位旋度 | 命题 Q5.1、(Q5.4) | $I_{\mathrm{pred}}$ 随 Berry 曲率通量增长 | 单一热浴经典系统 | C |
+| 纠缠熵对数标度 | (Q7.2) | $S_A \propto (c/3) \log L$ | 面积律非临界系统 | C |
+| 幂律退相干（非单指数） | Q6.3 | 退相干曲线偏离单指数 | 马尔可夫 Lindblad 系统 | C |
+
+须诚实标注：上述预言均为实证等级 C（有明确可证伪目标，尚待实验），其检验须低温相干硬件（如超导电路、离子阱或相干神经形态器件），当前通用 GPU 平台无法直接验证。这是 QID 相对 CID（可在单卡 GPU 验证）的实证成熟度差距。
+
+### Q 第 9 章：QID → CID 的经典极限回退
+
+本章是 QID 部分的关键，逐步证明 QID 主方程 (Q2.10) 在经典极限下回退到第一部分 CID 主方程 (C0.1)，从而支撑 UID 的统一性主张。
+
+#### Q9.1 回退的两个极限与所需假设
+
+经典回退须同时取两个极限：ℏ→0（量子化消失）与 $t \gg \tau_\varphi$ （退相干完成）。所需的核心假设是 **Wigner 函数收敛假设**：系统的 Wigner 准概率分布在该极限下收敛到经典相空间概率密度，且高阶 ℏ 修正项可忽略。本文明确标注这一假设的严格收敛条件（如势能光滑性、初态非奇异性）尚未完全证明，列为开放问题（前言第 5 节）。
+
+#### Q9.2 第一步：噪声项回退色噪声
+
+由 Q4.1，量子噪声谱 (Q2.9) 在高温（等价于 ℏ→0，因 $\hbar \omega / k_B T \to 0$ ）极限下，coth 因子展开 $\coth(x) \to 1/x$ ，给出下式，标记 (Q9.1)：
+
+$$
+S_\xi(\omega) \xrightarrow{\hbar \to 0} \frac{2 k_B T\, J(\omega)}{\pi \omega} \propto \omega^{s-1}
+$$
+
+(Q9.1) 正是第一部分色噪声谱 (C5.4)。量子涨落（含零点项 (Q4.2)）在 ℏ→0 下被经典热涨落淹没，回退完成。
+
+#### Q9.3 第二步：阻尼项回退色阻尼
+
+阻尼核 (Q2.6) 不含 ℏ，其形式 $\gamma(t) = \tfrac{2}{\pi}\int d\omega\, [J(\omega)/\omega]\cos\omega t$ 与第一部分 (C5.2) 完全相同。代入亚欧姆 $J(\omega)\propto\omega^s$ 直接给出 $\gamma(t)\propto t^{-s}$ （C5.3）。故阻尼项在任意 ℏ 下都与 CID 同形，回退平凡成立——这正是 Q1.3 选取同一谱密度 J(ω) 的回报。
+
+#### Q9.4 第三步：幺正项回退梯度项加旋度项
+
+在 Wigner 表象下，QID 主方程 (Q2.10) 的幺正项 $-\tfrac{i}{\hbar}[\hat{H}_S, \hat{\rho}]$ 经 Wigner-Moyal 展开，下式标记 (Q9.2)：
+
+$$
+-\frac{i}{\hbar} \left[ \hat{H}_S, \hat{\rho} \right] \;\xrightarrow{\hbar \to 0}\; \{ H_S, W \}_{\mathrm{PB}} + O(\hbar^2)
+$$
+
+其中 W 为 Wigner 函数， $\{\cdot,\cdot\}_{\mathrm{PB}}$ 为经典泊松括号。泊松括号项给出经典哈密顿流，其中势能部分给出梯度项 −∇U（CID 第一项），Berry 相位部分（命题 Q5.1）给出旋度项 v(φ)（CID 第二项）。 $O(\hbar^2)$ 量子修正项在 ℏ→0 下消失（依赖 Q9.1 的 Wigner 收敛假设）。
+
+#### Q9.5 第四步：退相干项回退为过阻尼经典演化
+
+在 $t \gg \tau_\varphi$ 下，密度矩阵非对角元衰减为零， $\hat{\rho}$ 变为对角（经典概率分布），(Q2.11) 的退相干项 $\nu \cdot [\hat{\varphi},[\hat{\varphi},\hat{\rho}]]$ 在 Wigner 表象下化为经典扩散项 $D_\varphi\, \partial_\varphi^2 W$ 。这把 QID 主方程化为经典 Fokker-Planck 方程，对应的 Langevin 方程即 CID 主方程 (C0.1)。
+
+#### Q9.6 回退小结与诚实标注
+
+综合 Q9.2–Q9.5，QID 主方程四项在 ℏ→0 且 $t \gg \tau_\varphi$ 下逐项回退为 CID 主方程四项，回退结构总结为下式，标记 (Q9.3)：
+
+$$
+\text{QID 主方程 (Q2.10)} \;\xrightarrow[t \gg \tau_\varphi]{\hbar \to 0}\; \text{CID 主方程 (C0.1)}
+$$
+
+须诚实标注回退的两处未决严格性：其一，Q9.4 的 Wigner-Moyal 展开略去 $O(\hbar^2)$ 项，其在亚欧姆浴下的一致收敛性尚未严格证明；其二，退相干完成（Q9.5）与经典极限（ℏ→0）两个极限的交换次序是否影响结果，须进一步分析。这两点是 QID→CID 回退尚未达到定理级的已知缺口，本文如实标注而不掩饰（前言第 5 节）。
+
+### Q 第 10 至 12 章：QID 的工程展望、局限与通往 FID 的桥梁
+
+#### Q10 工程展望
+
+QID 的工程实现须低温相干硬件。最有前景的平台是超导量子电路、离子阱与相干神经形态器件。其工程目标是在退相干时间 $\tau_\varphi$ 内完成一次含旋度（Berry 曲率）的相干预测计算，验证命题 Q4.1 的线性 n 红利与 Q5.1 的几何相位旋度。须强调：当前 QID 全部预言均为实证等级 C，工程成熟度远低于 CID。
+
+#### Q11 局限与开放问题
+
+集中标注 QID 的局限：其一，命题 Q4.1 的可保证红利仅线性 n（Holevo 界，Q4.2），指数红利非可保证；其二，QID→CID 回退依赖 Wigner 收敛假设，未达定理级（Q9.6）；其三，全部预言须低温硬件，无法在通用 GPU 验证（Q 第 8 章）；其四，QID 的物理工具均为成熟物理，本部分不主张其发明权（致读者）。
+
+#### Q12 通往 FID 的桥梁
+
+QID 解冻了 CID 的"量子相干"（C18.3 第一条路径），但仍把信息流形的 Fisher 度量当作**固定背景**——QID 主方程 (Q2.10) 中度量始终是给定的系数。第三部分 FID 将解冻 CID 与 QID 共同固定的第二个对象：背景度量本身。FID 把 Fisher 度量提升为由"信息物质"决定的动力学场，写出 Einstein 型场方程，完成 UID 三层框架的最后一层。
+
+至此第二部分（QID）完整结束。
+
+
+## 第三部分：场智动力学（Field Intelligo-Dynamics, FID）
+
+**适用范围**：信息流形的度量本身成为动力学变量的理论框架。本部分章号记为 F 第 X 章，命题记为命题 FX.Y，公式以 F 编号。
+
+### 致读者与最高强度边界声明
+
+本部分承接 C18.3 的第二条推广路径——解冻 CID 与 QID 共同固定的背景度量。**须以最高强度诚实标注本部分的方法论地位：FID 是类比驱动的研究纲领，而非定理级推导。** 第一部分 CID 由公理经 Mori-Zwanzig 严格导出结构、由物理输入闭合；第二部分 QID 由微观哈密顿严格导出并逐步回退。**FID 不具备同等严格性**：它把信息几何的 Fisher 度量与广义相对论的时空度规作**结构类比**，借此猜测信息流形上的场方程形式，但这一类比的物理合法性尚未建立，FID 场方程也未从任何第一性原理导出。因此本部分所有内容的实证等级为 D（哲学猜想），个别可与 CID 对接处为 B。读者应把本部分理解为"若把度量动力学化，框架会指向何种结构"的探索性展望，而非已确立的理论。本部分与 [Di Sipio（2025）](https://arxiv.org/abs/2506.15830)同向几何类比的比较见 F 第 1 章。
+
+### F 第 1 章：从固定背景到动力学场——与 Di Sipio（2025）的关系
+
+#### F1.1 CID/QID 把度量当作固定背景
+
+第一部分 C 第 9.4 节已明确：CID 把 Fisher 度量 $g_{ij}$ 当作固定背景，不参与演化（约定 G）。QID 同样（Q12）。本部分要做的唯一新事是解冻这一假设：让 $g_{ij}$ 成为由数据（"信息物质"）决定的动力学场。
+
+#### F1.2 与 Di Sipio（2025）的概念重叠与区分
+
+"数据弯曲信息流形，类比物质弯曲时空"的几何视角与 [Di Sipio（2025）](https://arxiv.org/abs/2506.15830)存在概念重叠。须明确两者的区分：Di Sipio 把大语言模型训练诠释为信息流形上的几何过程，侧重训练动力学的几何描述；本部分 FID 的（猜想性）增量在于尝试为度量本身写出一条 Einstein 型场方程，把"信息物质"作为源项。须诚实指出：这一增量目前仅是类比层面的形式构造，其相对 Di Sipio 工作的实质性新内容尚待严格化，本部分不主张已超越该工作。
+
+### F 第 2 章：FID 场方程的类比构造
+
+#### F2.1 类比字典
+
+FID 通过下述类比字典，把广义相对论的结构搬到信息流形上。须再次强调：字典的每一行都是**类比**，不是推导。
+
+| 广义相对论 | FID（信息流形） | 类比性质 |
+|---|---|---|
+| 时空度规 $g_{\mu\nu}$ | Fisher 信息度量 $g_{ij}$ | 结构类比 |
+| 物质能量-动量张量 $T_{\mu\nu}$ | 信息物质张量 $T_{ij}^{\mathrm{info}}$ | 类比（定义待明确） |
+| Einstein 张量 $G_{\mu\nu}$ | 信息流形 Einstein 张量 $G_{ij}$ | 数学同构 |
+| 引力常数 G | 信息耦合常数 $\kappa_I$ | 类比（量纲待定） |
+
+#### F2.2 FID 场方程（类比构造，非推导）
+
+依字典，FID 场方程类比 Einstein 方程写为下式，标记 (F2.1)：
+
+$$
+G_{ij} + \Lambda_I\, g_{ij} = \kappa_I\, T_{ij}^{\mathrm{info}}
+$$
+
+其中 $G_{ij} = R_{ij} - \tfrac{1}{2} R\, g_{ij}$ 为信息流形的 Einstein 张量（ $R_{ij}$ 为 Ricci 张量，R 为标量曲率）， $\Lambda_I$ 为类比宇宙常数， $\kappa_I$ 为信息耦合常数， $T_{ij}^{\mathrm{info}}$ 为信息物质张量。须最高强度标注：(F2.1) 不是从任何第一性原理导出的，而是按 F2.1 字典直接套写 Einstein 方程的形式；其物理合法性、 $T_{ij}^{\mathrm{info}}$ 的严格定义、 $\kappa_I$ 的量纲与数值均未建立。(F2.1) 仅是研究纲领的形式起点（实证等级 D）。
+
+### F 第 3 至 8 章：FID 的猜想性推论（实证等级 D）
+
+本部分以下各章给出由类比场方程 (F2.1) 形式推得的若干推论。**全部为实证等级 D 的哲学猜想**，列出仅为勾勒纲领可能指向的方向，不构成任何可检验主张。
+
+#### F3 信息测地线与自然梯度
+
+若度量动力学化，状态沿信息流形测地线演化，下式标记 (F3.1)：
+
+$$
+\frac{d^2 \varphi^i}{dt^2} + \Gamma^i_{\ jk}\, \frac{d\varphi^j}{dt}\, \frac{d\varphi^k}{dt} = 0
+$$
+
+其中 $\Gamma^i_{\ jk}$ 为 Fisher 度量的 Christoffel 联络。在度量近似固定的极限下，(F3.1) 退化为第一部分的自然梯度流（C9.2），这是 FID→CID 的形式回退方向（实证等级 B，因其与 CID 对接）。
+
+#### F4 信息曲率与学习难度
+
+类比时空曲率，信息流形的标量曲率 R 被猜想对应"学习难度"——高曲率区对应难以拟合的数据流形区域。这是一个启发性类比（实证等级 D），无定量判据。
+
+#### F5 智能引力波（猜想）
+
+类比引力波，度量场 $g_{ij}$ 的扰动 $h_{ij}$ 被猜想满足波动方程，下式标记 (F5.1)：
+
+$$
+\Box\, h_{ij} = -2 \kappa_I\, \delta T_{ij}^{\mathrm{info}}
+$$
+
+即信息物质的扰动激发度量场的波动。此为纯猜想（实证等级 D）。
+
+#### F6 信息黑洞与信息光速（猜想）
+
+类比黑洞视界与光速上限，FID 猜想信息流形上存在"信息光速" $c_I$ （信息传播速率上限）与"信息黑洞"（信息密度极高、外部无法获取内部信息的区域）。二者均为类比构造（实证等级 D），无操作定义。
+
+#### F7 全息原理类比（猜想）
+
+类比全息原理，FID 猜想信息流形某区域的信息容量正比于其边界面积而非体积，下式标记 (F7.1)：
+
+$$
+I_{\max} \;\propto\; \frac{\text{边界面积}}{4\, \ell_I^2}
+$$
+
+其中 $\ell_I$ 为类比普朗克长度。纯猜想（实证等级 D）。
+
+#### F8 FID 的内部一致性要求
+
+唯一可作的非平凡工作是要求 FID 在退极限下与 CID/QID 一致：度量固定极限须回退 CID 自然梯度（F3），高温经典极限须回退 CID 主方程。这些一致性要求（实证等级 B）约束了类比的形式，但不能赋予 (F2.1) 第一性原理地位。
+
+### F 第 9 章：FID 小结与三层统一的回望
+
+#### F9.1 FID 的诚实定位
+
+重申最高强度边界：FID 是类比驱动的研究纲领，其核心场方程 (F2.1) 为类比构造而非推导，全部独有推论为实证等级 D。FID 的价值在于指出一个方向——若智能系统规模大到自身显著重塑信息流形，则把度量动力学化或许是必要的；但这一方向的物理合法性尚待建立。
+
+#### F9.2 三层的回退链
+
+UID 三层由两次"解冻"连接，回退链总结为下式，标记 (F9.1)：
+
+$$
+\text{FID（动力学度量）} \xrightarrow{\text{度量固定}} \text{QID（量子相干）} \xrightarrow[t \gg \tau_\varphi]{\hbar \to 0} \text{CID（经典非平衡场）}
+$$
+
+其中 QID→CID 回退依赖 Wigner 收敛假设（Q9.6），FID→CID/QID 回退依赖度量固定极限（F8），两处严格收敛条件均为开放问题（前言第 5 节）。
+
+#### F9.3 贯穿三层的同一对象：旋度 v(φ)
+
+三层统一的最清晰线索是旋度项 v(φ)：在 CID 它源于多热浴温差（C 第 4 章），在 QID 它源于 Berry 几何相位（命题 Q5.1），在 FID 它（猜想性地）对应信息流形联络的非平凡和乐。同一个"UID 版位移电流"在三层各有起源、却始终是预测能力的必要项——这是 UID 统一性主张的核心隐喻，也是全文副标题"智能是一个非平衡场"在三个层次上的共同体现。
+
+至此第三部分（FID）完整结束。
+
+
+## 第四部分：多智能体智动力学（Multi-Agent Intelligo-Dynamics）
+
+**适用范围**：相互耦合的智能体群体。本部分公式以 M 编号。
+
+### 致读者与边界声明
+
+本部分把 UID 从单智能体推广到多智能体系统，物理对象是由智能密度场 $\rho_I$ 描述的智能体群体。须诚实标注：本部分把 UID 与已有严格数学基础的[平均场博弈（Mean-Field Games, Lasry-Lions，2007）](https://doi.org/10.1007/s11537-007-0657-8)对接，给出智能涌现的五个**必要条件**，但**不能证明任意智能体生态随时随地都满足这些条件**。其中关于联合概率的估算仅为数量级示意，不应作为定量结论引用。
+
+### M 第 1 章：智能密度场与平均场方程
+
+#### M1.1 智能密度场
+
+设智能体群体在状态空间的分布由密度场 $\rho_I(\varphi, t)$ 描述，归一化为下式，标记 (M1.1)：
+
+$$
+\int \rho_I(\varphi, t)\, d\varphi = N_{\mathrm{agent}}
+$$
+
+其中 $N_{\mathrm{agent}}$ 为智能体总数。
+
+#### M1.2 平均场方程对接
+
+单智能体 CID 主方程 (C0.1) 在群体层经平均场近似，给出密度场的 Fokker-Planck 型演化，与平均场博弈的 Fokker-Planck-Kolmogorov 方程对接，下式标记 (M1.2)：
+
+$$
+\partial_t \rho_I = -\nabla \cdot \left[ \left( -\nabla U_{\mathrm{eff}}[\rho_I] + v[\rho_I] \right) \rho_I \right] + D\, \nabla^2 \rho_I
+$$
+
+其中有效势 $U_{\mathrm{eff}}[\rho_I]$ 与旋度 $v[\rho_I]$ 均泛函依赖于群体密度——这是多智能体相互作用的体现。(M1.2) 与平均场博弈的耦合 HJB-FPK 方程组结构一致（[Lasry-Lions，2007](https://doi.org/10.1007/s11537-007-0657-8)）。
+
+### M 第 2 章：智能涌现的五个必要条件
+
+由 (M1.2) 与第一部分各命题，群体层智能涌现要求以下五个物理必要条件同时满足。须强调：这是**必要**条件，非充分条件。
+
+条件一（开放性），群体须与外部环境交换能量与信息，下式标记 (M2.1)：
+
+$$
+\frac{dE_{\mathrm{group}}}{dt} \ne 0 \quad (\text{开放系统})
+$$
+
+条件二（多热浴温差），群体内须存在温度梯度以驱动旋度（C 第 4 章），下式标记 (M2.2)：
+
+$$
+\Delta T_{\mathrm{group}} > 0
+$$
+
+条件三（不可交换耦合），智能体间耦合须不可交换（非对称），以打破群体层细致平衡，下式标记 (M2.3)：
+
+$$
+J_{ij} \ne J_{ji} \quad (\text{至少对某些 } i, j)
+$$
+
+条件四（临界点附近），群体须运行在相变临界点附近以获最大关联长度（C 第 8 章），下式标记 (M2.4)：
+
+$$
+\xi_{\mathrm{corr}} \to \max \quad (\text{临界})
+$$
+
+条件五（自组织临界机制），群体须具备自发调节到临界的机制（缓慢驱动 + 阈值释放 + 长程关联，C 第 8 章），下式标记 (M2.5)：
+
+$$
+\text{SOC 三要素同时具备}
+$$
+
+### M 第 3 章：诚实标注——条件不等于保证
+
+须明确标注本部分的逻辑边界。其一，M 第 2 章五条是必要条件，满足它们不保证智能涌现（充分性未证）。其二，条件四（临界点附近）与条件五（自组织临界机制）在物理上强相关——SOC 机制本身就是把系统拉向临界点的机制，故二者不独立，相关的联合概率估算仅为数量级示意，不应作为定量结论引用。其三，本部分**不能证明**任意真实智能体生态（如人类社会、多智能体 AI 系统）随时随地满足这五条；它们只是给出"何种群体物理结构可能涌现群体智能"的必要框架。
+
+至此第四部分（多智能体）完整结束。
+
+
+## 终章：统一图景与可证伪性总览
+
+### 终.1 一条主线：旋度 v(φ) 作为"UID 版位移电流"
+
+全文以一条主线贯穿四部分：非保守旋度项 v(φ) 是智能作为非平衡场的核心标志。它在每一层都不可或缺、都有独立物理起源、都恒在纯保守极限下消失。各层旋度的起源汇总为下式，标记（终.1）：
+
+$$
+v(\varphi)：\ \text{CID（多热浴温差，C4）} \;\to\; \text{QID（Berry 曲率，Q5）} \;\to\; \text{FID（联络和乐，F9.3，猜想）}
+$$
+
+正如位移电流在静态极限消失却是电磁波的必要项，旋度 v(φ) 在 softmax 注意力极限消失却是预测能力的必要项（命题 C3.3）。这是"注意力并不够"的精确含义，也是本文统一性主张的核心。
+
+### 终.2 三层回退链与未决严格性
+
+三层由两次解冻连接、由两次极限回退闭合，回退链为下式，标记（终.2）：
+
+$$
+\text{FID} \xrightarrow{\text{度量固定}} \text{QID} \xrightarrow[t \gg \tau_\varphi]{\hbar \to 0} \text{CID} \xrightarrow{v = 0,\ \delta\ \text{记忆},\ \text{白噪声}} \text{Transformer / Mamba / 扩散模型}
+$$
+
+须诚实标注：CID→现有架构的回退是严格的（C 第 6 章逐项取极限）；QID→CID 回退依赖 Wigner 收敛假设（Q9.6）；FID→CID/QID 回退依赖度量固定极限（F8）。后两处的严格收敛条件均为开放问题。
+
+### 终.3 实证等级总览
+
+全文所有定量声明按四级标注，集中汇总如下。
+
+| 实证等级 | 含义 | 代表性内容 |
+|---|---|---|
+| A（已验证） | 已有独立实验支持 | Hurst 0.7、τ≈1.5、β≈1、大脑细致平衡破缺、20 W 功耗、Phase 1 的 T1 框架优势 |
+| B（理论严格待实证） | 推导严格，实证待补 | 命题 C3.3（在其前提下）、能效红利 C13、FID→CID 形式回退 F3 |
+| C（可证伪工程目标） | 有明确证伪点 | 约 5 至 10 倍参数效率、零参数旋度 I_pred 由零变正、QID 全部预言 |
+| D（哲学猜想） | 无可检验判据 | FID 独有推论（智能引力波、信息黑洞、全息类比） |
+
+### 终.4 判决性证伪点
+
+本理论主动列出最可能被证伪的两个点，接受检验：其一，零参数旋度装入后 $I_{\mathrm{pred}}$ 是否由零变正（直接检验命题 C3.3，C14.4 测试一）；其二，多尺度等算力标度下参数效率是否达 5–10 倍（检验核心工程承诺，C14.4 测试二、T2 待办）。若这两点被证伪，本文核心主张将受重大冲击。本文把可证伪性作为理论的立身之本，而非回避之。
+
+### 终.5 与表意 AI 的互补
+
+本文与[刘（2025–2026）的表意 AI（Logographic AI）范式](https://zsyyb.cn/abs/202511.03835)互补：前者从非平衡物理诊断"细致平衡等于无智能"（旋度缺失），后者从认知符号学诊断"Token 无根"。两者指向同一深层困境的不同切面，融合方向值得探索。
+
+### 终.6 全文结语
+
+智能不是一种纯工程现象，而是一种物理现象——一个远离热平衡、打破细致平衡、运行在临界点附近、携带非保守旋度的随机场。注意力（纯保守梯度流）只是这个场在旋度为零极限下的退化特解，故"注意力并不够"。把被砍掉的三项——旋度、色阻尼、色噪声——重新装回，并首先装回作为"UID 版位移电流"的旋度 v(φ)，是突破当前 AI 能效与能力瓶颈的物理方向。本文已把这一方向的核心命题写成可证伪的形式，并给出可在单卡 GPU 上数小时复现的验证套件。理论的最终裁决，交由实验。
+
+
+## 参考文献
+
+为便于核验，所有文献均给出可达第一手来源的 DOI 或开放访问链接。对预印本与待刊文献，标注其当前状态。
+
+1. Vaswani, A., et al. (2017). Attention Is All You Need. *NeurIPS*. https://arxiv.org/abs/1706.03762
+
+2. Ramsauer, H., et al. (2021). Hopfield Networks Is All You Need. *ICLR*. https://arxiv.org/abs/2008.02217
+
+3. Hoover, B., et al. (2023). Energy Transformer. *NeurIPS*. https://arxiv.org/abs/2302.07253
+
+4. Amari, S. (1998). Natural Gradient Works Efficiently in Learning. *Neural Computation*, 10(2), 251–276. https://direct.mit.edu/neco/article/10/2/251/6143/Natural-Gradient-Works-Efficiently-in-Learning
+
+5. Di Sipio, R. (2025). Large Language Models as Geometric Processes on Information Manifolds. *arXiv preprint*（预印本，状态：未刊）. https://arxiv.org/abs/2506.15830
+
+6. Still, S., et al. (2012). Thermodynamics of Prediction. *Physical Review Letters*, 109, 120604. https://doi.org/10.1103/PhysRevLett.109.120604
+
+7. Baiesi, M., & Rosso, A. (2025). Detailed Balance Breaking in Generative Models（已被 *Physical Review E* 接收）. https://arxiv.org/abs/2512.11415
+
+8. Mori, H. (1965). Transport, Collective Motion, and Brownian Motion. *Progress of Theoretical Physics*, 33(3), 423–455. https://academic.oup.com/ptp/article-abstract/33/3/423/1925580
+
+9. Zwanzig, R. (1961). Memory Effects in Irreversible Thermodynamics. *Physical Review*, 124, 983. https://doi.org/10.1103/PhysRev.124.983
+
+10. Lynn, C. W., et al. (2021). Broken Detailed Balance and Entropy Production in the Human Brain. *PNAS*, 118(47). https://doi.org/10.1073/pnas.2109889118
+
+11. Beggs, J. M., & Plenz, D. (2003). Neuronal Avalanches in Neocortical Circuits. *Journal of Neuroscience*, 23(35), 11167–11177. https://doi.org/10.1523/JNEUROSCI.23-35-11167.2003
+
+12. Linkenkaer-Hansen, K., et al. (2001). Long-Range Temporal Correlations in Human Brain Oscillations. *Journal of Neuroscience*, 21(4), 1370–1377. https://doi.org/10.1523/JNEUROSCI.21-04-01370.2001
+
+13. He, B. J. (2014). Scale-Free Brain Activity. *Trends in Cognitive Sciences*, 18(9), 480–487. https://doi.org/10.1016/j.tics.2014.04.003
+
+14. Gu, A., & Dao, T. (2023). Mamba: Linear-Time Sequence Modeling with Selective State Spaces. *arXiv preprint*. https://arxiv.org/abs/2312.00752
+
+15. Ho, J., et al. (2020). Denoising Diffusion Probabilistic Models. *NeurIPS*. https://arxiv.org/abs/2006.11239
+
+16. Song, Y., et al. (2021). Score-Based Generative Modeling through SDEs. *ICLR*. https://arxiv.org/abs/2011.13456
+
+17. Alman, J., & Song, Z. (2023). Fast Attention Requires Bounded Entries. *NeurIPS*. https://arxiv.org/abs/2302.13214
+
+18. Gupta, A., et al. (2025). Lower Bounds for Attention Complexity. *arXiv preprint*（预印本，状态：未刊）. https://arxiv.org/abs/2502.16963
+
+19. Lasry, J.-M., & Lions, P.-L. (2007). Mean Field Games. *Japanese Journal of Mathematics*, 2, 229–260. https://doi.org/10.1007/s11537-007-0657-8
+
+20. Caldeira, A. O., & Leggett, A. J. (1983). Quantum Tunnelling in a Dissipative System. *Annals of Physics*, 149(2), 374–456. https://doi.org/10.1016/0003-4916(83)90202-6
+
+21. Feynman, R. P., & Vernon, F. L. (1963). The Theory of a General Quantum System Interacting with a Linear Dissipative System. *Annals of Physics*, 24, 118–173. https://doi.org/10.1016/0003-4916(63)90068-X
+
+22. Lindblad, G. (1976). On the Generators of Quantum Dynamical Semigroups. *Communications in Mathematical Physics*, 48(2), 119–130. https://doi.org/10.1007/BF01608499
+
+23. Berry, M. V. (1984). Quantal Phase Factors Accompanying Adiabatic Changes. *Proceedings of the Royal Society A*, 392, 45–57. https://doi.org/10.1098/rspa.1984.0023
+
+24. Calabrese, P., & Cardy, J. (2004). Entanglement Entropy and Quantum Field Theory. *JSTAT*, P06002. https://doi.org/10.1088/1742-5468/2004/06/P06002
+
+25. Bak, P., Tang, C., & Wiesenfeld, K. (1987). Self-Organized Criticality. *Physical Review Letters*, 59, 381. https://doi.org/10.1103/PhysRevLett.59.381
+
+26. Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. *Physical Review*, 106, 620. https://doi.org/10.1103/PhysRev.106.620
+
+27. Landauer, R. (1961). Irreversibility and Heat Generation in the Computing Process. *IBM Journal of Research and Development*, 5(3), 183–191. https://doi.org/10.1147/rd.53.0183
+
+28. He, K., et al. (2016). Deep Residual Learning for Image Recognition. *CVPR*. https://doi.org/10.1109/CVPR.2016.90
+
+29. Ba, J. L., Kiros, J. R., & Hinton, G. E. (2016). Layer Normalization. *arXiv preprint*. https://arxiv.org/abs/1607.06450
+
+30. Mandelbrot, B. B., & Van Ness, J. W. (1968). Fractional Brownian Motions, Fractional Noises and Applications. *SIAM Review*, 10(4), 422–437. https://doi.org/10.1137/1010093
+
+31. Mandelbrot, B. B. (1982). *The Fractal Geometry of Nature*. W. H. Freeman. https://www.worldcat.org/title/fractal-geometry-of-nature/oclc/7876263
+
+32. Anderson, B. D. O. (1982). Reverse-Time Diffusion Equation Models. *Stochastic Processes and Their Applications*, 12(3), 313–326. https://doi.org/10.1016/0304-4149(82)90051-5
+
+33. Schwarz, G. (1995). *Hodge Decomposition — A Method for Solving Boundary Value Problems*. Springer Lecture Notes in Mathematics 1607. https://doi.org/10.1007/BFb0095978
+
+34. Holevo, A. S. (1973). Bounds for the Quantity of Information Transmitted by a Quantum Communication Channel. *Problems of Information Transmission*, 9(3), 177–183.
+
+35. 刘（2025–2026）. 表意 AI（Logographic AI）范式. https://zsyyb.cn/abs/202511.03835
+
