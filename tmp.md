@@ -1012,7 +1012,7 @@ $$\partial_t \rho_I + \nabla \cdot (\rho_I\, v[\rho_I]) = D\, \nabla^2 \rho_I$$
 
 $$-\partial_t u = H(\varphi, \nabla u) + F[\rho_I]$$
 
-第一式（Fokker-Planck）描述群体分布演化，第二式（Hamilton-Jacobi-Bellman）描述个体最优策略，二者通过平均场耦合 $v[\rho_I]$、$F[\rho_I]$ 闭合。
+第一式（Fokker-Planck）描述群体分布演化，第二式（Hamilton-Jacobi-Bellman）描述个体最优策略，二者通过平均场耦合 $v[\rho_I]$ 、 $F[\rho_I]$ 闭合。
 
 ### M 第 2 章：群体智能涌现的五个物理必要条件
 
