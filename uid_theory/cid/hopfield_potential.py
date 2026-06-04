@@ -320,10 +320,17 @@ class HopfieldAttention(nn.Module):
         eye = torch.eye(s, device=x.device, dtype=torch.bool)
         scores = scores.masked_fill(eye[None, None, :, :], float("-inf"))
         if causal_mask is not None:
+            # scores layout is [key_B, query_C], but the standard causal_mask
+            # is built for [query_i, key_j] layout (True where j > i).
+            # To express "key B is in the future of query C" we need True where
+            # B > C, which is the TRANSPOSE of the standard upper-triangular mask.
             scores = scores.masked_fill(
-                causal_mask[None, None, :, :], float("-inf")
+                causal_mask.T[None, None, :, :], float("-inf")
             )
-        # log-sum-exp over key dim (B), then sum over query dim (C).
-        lse = torch.logsumexp(scores, dim=-2)  # (B, num_heads, S)
-        energy = -(1.0 / beta) * lse.sum()
+        # log-sum-exp over key dim (B), skipping query positions that have no
+        # valid keys (their lse would be -inf, contributing +inf to the energy
+        # and making the sum meaningless for any sequence length).
+        lse = torch.logsumexp(scores, dim=-2)  # (B, num_heads, S_query)
+        valid_queries = ~torch.isinf(lse)
+        energy = -(1.0 / beta) * lse[valid_queries].sum()
         return energy
