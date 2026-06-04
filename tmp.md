@@ -379,7 +379,7 @@ $$\int_{\mathbb{M}} \|\nabla W\|^2\, dV = -\int_{\mathbb{M}} W \nabla^2 W\, dV +
 
 故 $\nabla W = 0$，即 $W$ 为常数，$U$ 在相差常数意义下唯一。
 
-*（正交性与无散性）* 定义 $v = F + \nabla U$。由式 (C3.2)，$\nabla \cdot v = \nabla \cdot F + \nabla^2 U = 0$，即 $v$ 自动无散。又对任意梯度场 $\nabla\psi$ 与任意无散场 $v$，分部积分给出（C3.2b）：
+*（正交性与无散性）* 定义 $v = F + \nabla U$。由式 (C3.2)， $\nabla \cdot v = \nabla \cdot F + \nabla^2 U = 0$ ，即 $v$ 自动无散。又对任意梯度场 $\nabla\psi$ 与任意无散场 $v$，分部积分给出（C3.2b）：
 
 $$\langle \nabla\psi, v \rangle_{L^2} = \int_{\mathbb{M}} \nabla\psi \cdot v\, dV = -\int_{\mathbb{M}} \psi (\nabla \cdot v)\, dV = 0$$
 
@@ -439,7 +439,7 @@ $$P(X_p, X_q, X_f) = P(X_f, X_q, X_p)$$
 
 此式对任意（含强非马尔可夫）稳态过程均成立，是细致平衡的定义本身，不附加任何马尔可夫前提。
 
-**第二步（时间反演不对称度量）。** 稳态熵产生率 $\sigma$ 度量过程偏离时间反演对称的程度。记 $\mathbb{P}$ 为正向路径测度，$\tilde{\mathbb{P}}$ 为其在时间反演算子 $\Theta$ 作用下的路径测度（即 $\tilde{\mathbb{P}} = \Theta_{*}\mathbb{P}$，下标 $*$ 表示测度的推前）。则 $\sigma$ 可写为两者之间的 Kullback-Leibler 散度率（[Lynn 等，2021](https://doi.org/10.1073/pnas.2109889118)）（C3.12）：
+**第二步（时间反演不对称度量）。** 稳态熵产生率 $\sigma$ 度量过程偏离时间反演对称的程度。记 $\mathbb{P}$ 为正向路径测度，$\tilde{\mathbb{P}}$ 为其在时间反演算子 $\Theta$ 作用下的路径测度（即 $\tilde{\mathbb{P}} = \Theta_{*}\mathbb{P}$ ，下标 $*$ 表示测度的推前）。则 $\sigma$ 可写为两者之间的 Kullback-Leibler 散度率（[Lynn 等，2021](https://doi.org/10.1073/pnas.2109889118)）（C3.12）：
 
 $$\sigma = \lim_{T \to \infty} \frac{1}{T} D_{KL}\left( \mathbb{P}_{[0,T]} \,\|\, \tilde{\mathbb{P}}_{[0,T]} \right) \ge 0$$
 
