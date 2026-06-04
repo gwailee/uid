@@ -226,21 +226,25 @@ None of the four terms can be omitted: removing the gradient term means the inab
 
 ```mermaid
 graph TD
-    A["Naive question: how do living things learn the most knowledge with the least energy?"]
-    B["Two CID-tier working axioms<br/>(memory + non-equilibrium)<br/>(equivalently derived from the three basic open-system axioms via projection)<br/>+ geometric convention G (Fisher background metric)"]
+    A["Naive question: how does a living thing learn the most knowledge with the least energy?"]
+    B["Two working axioms at the CID tier<br/>(memory + non-equilibrium)<br/>(equivalently derived from the three base axioms of open systems via projection)<br/>+ geometric convention G (Fisher background metric)"]
     C["Mori-Zwanzig projection-operator formalism"]
     D1["Input 1: curl form<br/>→ multi-bath competition"]
     D2["Input 2: colored noise<br/>→ sub-Ohmic environment"]
     D3["Input 3: potential shape<br/>→ maximum-entropy principle"]
-    E["Complete CID master equation<br/>(structure fixed by the two working axioms,<br/>detail supplied by the three inputs,<br/>written on the Fisher background)"]
-    F["All mainstream architectures are its special solutions"]
+    E["Complete CID master equation<br/>(structure fixed by the two working axioms,<br/>details completed by the three inputs,<br/>written on the Fisher background)"]
+    F["All mainstream architectures are its special solutions<br/>(common deficiency: curl v ≡ 0)"]
     G1["Transformer"]
     G2["Mamba"]
     G3["Diffusion"]
+    G4["World Model"]
+    G5["JEPA"]
+    G6["Reasoning (R1/o-series)"]
+    G7["MoE sparse routing"]
     H["Falsifiable predictions"]
     I1["Hurst≈0.7"]
     I2["τ≈1.5"]
-    I3["about 5 to 10 times efficiency"]
+    I3["about 5 to 10× efficiency<br/>(order-of-magnitude origin in C14.2-bis)"]
 
     A --> B
     B --> C
@@ -254,9 +258,17 @@ graph TD
     F --> G1
     F --> G2
     F --> G3
+    F --> G4
+    F --> G5
+    F --> G6
+    F --> G7
     G1 --> H
     G2 --> H
     G3 --> H
+    G4 --> H
+    G5 --> H
+    G6 --> H
+    G7 --> H
     H --> I1
     H --> I2
     H --> I3
