@@ -2193,7 +2193,7 @@ $$
 三层由两次解冻连接、由两次极限回退闭合，回退链为下式，标记（终.2）：
 
 $$
-\text{FID} \xrightarrow{\text{度量固定}} \text{QID} \xrightarrow[t \gg \tau_\varphi]{\hbar \to 0} \text{CID} \xrightarrow{v = 0,\ \delta\ \text{记忆},\ \text{白噪声}} \text{Transformer / Mamba / 扩散模型}
+\text{FID} \xrightarrow{\text{度量固定}} \text{QID} \xrightarrow[t \gg \tau_\varphi]{\hbar \to 0} \text{CID} \xrightarrow{v = 0,\ \delta\ \text{记忆},\ \text{白噪声}} \text{Transformer / Mamba / 扩散模型 ...}
 $$
 
 须诚实标注：CID→现有架构的回退是严格的（C 第 6 章逐项取极限）；QID→CID 回退依赖 Wigner 收敛假设（Q9.6）；FID→CID/QID 回退依赖度量固定极限（F8）。后两处的严格收敛条件均为开放问题。
