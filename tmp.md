@@ -612,7 +612,7 @@ $$T_{eff}(\omega) = \frac{\sum_a k_B T_a\, \mathrm{Re}\,\gamma_a(\omega)}{\sum_a
 
 $$P(\varphi) \propto \exp\left[ \sum_\mu \lambda_\mu\, f_\mu(\varphi) \right]$$
 
-其中 $f_\mu$ 为约束对应的特征函数，$\lambda_\mu$ 为拉格朗日乘子。由 $P_{ss} \propto \exp[-U/D]$ ，得势能（C7.2）：
+其中 $f_\mu$ 为约束对应的特征函数， $\lambda_\mu$ 为拉格朗日乘子。由 $P_{ss} \propto \exp[-U/D]$ ，得势能（C7.2）：
 
 $$U(\varphi) = -D \sum_\mu \lambda_\mu\, f_\mu(\varphi)$$
 
@@ -654,7 +654,7 @@ $$S(\omega) \propto \frac{1}{\omega^{\beta}}, \qquad \beta \approx 1$$
 
 #### C8.3 证伪强度的诚实评估
 
-须诚实指出：上述三组指数的预言区间相当宽，其可证伪强度有限。它们能排除白噪声等平凡情形（$H = 0.5$、$\beta = 0$），但难以把 CID 与其他同样表现出自组织临界的模型区分开。真正具有区分力的证伪点是参数效率承诺（C 第 13 章）与关联长度标度，而非这三组指数本身。本文将这三组指数定位为"一致性检验"（系统若与之矛盾则被证伪，但与之相符并不唯一支持 CID），而非"判决性证据"。
+须诚实指出：上述三组指数的预言区间相当宽，其可证伪强度有限。它们能排除白噪声等平凡情形（ $H = 0.5$、 $\beta = 0$ ），但难以把 CID 与其他同样表现出自组织临界的模型区分开。真正具有区分力的证伪点是参数效率承诺（C 第 13 章）与关联长度标度，而非这三组指数本身。本文将这三组指数定位为"一致性检验"（系统若与之矛盾则被证伪，但与之相符并不唯一支持 CID），而非"判决性证据"。
 
 ### C 第 9 章：CID 主方程的完整形式与守恒结构
 
@@ -678,7 +678,7 @@ $$\frac{d\langle E \rangle}{dt} = \underbrace{-\langle \|\nabla U\|^2 \rangle}_{
 
 $$\sigma = \frac{1}{D} \int_{\mathbb{M}} \frac{\|J_{ss}(\varphi)\|^2}{P_{ss}(\varphi)}\, d\varphi \ge 0$$
 
-由命题 C3.2，$J_{ss} = v P_{ss}$ ，故 $\sigma > 0 \iff v \not\equiv 0$ 。这把 C 第 3 章的预测必要性（命题 C3.3）与本章的能量收支统一起来：维持预测能力须持续的熵产生，而熵产生由旋度环流承载。
+由命题 C3.2， $J_{ss} = v P_{ss}$ ，故 $\sigma > 0 \iff v \not\equiv 0$ 。这把 C 第 3 章的预测必要性（命题 C3.3）与本章的能量收支统一起来：维持预测能力须持续的熵产生，而熵产生由旋度环流承载。
 
 #### C9.3 四项缺失的工程后果对照表
 
@@ -704,11 +704,11 @@ $$\varphi_{t+1} = \varphi_t - \eta\, \nabla U(\varphi_t) = \mathrm{softmax}\!\le
 
 **极限 1（旋度归零，$v \equiv 0$）。** Transformer 的力场是纯能量梯度，无非保守分量，故恒处细致平衡（命题 C3.2），无内禀预测能力（命题 C3.3）。
 
-**极限 2（白噪声/无噪声）。** 标准 Transformer 前向是确定性的（$\xi \equiv 0$），或在采样温度处引入单一尺度白噪声，缺失 $1/f$ 色噪声。
+**极限 2（白噪声/无噪声）。** 标准 Transformer 前向是确定性的（ $\xi \equiv 0$ ），或在采样温度处引入单一尺度白噪声，缺失 $1/f$ 色噪声。
 
-**极限 3（无记忆核，$\gamma \to \delta$）。** Transformer 以显式 KV 缓存代替物理记忆核，对应记忆核退化为瞬时项，缺失幂律长记忆。
+**极限 3（无记忆核， $\gamma \to \delta$ ）。** Transformer 以显式 KV 缓存代替物理记忆核，对应记忆核退化为瞬时项，缺失幂律长记忆。
 
-故 CID 主方程在 $v \equiv 0$、$\xi \equiv 0$、$\gamma \to \delta$ 三重极限下还原为 Transformer 的能量梯度流（C10.2）：
+故 CID 主方程在 $v \equiv 0$、 $\xi \equiv 0$、 $\gamma \to \delta$ 三重极限下还原为 Transformer 的能量梯度流（C10.2）：
 
 $$\frac{d\varphi}{dt} = -\nabla U(\varphi) \quad \xrightarrow{\text{离散化}} \quad \text{softmax 注意力}$$
 
@@ -989,7 +989,7 @@ $$\frac{d^2 \varphi^i}{dt^2} + \Gamma^i_{jk}\, \frac{d\varphi^j}{dt}\, \frac{d\v
 
 FID 框架在类比意义下衍生若干概念，全部为实证等级 D 的哲学猜想，列出仅供启发，不作定量引用：
 
-- **智能引力波**：信息度量扰动的传播（F4.1）：$\Box\, h_{ij} = -16\pi\kappa\, T_{ij}^{\text{(info)}}$ ；
+- **智能引力波**：信息度量扰动的传播（F4.1）： $\Box\, h_{ij} = -16\pi\kappa\, T_{ij}^{\text{(info)}}$ ；
 - **信息黑洞**：信息曲率发散区域，对应学习中的不可逃逸吸引盆；
 - **信息光速**：信息传播的上界速度，对应学习动力学的因果锥；
 - **全息原理**：体信息由边界信息编码的类比。
