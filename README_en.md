@@ -225,13 +225,13 @@ print('✓ Download complete')
 ### Step 4: Verify Data Loading
 
 ```bash
-# Verify pretraining data
+# Verify pretraining data：if error,please find if bert-base-chinese has content
 python data_loaders.py \
     --data_path data/minimind/pretrain.jsonl \
     --tokenizer_path tokenizers/bert-base-chinese \
     --max_length 512
 
-# Verify SFT data
+# Verify SFT data：if error,please find if bert-base-chinese has content
 python data_loaders.py \
     --data_path data/minimind/sft.jsonl \
     --tokenizer_path tokenizers/bert-base-chinese \
