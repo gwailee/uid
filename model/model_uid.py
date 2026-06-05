@@ -8,15 +8,6 @@
 #   * UIDModel: expose set_noise_injection / set_energy_monitoring /
 #     fluctuation_dissipation_consistency at the TOP level — README's
 #     critical-exponent measurement workflow depends on these.
-# UPDATE: 2026-06-05
-#   * FIX-4: Add ``position_offset`` parameter to ``forward()`` so that
-#     ``generate()`` can pass the true absolute position of the cropped
-#     window instead of always starting from 0.  When the full sequence
-#     length exceeds ``max_position_embeddings``, the model crops to the
-#     last ``max_position_embeddings`` tokens, but previously re-indexed
-#     positions from 0 — making every token in the window believe it was
-#     near the beginning of the sequence.  The fix passes the real start
-#     index, clamped so positions never exceed the embedding table size.
 #
 # This file is part of the UID Theory reference implementation.
 #
@@ -34,29 +25,6 @@
 """Causal language model built from CID/QID/FID blocks.
 
 由 CID/QID/FID 块组成的因果语言模型。
-
-修复说明（v2.2 FIX-4）
------------------------
-原版 generate() 的位置编码错误：
-
-    generate() 中每一步都把 input_ids 裁剪到最后 max_position_embeddings
-    个 token，然后调用 forward()。forward() 里：
-        pos = torch.arange(s)   # 永远从 0 开始
-    这使裁剪窗口内的所有 token 都使用 [0, 1, ..., s-1] 的位置，
-    而非它们在完整序列中的真实位置（如 [156, 157, ..., 2047]）。
-
-修复方案：
-    1. forward() 新增可选参数 position_offset: int = 0。
-       实际位置向量为：
-           pos = arange(offset, offset + s).clamp(max=max_pos_emb - 1)
-       clamp 保证不超出嵌入表大小，同时保留相对顺序。
-
-    2. generate() 追踪已生成的总长度 total_len，每步计算正确的
-       position_offset = max(0, total_len - s) 并传入 forward()。
-
-    注意：绝对位置嵌入的根本局限（训练/推理长度不一致）需要 RoPE 等
-    相对位置编码才能彻底解决。本修复在现有绝对嵌入框架内最大化位置
-    信息的准确性。
 """
 
 from __future__ import annotations
@@ -69,7 +37,7 @@ import torch.nn.functional as F
 from transformers import PretrainedConfig, PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
-from uid_theory.cid.cid_layer import CIDBlock
+from cid.cid_layer import CIDBlock
 
 
 class UIDConfig(PretrainedConfig):
@@ -261,7 +229,6 @@ class UIDModel(PreTrainedModel):
         attention_mask: Optional[torch.Tensor] = None,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-        position_offset: int = 0,
         **kwargs,
     ) -> CausalLMOutputWithPast:
         """Run the language model.
@@ -275,15 +242,6 @@ class UIDModel(PreTrainedModel):
             output_hidden_states: If True, returns per-layer hidden
                                   states. 是否返回每层隐状态。
             return_dict:          Always returns ``CausalLMOutputWithPast``.
-            position_offset:      Starting absolute position of the first
-                                  token in ``input_ids``.  Defaults to 0
-                                  (normal training / short-context inference).
-                                  Set to ``total_generated - s`` in
-                                  ``generate()`` to preserve true positions
-                                  when the context window is sliding.
-                                  第一个 token 的真实绝对位置偏移量。
-                                  训练时为 0；generate() 长序列推理时由
-                                  调用方传入正确偏移以修正位置嵌入。
 
         Returns:
             A :class:`CausalLMOutputWithPast`.
@@ -300,17 +258,7 @@ class UIDModel(PreTrainedModel):
             )
 
         device = input_ids.device
-        max_pos = self.config.max_position_embeddings
-
-        # FIX-4: Use true absolute positions instead of always starting from 0.
-        # Clamp to [0, max_pos-1] so we never index outside the embedding table.
-        #
-        # 修复4：使用真实绝对位置而非永远从 0 开始。
-        # clamp 保证不超出位置嵌入表范围。
-        pos = torch.arange(
-            position_offset, position_offset + s, device=device
-        ).clamp(max=max_pos - 1)
-
+        pos = torch.arange(s, device=device)
         x = self.drop(self.tok_emb(input_ids) + self.pos_emb(pos)[None])
 
         # Causal mask: True = blocked.
@@ -373,25 +321,9 @@ class UIDModel(PreTrainedModel):
             Tensor of shape (B, S0 + max_new_tokens). 生成结果。
         """
         self.eval()
-        max_pos = self.config.max_position_embeddings
-
         for _ in range(max_new_tokens):
-            total_len = input_ids.shape[1]
-            # Crop context to last max_pos tokens if needed.
-            # 超出最大长度时裁剪到最后 max_pos 个 token。
-            cropped = input_ids[:, -max_pos:]
-            s = cropped.shape[1]
-
-            # FIX-4: Compute the true starting position of the cropped window.
-            # If total_len <= max_pos the window is the full sequence (offset=0).
-            # Otherwise offset = total_len - s, i.e. the index of the first
-            # token in the cropped window within the full generated sequence.
-            #
-            # 修复4：计算裁剪窗口在完整序列中的真实起始位置。
-            # 若未裁剪 offset=0；若裁剪 offset = total_len - s。
-            position_offset = max(0, total_len - s)
-
-            out = self.forward(cropped, position_offset=position_offset)
+            cropped = input_ids[:, -self.config.max_position_embeddings :]
+            out = self.forward(cropped)
             logits = out.logits[:, -1, :] / max(float(temperature), 1.0e-6)
             if top_k > 0:
                 v, _ = torch.topk(logits, top_k)
