@@ -7,27 +7,6 @@
 #   * Default noise: switch to OrnsteinUhlenbeckNoise (physical, §14.2)
 #   * Add set_energy_monitoring() for ET Lyapunov verification (§8.5)
 #   * Add fluctuation-dissipation consistency check helper
-# UPDATE: 2026-06-05
-#   * FIX-3: Apply memory kernel to the pre-residual state x (before norm1),
-#     not to the LayerNorm output h.  Theory (C5.3) requires the kernel to
-#     integrate over the actual state trajectory φ(t); normalising the input
-#     before the integral destroys the power-law statistics of the trajectory.
-#     The memory term is now computed from x and then added into the residual
-#     stream alongside the other terms.
-#
-# This file is part of the UID Theory reference implementation.
-#
-# DUAL LICENSE:
-#   - PolyForm Noncommercial License 1.0.0  (academic / personal use)
-#     see LICENSE-NONCOMMERCIAL in the project root
-#   - Commercial License from Suzhou Jodell Robotics Co., Ltd.
-#     (required for any commercial / for-profit / production use)
-#     see LICENSE-COMMERCIAL in the project root
-#
-# For commercial licensing inquiries, contact: lig@jodell.cn
-# 本文件采用双许可证发布；商业使用须先获得苏州钧舵机器人有限公司书面授权，
-# 商业授权联系: lig@jodell.cn
-
 """CID layer: Euler-Maruyama discretisation of the CID master equation.
 
 CID 主层 —— CID 主方程的 Euler-Maruyama 离散化实现。
@@ -53,25 +32,6 @@ KEY CHANGES in v2.1:
            model.eval()
            model.set_noise_injection(False)
            # ... measure spectra, Hurst, avalanches ...
-
-KEY CHANGES in v2.2 (2026-06-05):
-    5. FIX-3: Memory kernel now operates on the raw residual state x,
-       not on the LayerNorm output h.  See module-level docstring for
-       the physical motivation.
-
-修复说明（v2.2 FIX-3）
------------------------
-原代码：
-    h = norm1(x)
-    mem_term = -exp(log_w_mem) * self.memory(h)   # ← 对 norm(x) 积分
-
-理论 (C5.3) 要求记忆核积分在真实状态轨迹 φ(t) 上执行，即对 x（残差流）
-而非 norm1(x) 积分。LayerNorm 会破坏 x 的幂律自相关统计，使记忆核丧失
-物理意义（Hurst 指数 H≈0.7 的长程关联来自真实轨迹，而非归一化后的值）。
-
-修复后：
-    h = norm1(x)
-    mem_term = -exp(log_w_mem) * self.memory(x)   # ← 对原始 x 积分
 """
 
 from __future__ import annotations
@@ -298,18 +258,6 @@ class CIDLayer(nn.Module):
                       + xi(t)             (OU colored noise)
         followed by the standard FFN residual block.
 
-        Memory kernel note (FIX-3, v2.2):
-            The memory term is computed from the raw residual state ``x``,
-            NOT from the LayerNorm output ``h``.  Theory §5 requires the
-            kernel to integrate the actual state trajectory φ(t); applying
-            LayerNorm before the integral destroys the power-law
-            autocorrelation statistics of the trajectory.
-
-        记忆核说明（FIX-3，v2.2）：
-            记忆项作用于原始残差流 x，而非 LayerNorm 输出 h。
-            理论 §5 要求对真实轨迹 φ(t) 积分；在积分前施加 LayerNorm
-            会破坏轨迹的幂律自相关统计。
-
         Args:
             x:           Input tensor of shape (B, S, H). 输入张量。
             causal_mask: Optional boolean mask of shape (S, S);
@@ -342,16 +290,9 @@ class CIDLayer(nn.Module):
             info.update({f"vortex_{k}": val for k, val in vinfo.items()})
 
         # ----- 3. Sub-Ohmic memory damping ----------------------------
-        # FIX-3: Integrate over x (raw residual state), NOT over h = norm1(x).
-        # Theory §5 (C5.3) requires the memory integral on the real trajectory
-        # φ(t).  LayerNorm applied before the integral would destroy the
-        # power-law autocorrelation of the trajectory that underpins H≈0.7.
-        #
-        # 修复3：对原始残差流 x 积分，而非 norm1(x) 的输出 h。
-        # 理论 §5 要求在真实轨迹上积分；归一化会破坏幂律自相关统计。
-        mem_term = torch.zeros_like(x)
+        mem_term = torch.zeros_like(h)
         if self.memory is not None:
-            mem_term = -torch.exp(self.log_w_mem) * self.memory(x)
+            mem_term = -torch.exp(self.log_w_mem) * self.memory(h)
 
         # ----- 4. Colored fluctuation ---------------------------------
         # Four conditions ALL must hold to actually inject:
