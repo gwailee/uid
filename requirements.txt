@@ -21,3 +21,5 @@ datasets>=2.14.0  # for loading WikiText, etc.
 tqdm>=4.65.0
 
 protobuf>=7.35.0
+
+typeguard>=4.15.0
