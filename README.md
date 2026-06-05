@@ -226,13 +226,13 @@ print('✓ 下载完成')
 ### 步骤 4：验证数据加载
 
 ```bash
-# 验证预训练数据
+# 验证预训练数据:如果出错，请检查tokenizer_path，确定bert-base-chinese有内容
 python data_loaders.py \
     --data_path data/minimind/pretrain.jsonl \
     --tokenizer_path tokenizers/bert-base-chinese \
     --max_length 512
 
-# 验证 SFT 数据
+# 验证 SFT 数据:如果出错，请检查tokenizer_path，确定bert-base-chinese有内容
 python data_loaders.py \
     --data_path data/minimind/sft.jsonl \
     --tokenizer_path tokenizers/bert-base-chinese \
