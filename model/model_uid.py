@@ -69,7 +69,7 @@ import torch.nn.functional as F
 from transformers import PretrainedConfig, PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
-from cid.cid_layer import CIDBlock
+from uid_theory.cid.cid_layer import CIDBlock
 
 
 class UIDConfig(PretrainedConfig):
