@@ -276,14 +276,17 @@ class UIDModel(PreTrainedModel):
         )
         x = self.norm(x)
         logits = self.lm_head(x)
-
+        
         loss = None
         if labels is not None:
-            shift_logits = logits[..., :-1, :].contiguous()
-            shift_labels = labels[..., 1:].contiguous()
+            # data_loaders.py ALREADY left-shifts labels
+            #   (labels[i] = input_ids[i+1], last position == -100),
+            #   so do NOT shift again here — a second shift causes a
+            #   double-shift bug. See
+            #   tests/test_uid_causality.py::test_label_no_double_shift.
             loss = F.cross_entropy(
-                shift_logits.view(-1, self.config.vocab_size),
-                shift_labels.view(-1),
+                logits.view(-1, self.config.vocab_size),
+                labels.view(-1),
                 ignore_index=-100,
             )
 
