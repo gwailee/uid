@@ -24,6 +24,8 @@ Both datasets index records by byte offset (built once on construction)
 so opening even multi-GB files takes microseconds per sample without
 keeping the whole file in RAM.
 
+
+
 设计原则：按字节偏移建立索引；容忍空行、编码错误、缺字段的不完整行；
 labels 与 input_ids 严格错位并把 pad 位置置为 -100；通过 collate_fn
 工厂函数让 DataLoader 直接可用；本模块名称以 ``test_`` 开头是历史原因，
@@ -222,10 +224,15 @@ class PretrainJsonl(Dataset):
         * ``"attention_mask"``: (max_length,) torch.bool; True where
                                 ``input_ids[i] != pad_id``.
 
-    The standard next-token language-model setup is implemented:
-    ``labels`` equals ``input_ids`` rolled left by one position, with
-    the final label set to IGNORE_INDEX. The model code is then free
-    to perform its own ``shift_logits = logits[..., :-1, :]`` slice.
+     ``labels`` equals ``input_ids`` rolled left by one position, with
+-    the final label set to IGNORE_INDEX. The model code is then free
+-    to perform its own ``shift_logits = logits[..., :-1, :]`` slice.
++    the final label set to IGNORE_INDEX. Because the shift is done HERE,
++    the model must compute the loss directly as
++    ``cross_entropy(logits, labels)`` and MUST NOT shift again
++    (no ``logits[..., :-1, :]`` / ``labels[..., 1:]``), otherwise a
++    double-shift bug is introduced.
+
     """
 
     def __init__(
