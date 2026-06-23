@@ -1461,7 +1461,7 @@ Per-term contributions (relative to `cid_full`, perplexity 23.62):
 |---|---|---|---|---|
 | Remove colored damping ($\int\gamma$) | `cid_no_memory` | 28.65 | **+21.3%** | **Largest single physical contributor**; maps to the $\int\gamma$ term Transformer discards |
 | Remove colored noise (presence) | `cid_no_noise` | 23.79 | +0.7% | Presence matters little; *type* is what matters (see Contrast C) |
-| Remove vortex ($v(\varphi)$) | `cid_no_vortex` | 23.71 | +0.4% | Small ablation effect; its *necessity* should be tested via critical exponents (Prop. C3.3), see 16.4 |
+| Remove vortex ( $v(\varphi)$ ) | `cid_no_vortex` | 23.71 | +0.4% | Small ablation effect; its *necessity* should be tested via critical exponents (Prop. C3.3), see 16.4 |
 | Disable ET symmetric term | `cid_full_no_et` | 22.87 | **−3.2%** | ET (borrowed, Hoover 2023) gives no benefit; F8 FAIL |
 | OU → FFT noise | `cid_full_fft_noise` | 169.93 | **+619%** | OU far superior to FFT; supports §14.2 |
 
