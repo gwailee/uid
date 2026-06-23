@@ -1417,7 +1417,7 @@ Two **boundary conditions** must be stated up front to preclude over-reading:
 
 We report all results under our commitment to "no selective reporting, no retroactive adjustment, negative results with equal prominence," including three FAILs and one non-discriminating INCONCLUSIVE.
 
-#### 16.1 Framework Advantage (T1): Dual Evidence from Ablation and Scaling Law
+#### C16.1 Framework Advantage (T1): Dual Evidence from Ablation and Scaling Law
 
 **Ablation (single-epoch training).** With an attention backbone identical to the standard one, adding only UID's three physical terms (vortex $v(\varphi)$, colored-damping memory kernel $\int\gamma$, OU colored noise $\xi$) lowers perplexity from the plain-Transformer baseline of 73.58 to 22.87 (`cid_full_no_et`), a **3.22× advantage**. The 11 variants form two clean tiers: all CID variants cluster at perplexity 22.9–28.7, all Transformer variants at 72.8–73.6.
 
@@ -1435,7 +1435,7 @@ After full training, `cid_full` reaches perplexity **7.90** (std ≈ 0.01), a **
 2. **Training loss is also far lower** (2.355 vs 3.345), ruling out a "CID merely wins via some regularization/generalization trick" explanation — CID fits the training distribution better and generalizes better.
 3. **Near-zero cross-seed variance**, indicating a stable architectural difference rather than a lucky seed.
 
-### 16.2 "Attention Is Not All You Need": Three Independent Replications
+### C16.2 "Attention Is Not All You Need": Three Independent Replications
 
 Known Transformer tricks are useless across three independent experiments:
 
@@ -1445,7 +1445,7 @@ Known Transformer tricks are useless across three independent experiments:
 
 CID's advantage therefore **cannot be attributed to "more tricks"** but arises from architecture-level physical reconstruction — consistent with this paper's central "attention is not all you need" thesis.
 
-#### 16.3 The Three Critical Contrasts and Per-Term Contributions
+#### C16.3 The Three Critical Contrasts and Per-Term Contributions
 
 `run_ablation.py` emits three pre-registered critical contrasts:
 
@@ -1467,7 +1467,7 @@ Per-term contributions (relative to `cid_full`, perplexity 23.62):
 
 **The colored-damping memory kernel is the single largest physical contributor** (removing it raises perplexity by 21.3%), directly corresponding to the $\int\gamma$ colored-damping term the theory says Transformer discards. **OU colored noise vastly outperforms FFT spectral shaping** (`cid_full_fft_noise` perplexity 169.93, the worst in the suite, with the highest variance and least stable training), the strongest single-point evidence for §14.2's choice of OU as the physical default. Vortex and colored noise have small standalone ablation effects, corresponding respectively to "necessity should be tested via critical exponents" (vortex) and "type, not presence, is what matters" (noise), as discussed below.
 
-#### 16.4 Critical Exponents: Partial Support, No Discrimination from the Baseline
+#### C16.4 Critical Exponents: Partial Support, No Discrimination from the Baseline
 
 Critical exponents were measured on the trained `cid_full_10M` and `transformer_10M` checkpoints, with noise injection disabled, over 2000 sequences × 512 tokens. **Note: this round fixed three toolchain bugs** (see caveat C5); after the fixes, the estimators were validated by a **shuffle-surrogate Hurst = 0.519 ≈ 0.5** (the white-noise value) and a **spectral-fit $R^2 = 0.94$**. Corrected results:
 
@@ -1485,7 +1485,7 @@ Critical exponents were measured on the trained `cid_full_10M` and `transformer_
 
 **The most important honest conclusion of this section**: none of the four critical exponents distinguish CID from a plain Transformer (H 0.80 vs 0.81; β 0.57 vs 0.71; η 0.997 vs 0.998). This precisely confirms the stance already declared in the abstract — these universal-class predictions have wide bands and limited falsifying power; they can rule out trivial cases (white noise) but cannot separate CID from other models that also exhibit self-organized criticality. We therefore **do NOT use the critical exponents as discriminating evidence that CID is superior to Transformer**, only as descriptive corroboration that "CID exhibits brain-consistent critical statistics"; the genuinely discriminating decision points are the parameter-efficiency promise and correlation-length scaling (see 16.6).
 
-#### 16.5 Decode Energy: Iso-Parameter Overhead
+#### C16.5 Decode Energy: Iso-Parameter Overhead
 
 Energy was measured in decode mode (64 new tokens per iteration, batch 8 × seq\_len 256) with pynvml high-frequency sampling @ 25 Hz. **Note: this round used a robust global idle baseline** (3-window median = 61.9 W, inter-window spread only 0.06 W), fixing a prior measurement artifact in which per-family idle power differed by ~87 W (CID 124 W vs Transformer 211 W), which had made the above-idle column non-comparable (see caveat C5).
 
@@ -1499,7 +1499,7 @@ At iso-parameter, `cid_full`'s per-token above-idle energy is only ~**13%** high
 
 We re-emphasize: this is an **iso-parameter overhead**, **not** the C13 "≥3× energy efficiency at equal performance" verdict (pre-registered condition F7). C13 must be measured at iso-performance (iso-PPL) — i.e. "how much energy a Transformer would spend to reach CID's perplexity 7.90" — but a 10M-scale Transformer cannot reach that perplexity at all (it plateaus at 31.12), so the iso-PPL energy ratio is currently undefined (the measurement tool correctly refuses to extrapolate). F7 awaits the multi-scale curve and is deferred to Phase 1b.
 
-#### 16.6 Phase 1 Falsification Scorecard
+#### C16.6 Phase 1 Falsification Scorecard
 
 | Verdict | Pre-registered condition | Note |
 |---|---|---|
@@ -1510,7 +1510,7 @@ We re-emphasize: this is an **iso-parameter overhead**, **not** the C13 "≥3× 
 
 It must be stressed: the FAILs of F3/F5 and the non-discrimination of F6 all concern the **B-grade (theoretically rigorous, empirically pending) critical-universality predictions**, which this paper has already declared to have limited discriminating power and to be non-decisive; whereas the FAIL of F8 concerns only the **non-original ET component borrowed from Hoover et al. (2023)**, and because UID's advantage *increases* rather than decreases when ET is removed (22.87 < 23.62), it actually "purifies" the attribution that "the advantage stems from UID's own physical terms." **The core decision points T2 (parameter efficiency) and C13 (energy efficiency) have not yet been tested** — none of this section's positive results (T1, Hurst, OU>FFT) or negative results (β, avalanche, η, ET) change that pending status.
 
-#### 16.7 Mapping to Theoretical Propositions
+#### C16.7 Mapping to Theoretical Propositions
 
 | Theoretical claim | Original to UID? | This round's verdict | Proper test |
 |---|---|---|---|
@@ -1522,7 +1522,7 @@ It must be stressed: the FAILs of F3/F5 and the non-discrimination of F6 all con
 | **C13**: ≥3× energy at iso-PPL (F7) | Yes | Untestable at single scale (iso-param overhead 1.13×) | Multi-scale iso-PPL (F7) |
 | **ET symmetric term (§8.5)** | **No** (Hoover 2023) | **Falsified here** (−3.2%, z=−6.39); causal-discretization caveat C4 | Ablation B |
 
-#### 16.8 Limitations and Per-Item Caveats
+#### C16.8 Limitations and Per-Item Caveats
 
 When citing any result in this section, the following per-item caveats must be cited together with it:
 
