@@ -53,30 +53,99 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 ---
 
-## ⚠️ Important Notice: v2.1 Honest Version Statement
+## ⚠️ Important Notice: v2.2 Honest-Version Statement
 
-**This repository is currently v2.1 (honest validation version + theory §8.5 / §14.2 corrections)**, a complete rewrite of v0.1 based on detailed peer review feedback, with three implementation defects inconsistent with the theory document corrected on top of v2.0, plus a complete infrastructure upgrade:
+**This repository is currently at v2.2 (Honest-Verification Edition · Phase 1 four-experiment-complete edition).** On top of v2.1, it **completes the full Phase 1 empirical suite (ablation + scaling-law family training + critical exponents + decode energy) and fixes several flaws in the energy and critical-exponent measurement toolchains**:
 
-| v2.1 Key Corrections | Corresponding Theory Section |
+| Key v2.2 progress | Theory section / fix |
 |---|---|
-| `HopfieldAttention` implements **ET symmetric dual-term update** (with Lyapunov monotonic descent guarantee) | §8.5 |
-| `VortexField` changed to **antisymmetric projection from FFN first-layer weights**, zero extra matrix parameters | §14.2 |
-| Colored noise default changed to **Ornstein-Uhlenbeck physical SDE** (FFT version retained as legacy) | §14.2 |
-| `FIDLayer` directly reports §6.1 anisotropy η and §6.2 Ricci scalar proxy to info | §6.1 / §6.2 |
-| QID / FID three-level passthrough of v2.1 key parameters + top-level API exposure | Interface consistency |
-| `run_critical_exponents.py` verdict table adds η row + three-state judgment | §6.1 |
-| `energy_meter.py` upgraded to v2.1: idle baseline + above-idle field + prefill/decode modes | §0.1 / §11.4 |
+| 10M scaling-law families trained (3 families × 3 seeds, well-converged) | T1 / T2 |
+| Energy switched to a **robust GLOBAL idle baseline** (fixing a prior artifact where CID 124 W vs Transformer 211 W idle made above-idle non-comparable) | §0.1 / §11.4 |
+| Energy comparison now in **three views: iso-parameter (neutral) + iso-performance (the C13 verdict)**, with no extrapolation | §13 |
+| Critical-exponent toolchain: fixed three bugs — degenerate noise-OFF/ON → shuffle-surrogate control; ill-conditioned per-sequence η → global covariance; erroneous Hurst differencing correction → standard DFA-2 (validated by surrogate H = 0.519) | §6.1 |
 
+The v2.2 edition:
+- ✅ Provides the **complete infrastructure** for rigorous verification (full test coverage)
+- ✅ Delivers all promised fixes: §8.5 ET correction, §14.2 zero-parameter vortex, §14.2 OU noise, §6.1 measurable η
+- ✅ **All four Phase 1 experiments completed** (ablation, scaling-law families, critical exponents, energy; see "First Empirical Results" below)
+  - ✅ **T1 (core thesis) strongly supported**: after full training, CID perplexity **7.90** vs Transformer **31.12** = **3.94×**, with FEWER parameters (4.83M vs 5.12M) and near-zero cross-seed variance (std ≈ 0.01)
+  - ✅ **"Attention is not all you need" replicated three times**: stacking known tricks is useless (ablation < 1%; in scaling-law `transformer_plus_tricks` 31.23 ≈ `transformer` 31.12 yet costs 2.3× the compute)
+  - ✅ **§14.2 OU noise supported**: OU beats FFT by **6.9×** (z = 37)
+  - ✅ **F4 Hurst supported**: H = 0.803, inside the predicted band [0.6, 0.8], far above the shuffle surrogate (0.519), demonstrating genuine long-range correlation
+  - ❌ **F3 β falsified**: β = 0.572, just below [0.7, 1.3]
+  - ❌ **F5 avalanche falsified**: tail not power-law (KS p = 0, α ≈ 3.0; with a measurement-validity caveat)
+  - ⚠️ **F6 η non-discriminating**: η = 0.997 > 0.5 but essentially identical to the Transformer baseline (0.998); the metric saturates
+  - ❌ **F8 ET term falsified**: the ET symmetric term gives no benefit and is marginally harmful (−3.2%); **note: the theory states ET is NOT original to UID and credits Hoover et al. 2023**
+  - ⏳ **Multi-scale scaling law (F1/F2) and iso-PPL energy (F7) not yet done** — these are the **only decisive tests** of T2 (5–10× parameter efficiency) and C13 (≥3× energy), deferred to Phase 1b
+- 🎯 Commits to **publishing all results** (positive or negative)
 
-v2.1 version:
-- ✅ Provides **complete infrastructure** for rigorous validation (7 new test files with full-stack coverage)
-- ✅ Completed all promised corrections: theory §8.5 ET, §14.2 zero-parameter vortex, §14.2 OU noise, §6.1 η directly measurable
-- ✅ **Phase 1 partial empirical results completed** (10M scale, 11 ablations × 3 seeds, see "First Empirical Results" below)
-  - ✅ **T1 (core claim) SUPPORTED**: CID physical terms make model **3.1× more efficient** than Transformer (z=182)
-  - ✅ **§14.2 OU noise SUPPORTED**: OU beats FFT by **6.9×** (z=62)
-  - ❌ **§8.5 ET term FALSIFIED**: ET symmetric term shows no positive contribution, even slightly harmful (−3.2%); **Note: theory explicitly credits ET to Hoover 2023, not UID original**
-- ⏳ Large-scale scaling law / critical exponents / energy experiments **not yet completed**
-- 🎯 Committed to **publicly releasing all results** (positive or negative)
+**Falsifying a theory is as valuable as confirming it** — the fundamental principle of scientific progress.
+
+---
+
+## 🧪 First Empirical Results (Phase 1 Complete · 2026-06-22)
+
+> **Status**: SUBSTANTIALLY COMPLETE (ablation + scaling-law families + critical exponents + decode energy done; multi-scale scaling law F1/F2 and iso-PPL energy F7 deferred to Phase 1b)
+> **Dataset**: MiniMind Chinese pretraining corpus, 100k subset (~10M tokens)
+> **Scale**: 10M params · **Seeds**: [42, 43, 44] · **Hardware**: NVIDIA RTX 4090 (24GB)
+> **Reproduction commands**: see Quick Start §Step 5. Full report: [`results/phase1/REPORT.md`](./results/phase1/REPORT.md).
+
+### Finding 1: With full training, CID's framework advantage GROWS (T1 strongly supported)
+
+| Family | Non-emb params | Perplexity (mean of 3 seeds) | vs CID |
+|---|---|---|---|
+| `transformer` | 5,115,136 | **31.12** | 3.94× worse |
+| `transformer_plus_tricks` | 5,213,470 | **31.23** | 3.95× worse |
+| **`cid_full`** | **4,831,268** | **7.90** (std ≈ 0.01) | — |
+
+CID reaches perplexity 7.90 with **fewer parameters**, **3.94×** below Transformer (31.12); the advantage GREW from the 3.22× seen in 1-epoch ablation, with near-zero seed variance. Known tricks (conv/linear/noise) are useless, and `transformer_plus_tricks` costs 2.3× the compute yet is worse — a third independent replication of "attention is not all you need."
+
+### Finding 2: Ablation — UID's original physical terms supported, the borrowed ET term falsified
+
+| Contrast | Meaning (theory §) | `cid_full` | Control | Ratio | z-score | Verdict |
+|---|---|---|---|---|---|---|
+| **A** | CID physical framework vs known tricks (T1) | 23.62 | `transformer_plus_all_tricks` = 73.33 | **3.10×** | 182.19 | ✅ supported |
+| **C** | §14.2 OU vs FFT noise | 23.62 | `cid_full_fft_noise` = 169.93 | **6.87×** | 37.14 | ✅ supported |
+| **B** | §8.5 ET symmetric term (F8) | 23.62 | `cid_full_no_et` = 22.87 | 0.97× | −6.39 | ❌ **not_supported** |
+
+The **colored-damping memory kernel is the single largest physical contributor** (removing it raises perplexity by 21%). The ET falsification concerns only the borrowed, non-original component; removing it makes CID *better*, "purifying" the attribution of the advantage to UID's own terms.
+
+### Finding 3: Critical exponents — partial support, and NO discrimination from baseline (consistent with the theory's own caveat)
+
+> Tooling validated after fixes: shuffle-surrogate Hurst = 0.519 ≈ 0.5; spectral-fit R² = 0.94.
+
+| Exponent (F#) | Predicted | `cid_full` | Transformer baseline | Verdict |
+|---|---|---|---|---|
+| **Hurst (F4)** | [0.6, 0.8] | **0.803** (surrogate 0.519) | 0.813 | ✅ **PASS** |
+| **β 1/f (F3)** | [0.7, 1.3] | **0.572** (R²=0.94) | 0.709 | ❌ FAIL |
+| **Avalanche τ (F5)** | ~1.5 | not power-law (α≈3.0, p=0) | not power-law | ❌ FAIL |
+| **η anisotropy (F6)** | > 0.5 | 0.997 | 0.998 | ⚠️ no discrimination |
+
+**Key honesty point**: none of the four exponents distinguish CID from a plain Transformer — exactly as the theory's abstract pre-states ("these universal exponents have limited falsifying power and cannot separate CID from other critical models"). They support the *descriptive* claim that CID shows brain-like critical statistics, but are **not** independent evidence that CID is superior to Transformer.
+
+### Finding 4: Energy — clean after the idle fix; the iso-PPL verdict awaits multi-scale
+
+> Robust shared idle baseline = 61.9 W (inter-window spread 0.06 W), fixing a prior 87 W CID/Transformer idle artifact.
+
+| Family | Perplexity | above-idle energy (mJ/token) | vs baseline |
+|---|---|---|---|
+| `transformer` | 31.12 | **0.141** | 1.00× |
+| **`cid_full`** | **7.90** | 0.160 | 1.13× (overhead) |
+| `transformer_plus_tricks` | 31.23 | 0.164 | 1.17× |
+
+At iso-parameter, CID's per-token energy is only ~**13%** higher (and *lower* than tricks, with the fewest params and the lowest peak power), yet it buys a **3.9×** perplexity advantage — i.e. "3.9× quality for 13% more energy." **Note: this is the iso-parameter overhead, NOT the C13 ≥3× energy verdict (F7)**, which must be measured on a multi-scale iso-PPL curve where the Transformer reaches CID's perplexity; it is untestable at a single scale and is deferred to Phase 1b.
+
+### Phase 1 falsification scorecard
+
+| Verdict | Conditions |
+|---|---|
+| ✅ PASS (1) | F4 (Hurst) |
+| ❌ FAIL (3) | F3 (β), F5 (avalanche), F8 (borrowed ET) |
+| ⚠️ INCONCLUSIVE (1) | F6 (η, no discrimination) |
+| ⏳ ABSTAIN (3) | F1/F2 (multi-scale not run), F7 (iso-PPL untestable at single scale) |
+
+> All negative results are presented with **equal prominence** to positive ones and are permanently retained. Cite these results with the v2.2 commit hash and the per-claim caveats in [`results/phase1/REPORT.md`](./results/phase1/REPORT.md) §6.
+
 
 **Falsifying a theory is as valuable as confirming it** — this is the fundamental principle of scientific progress.
 
