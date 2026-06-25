@@ -1435,7 +1435,7 @@ After full training, `cid_full` reaches perplexity **7.90** (std ≈ 0.01), a **
 2. **Training loss is also far lower** (2.355 vs 3.345), ruling out a "CID merely wins via some regularization/generalization trick" explanation — CID fits the training distribution better and generalizes better.
 3. **Near-zero cross-seed variance**, indicating a stable architectural difference rather than a lucky seed.
 
-### C16.2 "Attention Is Not All You Need": Three Independent Replications
+#### C16.2 "Attention Is Not All You Need": Three Independent Replications
 
 Known Transformer tricks are useless across three independent experiments:
 
