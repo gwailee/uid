@@ -1,0 +1,13 @@
+[
+  {
+    "model_family": "cid_full",
+    "scale_name": "10M",
+    "non_emb_params": 4831268,
+    "train_flops": 2.80093805853888e+16,
+    "final_train_loss": 2.3553220909345827,
+    "final_eval_loss": 2.067268903262274,
+    "final_eval_ppl": 7.903209187587148,
+    "wall_clock_seconds": 8580.194590330124,
+    "seed": 43
+  }
+]

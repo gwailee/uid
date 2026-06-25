@@ -1,0 +1,12 @@
+{
+  "mode": "decode",
+  "idle_W": 69.97,
+  "above_idle_mJ_per_token": {
+    "cid_full": 265.26,
+    "transformer": 221.69,
+    "transformer_plus_tricks": 259.7
+  },
+  "iso_parameter_overhead_cid_vs_tf": 1.197,
+  "iso_performance_C13": "NOT_COMPUTABLE: transformer cannot reach CID ppl range within measured scaling (10M-30M); script refuses extrapolation. iso-PPL energy advantage is a lower bound favoring CID.",
+  "target_ppl_tested": 28.0
+}

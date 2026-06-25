@@ -1,0 +1,124 @@
+{
+  "summary": [
+    {
+      "ablation": "cid_full_no_et",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.12993105104427,
+      "eval_loss_std": 0.007415554595063704,
+      "eval_ppl_mean": 22.87303210101639,
+      "eval_ppl_std": 0.16991964267547344
+    },
+    {
+      "ablation": "cid_full",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.16191244330945,
+      "eval_loss_std": 0.004500295286087111,
+      "eval_ppl_mean": 23.61595573686787,
+      "eval_ppl_std": 0.1063494717380194
+    },
+    {
+      "ablation": "cid_no_vortex",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.165731223267081,
+      "eval_loss_std": 0.008436020741584359,
+      "eval_ppl_mean": 23.70691492718095,
+      "eval_ppl_std": 0.19972354352972513
+    },
+    {
+      "ablation": "cid_no_noise",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.1690695704543574,
+      "eval_loss_std": 0.0014551199070083213,
+      "eval_ppl_mean": 23.78536865826243,
+      "eval_ppl_std": 0.03462205700373344
+    },
+    {
+      "ablation": "cid_no_memory",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.3552265789679026,
+      "eval_loss_std": 0.008874038715567325,
+      "eval_ppl_mean": 28.65322202716978,
+      "eval_ppl_std": 0.2537391112665146
+    },
+    {
+      "ablation": "transformer_plus_conv",
+      "n_seeds": 3,
+      "eval_loss_mean": 4.287898534809522,
+      "eval_loss_std": 0.006087240178802059,
+      "eval_ppl_mean": 72.81464249330922,
+      "eval_ppl_std": 0.4434580536585937
+    },
+    {
+      "ablation": "transformer_plus_all_tricks",
+      "n_seeds": 3,
+      "eval_loss_mean": 4.294903120993783,
+      "eval_loss_std": 0.009786285345016833,
+      "eval_ppl_mean": 73.32862565393849,
+      "eval_ppl_std": 0.7188121824464193
+    },
+    {
+      "ablation": "transformer_plus_noise",
+      "n_seeds": 3,
+      "eval_loss_mean": 4.297996403539186,
+      "eval_loss_std": 0.0019472004340359572,
+      "eval_ppl_mean": 73.55241638625259,
+      "eval_ppl_std": 0.14331507704709345
+    },
+    {
+      "ablation": "transformer_plus_linear",
+      "n_seeds": 3,
+      "eval_loss_mean": 4.298226732034721,
+      "eval_loss_std": 0.0017325158280602252,
+      "eval_ppl_mean": 73.5693303948496,
+      "eval_ppl_std": 0.12739077658320744
+    },
+    {
+      "ablation": "transformer_baseline",
+      "n_seeds": 3,
+      "eval_loss_mean": 4.298330453787563,
+      "eval_loss_std": 0.002702693951127827,
+      "eval_ppl_mean": 73.57711974021835,
+      "eval_ppl_std": 0.1987129756806761
+    },
+    {
+      "ablation": "cid_full_fft_noise",
+      "n_seeds": 3,
+      "eval_loss_mean": 5.08769176799687,
+      "eval_loss_std": 0.05395902310431962,
+      "eval_ppl_mean": 162.2543718377997,
+      "eval_ppl_std": 8.913483183142164
+    }
+  ],
+  "critical_comparisons": [
+    {
+      "title": "A: cid_full vs transformer_plus_all_tricks (UID框架 vs 已知技巧)",
+      "name_a": "cid_full",
+      "name_b": "transformer_plus_all_tricks",
+      "loss_a": 3.16191244330945,
+      "loss_b": 4.294903120993783,
+      "advantage": 1.1329906776843326,
+      "z_score": 182.18515007293107,
+      "verdict": "supported"
+    },
+    {
+      "title": "B: cid_full vs cid_full_no_et (§8.5 ET 贡献)",
+      "name_a": "cid_full",
+      "name_b": "cid_full_no_et",
+      "loss_a": 3.16191244330945,
+      "loss_b": 3.12993105104427,
+      "advantage": -0.03198139226517993,
+      "z_score": -6.385937025805258,
+      "verdict": "not_supported"
+    },
+    {
+      "title": "C: cid_full vs cid_full_fft_noise (§14.2 OU 贡献)",
+      "name_a": "cid_full",
+      "name_b": "cid_full_fft_noise",
+      "loss_a": 3.16191244330945,
+      "loss_b": 5.08769176799687,
+      "advantage": 1.92577932468742,
+      "z_score": 61.6024296458721,
+      "verdict": "supported"
+    }
+  ]
+}

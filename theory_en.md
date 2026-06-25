@@ -1536,6 +1536,13 @@ When citing any result in this section, the following per-item caveats must be c
 - **C8 (vortex's small ablation effect is not the relevant test)**: The vortex term's theoretical role is necessity-of-non-equilibrium (Prop. C3.3), to be tested by critical exponents rather than ablation loss; the +0.4% figure should not be cited as "vortex is unimportant."
 - **C9 (energy used random input tokens)**: The decode benchmark used random tokens (flagged in the results); per-token energy is largely insensitive to the input distribution, but a real-corpus re-measurement is recommended.
 
+#### C16.9 Independent Third-Party Reproduction
+
+The core results of this section have been reproduced in an independent environment by Xingyu Zhao (Neutron Technology Application Research Center, Institute of Energy, Hefei Comprehensive National Science Center) on commit `53f2aa06` (10M scale, 3 seeds, RTX 4090), built from scratch following the official `requirements.txt` and documentation.
+
+The reproduced numbers match our published values bit-for-bit: ablation Contrast A = 3.11× (z = 182.2); well-trained scaling-law (tokens/param = 200, 3 seeds) `cid_full` perplexity 7.89 ± 0.01 and `transformer` 31.12 ± 0.16, a 3.94× ± 0.03 ratio; the two-tier perplexity separation (CID 22–29 / Transformer 73) is likewise reproduced. The reproduction **independently confirms our negative and neutral findings** as well: the critical exponents are judged `emergence_not_confirmed` and cannot distinguish CID from Transformer (H 0.77 vs 0.81, β 0.51 vs 0.64, η 0.998 vs 0.997); iso-parameter decode energy is ~20% higher for CID (same direction as our ~13% prefill figure); raw inference throughput is ~27% higher for Transformer; and the iso-PPL energy verdict is undecidable at this scale because the perplexity ranges do not overlap. The report also independently flagged several engineering issues (an unsatisfiable `typeguard` pin in `requirements.txt`, the `transformers<5.0` upper bound, a missing sampling cap in the critical-exponent statistics, and inconsistent training-budget defaults across entry points), which we have used to revise the repository. The full reproduction report and raw data are in the companion repository [`results/phase1/INDEPENDENT_REPRODUCTION.md`](https://github.com/gwailee/uid).
+
+We note honestly that this reproduction further corroborates the **robustness of our parameter-efficiency finding (3.1× single-epoch → 3.94× well-trained, growing with training)** while also independently reproducing our **as-yet-unestablished decisive predictions** — the iso-PPL energy bonus (C13) and critical emergence are both undecidable/unsupported at the single 10M point. This is fully consistent with the boundaries listed in §16.8.
 
 ### Chapter C17: Limitations and Open Problems of Part One
 
@@ -2302,6 +2309,9 @@ This paper is complementary to the Logographic AI paradigm of [Liu (2025–2026)
 
 Intelligence is not a purely engineering phenomenon but a physical phenomenon—a stochastic field far from thermal equilibrium, breaking detailed balance, operating near a critical point, and carrying a non-conservative curl. Attention (a purely conservative gradient flow) is merely a degenerate special solution of this field in the zero-curl limit, so "Attention Is Not All You Need." Re-installing the three cut-away terms—the curl, the colored damping, and the colored noise—and first of all re-installing the curl v(φ) as the "UID version of the displacement current," is the physical direction to break through the current bottleneck of AI energy efficiency and capability. This paper has written the core proposition of this direction in a falsifiable form, and given a verification suite reproducible within hours on a single GPU. The final verdict of the theory is left to experiment.
 
+### Acknowledgments
+
+We thank Xingyu Zhao (Neutron Technology Application Research Center, Institute of Energy, Hefei Comprehensive National Science Center) for the independent reproduction of our Phase 1 experiments and for reporting several engineering issues in the companion repository.
 
 ## References
 

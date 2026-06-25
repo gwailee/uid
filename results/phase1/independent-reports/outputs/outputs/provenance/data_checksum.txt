@@ -1,0 +1,4 @@
+pretrain_100k.jsonl:
+100000 data/minimind/pretrain_100k.jsonl
+f27f4c15095f44ecd3388b4c0ef6169a  data/minimind/pretrain_100k.jsonl
+tokenizer vocab: 21128

@@ -1,0 +1,31 @@
+{
+  "setting": "tpp=200, batch=64, seed=42, scale=10M, max_seq_len=512",
+  "repro": {
+    "transformer": {
+      "eval_ppl": 31.35154227057569,
+      "non_emb_params": 5115136,
+      "wall_s": 6058.094599246979
+    },
+    "transformer_plus_tricks": {
+      "eval_ppl": 30.90154109046851,
+      "non_emb_params": 5213470,
+      "wall_s": 10770.21232676506
+    },
+    "cid_full": {
+      "eval_ppl": 7.88108751186147,
+      "non_emb_params": 4831268,
+      "wall_s": 9008.482919931412
+    }
+  },
+  "official_minimind_100k_seed42": {
+    "transformer": 31.35,
+    "transformer_plus_tricks": 30.9,
+    "cid_full": 7.88
+  },
+  "official_3seed_mean": {
+    "transformer": 31.12,
+    "cid_full": 7.89,
+    "ratio": 3.94
+  },
+  "repro_ratio_tf_over_cid": 3.978
+}

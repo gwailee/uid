@@ -1,0 +1,13 @@
+[
+  {
+    "model_family": "transformer_plus_tricks",
+    "scale_name": "10M",
+    "non_emb_params": 5213470,
+    "train_flops": 3.261632332908e+16,
+    "final_train_loss": 3.3547392476530415,
+    "final_eval_loss": 3.449373066418478,
+    "final_eval_ppl": 31.480649844232094,
+    "wall_clock_seconds": 9443.903493404388,
+    "seed": 44
+  }
+]

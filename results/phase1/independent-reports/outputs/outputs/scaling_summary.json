@@ -1,0 +1,86 @@
+{
+  "table": [
+    {
+      "model_family": "transformer",
+      "scale_name": "10M",
+      "non_emb_params": 5115136,
+      "train_flops": 3139753955819520.0,
+      "final_train_loss": 4.174621839480876,
+      "final_eval_loss": 3.710767996728869,
+      "final_eval_ppl": 40.88519416802491,
+      "wall_clock_seconds": 634.8052990436554,
+      "seed": 42
+    },
+    {
+      "model_family": "transformer_plus_tricks",
+      "scale_name": "30M",
+      "non_emb_params": 14358952,
+      "train_flops": 2.474154030459648e+16,
+      "final_train_loss": 3.404835932342228,
+      "final_eval_loss": 3.3101967352463597,
+      "final_eval_ppl": 27.390513621311595,
+      "wall_clock_seconds": 9298.088851451874,
+      "seed": 42
+    },
+    {
+      "model_family": "cid_full",
+      "scale_name": "10M",
+      "non_emb_params": 4831268,
+      "train_flops": 2800938058538880.0,
+      "final_train_loss": 3.0789164190254796,
+      "final_eval_loss": 2.4220033704946498,
+      "final_eval_ppl": 11.268411520288954,
+      "wall_clock_seconds": 2110.191919326782,
+      "seed": 42
+    },
+    {
+      "model_family": "transformer",
+      "scale_name": "30M",
+      "non_emb_params": 14162304,
+      "train_flops": 2.406850255060992e+16,
+      "final_train_loss": 3.4571439539521704,
+      "final_eval_loss": 3.3021545877880167,
+      "final_eval_ppl": 27.171118458403136,
+      "wall_clock_seconds": 2916.65177321434,
+      "seed": 42
+    },
+    {
+      "model_family": "transformer_plus_tricks",
+      "scale_name": "10M",
+      "non_emb_params": 5213470,
+      "train_flops": 3261632332908000.0,
+      "final_train_loss": 4.146525429215499,
+      "final_eval_loss": 3.702943912665504,
+      "final_eval_ppl": 40.56655313452356,
+      "wall_clock_seconds": 2333.190369606018,
+      "seed": 42
+    },
+    {
+      "model_family": "cid_full",
+      "scale_name": "30M",
+      "non_emb_params": 14380848,
+      "train_flops": 2.481705470389248e+16,
+      "final_train_loss": 2.331199597102589,
+      "final_eval_loss": 1.9977983354885256,
+      "final_eval_ppl": 7.37280577179284,
+      "wall_clock_seconds": 9384.774066448212,
+      "seed": 42
+    }
+  ],
+  "ratios_by_scale": {
+    "10M": {
+      "vs_baseline": 3.6283014774895705,
+      "vs_tricks": 3.600024108232366,
+      "cid_ppl": 11.268411520288954,
+      "tf_ppl": 40.88519416802491,
+      "tft_ppl": 40.56655313452356
+    },
+    "30M": {
+      "vs_baseline": 3.6853159162764646,
+      "vs_tricks": 3.7150732664222974,
+      "cid_ppl": 7.37280577179284,
+      "tf_ppl": 27.171118458403136,
+      "tft_ppl": 27.390513621311595
+    }
+  }
+}

@@ -149,6 +149,10 @@ At iso-parameter, CID's per-token energy is only ~**13%** higher (and *lower* th
 
 **Falsifying a theory is as valuable as confirming it** — this is the fundamental principle of scientific progress.
 
+### ✅ Independent Third-Party Reproduction
+
+The repository's Phase 1 core results have been independently reproduced by Xingyu Zhao (Neutron Technology Application Research Center, Institute of Energy, Hefei Comprehensive National Science Center) on commit `53f2aa06`. Key numbers match bit-for-bit: ablation Contrast A **3.11× / z=182.2**; well-trained scaling law **cid 7.89 / tf 31.12 (3.94× ± 0.03)**. The reproduction equally confirms the negative/neutral findings — critical exponents cannot distinguish CID from Transformer, iso-parameter energy is ~20% higher for CID, Transformer throughput is ~27% higher, and the iso-PPL energy verdict is undecidable at this scale — and independently surfaced several engineering issues (since fixed). Full report: [`results/phase1/independent-reports/REPRODUCTION_en.md`](./results/phase1/independent-reports/REPRODUCTION_en.md).
+
 ---
 
 ## 🧪 First Empirical Results (Phase 1 Partial · 2026-05-31)

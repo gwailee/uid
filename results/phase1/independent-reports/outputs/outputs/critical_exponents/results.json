@@ -1,0 +1,170 @@
+{
+  "cid_emergence": {
+    "model_name": "cid_full_noise_OFF",
+    "noise_injection_on": false,
+    "hurst": {
+      "hurst_mean": 0.7656268361840484,
+      "hurst_std": 0.13688669580517118,
+      "n_series": 6400,
+      "sample_length": 512,
+      "method": "DFA-2"
+    },
+    "spectrum": {
+      "beta_mean": 0.5127119382542197,
+      "beta_std": 0.01024439596333059,
+      "n_series": 6400,
+      "sample_length": 512,
+      "r_squared_mean": 0.926742808050071
+    },
+    "avalanche": {
+      "alpha": 2.8190868404189855,
+      "alpha_se": 0.20597102525210723,
+      "xmin": 5074.938775510203,
+      "n_tail": 78,
+      "ks_statistic": 0.12344381898127066,
+      "p_value": 0.03,
+      "is_power_law": false
+    },
+    "eta": {
+      "eta_mean": 0.9981550267392201,
+      "eta_std": 1.7019304301212616e-05,
+      "eta_in_range": true,
+      "n_samples": 12800,
+      "hidden_size": 256,
+      "seq_len": 512,
+      "rank_deficient": false
+    },
+    "surrogate_hurst": {
+      "hurst_mean": 0.5192546043658642,
+      "hurst_std": 0.043111347508799004,
+      "n_series": 6400,
+      "sample_length": 512,
+      "method": "DFA-2"
+    },
+    "surrogate_spectrum": {
+      "beta_mean": -0.0009875916159236629,
+      "beta_std": 0.0013635432939502338,
+      "n_series": 6400,
+      "sample_length": 512,
+      "r_squared_mean": 0.002642424731841059
+    }
+  },
+  "cid_with_noise": {
+    "model_name": "cid_full_noise_ON",
+    "noise_injection_on": true,
+    "hurst": {
+      "hurst_mean": 0.7656268361840484,
+      "hurst_std": 0.13688669580517118,
+      "n_series": 6400,
+      "sample_length": 512,
+      "method": "DFA-2"
+    },
+    "spectrum": {
+      "beta_mean": 0.5127119382542197,
+      "beta_std": 0.01024439596333059,
+      "n_series": 6400,
+      "sample_length": 512,
+      "r_squared_mean": 0.926742808050071
+    },
+    "avalanche": {
+      "alpha": 2.8190868404189855,
+      "alpha_se": 0.20597102525210723,
+      "xmin": 5074.938775510203,
+      "n_tail": 78,
+      "ks_statistic": 0.12344381898127066,
+      "p_value": 0.03,
+      "is_power_law": false
+    },
+    "eta": {
+      "eta_mean": 0.9981550267392201,
+      "eta_std": 1.7019304301212616e-05,
+      "eta_in_range": true,
+      "n_samples": 12800,
+      "hidden_size": 256,
+      "seq_len": 512,
+      "rank_deficient": false
+    },
+    "surrogate_hurst": {
+      "hurst_mean": 0.5192546043658642,
+      "hurst_std": 0.043111347508799004,
+      "n_series": 6400,
+      "sample_length": 512,
+      "method": "DFA-2"
+    },
+    "surrogate_spectrum": {
+      "beta_mean": -0.0009875916159236629,
+      "beta_std": 0.0013635432939502338,
+      "n_series": 6400,
+      "sample_length": 512,
+      "r_squared_mean": 0.002642424731841059
+    }
+  },
+  "baseline": {
+    "model_name": "transformer_baseline",
+    "noise_injection_on": false,
+    "hurst": {
+      "hurst_mean": 0.8064582819569965,
+      "hurst_std": 0.11315605475161179,
+      "n_series": 6400,
+      "sample_length": 512,
+      "method": "DFA-2"
+    },
+    "spectrum": {
+      "beta_mean": 0.6394712949113257,
+      "beta_std": 0.00793122096784096,
+      "n_series": 6400,
+      "sample_length": 512,
+      "r_squared_mean": 0.9704421505571982
+    },
+    "avalanche": {
+      "alpha": 2.523966034186117,
+      "alpha_se": 0.16529732474803813,
+      "xmin": 4233.667346938775,
+      "n_tail": 85,
+      "ks_statistic": 0.13702675749886706,
+      "p_value": 0.004,
+      "is_power_law": false
+    },
+    "eta": {
+      "eta_mean": 0.9973786604161559,
+      "eta_std": 3.959913551699954e-05,
+      "eta_in_range": true,
+      "n_samples": 12800,
+      "hidden_size": 256,
+      "seq_len": 512,
+      "rank_deficient": false
+    },
+    "surrogate_hurst": {
+      "hurst_mean": 0.5190925163883228,
+      "hurst_std": 0.04272427871672698,
+      "n_series": 6400,
+      "sample_length": 512,
+      "method": "DFA-2"
+    },
+    "surrogate_spectrum": {
+      "beta_mean": -0.0011993127329371427,
+      "beta_std": 0.0012500451543743095,
+      "n_series": 6400,
+      "sample_length": 512,
+      "r_squared_mean": 0.004627367506999453
+    }
+  },
+  "verdict": {
+    "beta_off": 0.5127119382542197,
+    "beta_on": 0.5127119382542197,
+    "hurst_off": 0.7656268361840484,
+    "hurst_on": 0.7656268361840484,
+    "eta_off": 0.9981550267392201,
+    "eta_on": 0.9981550267392201,
+    "beta_diff": 0.0,
+    "hurst_diff": 0.0,
+    "eta_diff": 0.0,
+    "beta_in_range": false,
+    "hurst_in_range": true,
+    "eta_state": "pass",
+    "eta_threshold": 0.5,
+    "eta_rank_deficient": false,
+    "noise_diff_tol": 0.05,
+    "verdict": "emergence_not_confirmed"
+  }
+}
