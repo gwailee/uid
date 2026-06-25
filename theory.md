@@ -1548,7 +1548,7 @@ $$
 
 本节核心数值已由赵星宇（合肥综合性国家科学中心能源研究院中子技术应用研究中心）在独立环境下复现（基于 commit `53f2aa06`，10M 规模、3 个种子、RTX 4090，依官方 `requirements.txt` 与文档流程从头搭建）。
 
-复现结果与本文公开数值**逐位吻合**：消融关键对照 A 为 3.11×（z = 182.2）；充分训练缩放律（tokens/param = 200，3 种子）cid_full 困惑度 7.89 ± 0.01、transformer 31.12 ± 0.16，比值 3.94× ± 0.03；两个困惑度梯队（CID 22–29 / Transformer 73）的数量级分离亦被复现。复现同时**独立验证了本文的负面与中性结论**：临界指数判为 `emergence_not_confirmed` 且无法区分 CID 与 Transformer（H 0.77 vs 0.81、β 0.51 vs 0.64、η 0.998 vs 0.997）、等参数解码能耗 CID 高约 20%（与本文 prefill 口径的约 13% 同向）、原始推理吞吐 Transformer 反快约 27%、等性能（iso-PPL）能效在该规模因区间不相交而不可判定。复现报告另独立指出若干工程缺陷（`requirements.txt` 中 `typeguard` 版本约束失效、`transformers<5.0` 上限、临界指数统计步骤缺采样上限、不同入口的训练预算默认值不一致），本文已据此修订仓库。完整复现报告与原始数据见配套仓库 [`results/phase1/INDEPENDENT_REPRODUCTION.md`](https://github.com/gwailee/uid)。
+复现结果与本文公开数值**逐位吻合**：消融关键对照 A 为 3.11×（z = 182.2）；充分训练缩放律（tokens/param = 200，3 种子）cid_full 困惑度 7.89 ± 0.01、transformer 31.12 ± 0.16，比值 3.94× ± 0.03；两个困惑度梯队（CID 22–29 / Transformer 73）的数量级分离亦被复现。复现同时**独立验证了本文的负面与中性结论**：临界指数判为 `emergence_not_confirmed` 且无法区分 CID 与 Transformer（H 0.77 vs 0.81、β 0.51 vs 0.64、η 0.998 vs 0.997）、等参数解码能耗 CID 高约 20%（与本文 prefill 口径的约 13% 同向）、原始推理吞吐 Transformer 反快约 27%、等性能（iso-PPL）能效在该规模因区间不相交而不可判定。复现报告另独立指出若干工程缺陷（`requirements.txt` 中 `typeguard` 版本约束失效、`transformers<5.0` 上限、临界指数统计步骤缺采样上限、不同入口的训练预算默认值不一致），本文已据此修订仓库。完整复现报告与原始数据见配套仓库  [`results/phase1/independent-reports/REPRODUCTION_zh.md`](https://github.com/gwailee/uid)。
 
 须诚实指出：该复现进一步确证了本文的**参数效率方向结论稳健（单轮 3.1× → 充分训练 3.94×，随训练放大）**，同时也独立复现了本文**尚未成立的判决性预言**——iso-PPL 能效（C13）与临界涌现在 10M 单点上均不可判定/未获支持。这与本文 §16.8 列出的边界完全一致。
 
