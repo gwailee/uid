@@ -337,13 +337,6 @@ nohup python experiments/run_all.py \
     --output_root ./output/minimind_100k \
     > logs/ablation.log 2>&1 &
 
-nohup python experiments/run_all.py \
-    --data_path data/minimind/pretrain_100k.jsonl \
-    --tokenizer_path tokenizers/bert-base-chinese \
-    --scale 100M --seeds 42 43 44 \
-    --batch_size 16 --max_seq_len 512 \
-    --output_root ./output/minimind_100k \
-    > logs/ablation.log 2>&1 &
 # 查看结果
 cat ./output/minimind_100k/ablation_v2.1/summary.json | python -m json.tool
 ```
