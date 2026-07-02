@@ -2,9 +2,9 @@
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
 Date:   2026-05-30
-UPDATE: 2026-06-22 (v2.2 — Phase 1 four-experiment complete + independent reproduction)
+UPDATE: 2026-06-24 (v2.3 — multi-scale ablation + ET non-causal structural result + memory_length fix + independent reproduction)
 
-This README is part of the UID Theory reference implementation (v2.2).
+This README is part of the UID Theory reference implementation (v2.3).
 
 DUAL LICENSE:
   - PolyForm Noncommercial License 1.0.0  (free for academic / personal use)
@@ -46,205 +46,166 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 </div>
 
-***Corresponding author***: Gui LI, Ph.D. B.Sc. from the School of Physics, Northwest University; M.Sc. and Ph.D. from the Hefei Institutes of Physical Science, Chinese Academy of Sciences; currently at Suzhou Jodell Robotics Co., Ltd., working on the theory and engineering of **Unified Intelligo-Dynamics (UID)** — an open-system physical framework for intelligent architectures (the three-tier CID/QID/FID system) and its falsifiable verification across robotic cognitive brains, motor-control cerebella, dexterous-hand operating systems, large language models, and dedicated intelligence chips. E-mail: guilichina@163.com
+***Corresponding author***: Gui LI, Ph.D. B.Sc. from the School of Physics, Northwest University; M.Sc. and Ph.D. from the Hefei Institutes of Physical Science, CAS; currently at Suzhou Jodell Robotics Co., Ltd., working on the theory and engineering of Unified Intelligo-Dynamics (UID). E-mail: guilichina@163.com
 
 ---
 
-## ⚠️ Important Notice: v2.2 Honest-Version Statement
+## ⚠️ Important Notice: v2.3 Honest-Version Statement
 
-**This repository is currently at v2.2 (Honest-Verification Edition · Phase 1 four-experiment-complete edition).** On top of v2.1, it **completes the full Phase 1 empirical suite (ablation + scaling-law family training + critical exponents + decode energy), fixes several flaws in the energy and critical-exponent measurement toolchains, and archives an independent third-party reproduction**:
+**This repository is at v2.3 (Honest-Verification Edition · multi-scale ablation complete).** On top of v2.2 it adds a **10M/30M/100M multi-scale ablation**, resolves a **fundamental conflict between the ET term and causality**, raises the **memory-kernel length from 64 to 512**, and archives an **independent third-party reproduction**:
 
-| Key v2.2 progress | Theory section / fix |
+| Key v2.3 progress | Theory section / fix |
 |---|---|
-| 10M scaling-law families trained (3 families × 3 seeds, well-converged tpp=200) | T1 / T2 |
-| Energy switched to a **robust GLOBAL idle baseline** (fixing a prior artifact: CID 124 W vs Transformer 211 W idle made above-idle non-comparable) | §0.1 / §11.4 |
-| Energy comparison now in **three views: iso-parameter (neutral) + iso-performance (the C13 verdict)**, with no extrapolation | §13 |
-| Critical-exponent toolchain: fixed three bugs — degenerate noise-OFF/ON → shuffle surrogate; ill-conditioned per-sequence η → global covariance; erroneous Hurst correction → standard DFA-2 (validated by surrogate H = 0.519) | §6.1 |
-| Archived an independent third-party reproduction (Xingyu Zhao), bit-for-bit match | §16.9 |
+| **10M/30M/100M multi-scale ablation** (3 seeds); ratio grows with scale 3.35→3.71→4.09× | T1 / T2 (directional) |
+| **ET symmetric term shown intrinsically NON-CAUSAL**: its second term needs keys to depend on future queries (verified ~0.11 leakage); incompatible with autoregressive causality; in causal LMs it is **dropped, ET reduces to standard attention** | §8.5 |
+| Memory-kernel `memory_length` 64→512; cid_full(10M) PPL 23.62 → 21.95 | §5 |
+| Critical-exponent toolchain: fixed three bugs (noise-OFF/ON degeneracy → shuffle surrogate; ill-conditioned η → global covariance; erroneous Hurst correction → standard DFA-2, surrogate H=0.519) | §6.1 |
+| Energy: robust global idle baseline + iso-parameter/iso-performance three views | §0.1 / §13 |
+| Independent third-party reproduction archived (Xingyu Zhao) | §16.9 |
 
-The v2.2 edition:
-- ✅ Provides the **complete infrastructure** for rigorous verification (full test coverage)
-- ✅ Delivers all promised fixes: §8.5 ET correction, §14.2 zero-parameter vortex, §14.2 OU noise, §6.1 measurable η
-- ✅ **All four Phase 1 experiments completed** (ablation, scaling-law families, critical exponents, energy; see "First Empirical Results" below)
-  - ✅ **T1 (core thesis) strongly supported**: after full training, CID perplexity **7.90** vs Transformer **31.12** = **3.94×**, with FEWER parameters (4.83M vs 5.12M) and near-zero cross-seed variance (std ≈ 0.01)
-  - ✅ **"Attention is not all you need" replicated three times**: stacking known tricks is useless (ablation < 1%; in scaling-law `transformer_plus_tricks` 31.23 ≈ `transformer` 31.12 yet costs 2.3× the compute)
-  - ✅ **§14.2 OU noise supported**: OU beats FFT by **6.9×** (z = 37)
-  - ✅ **F4 Hurst supported**: H = 0.803, inside [0.6, 0.8], far above the shuffle surrogate (0.519), demonstrating genuine long-range correlation
-  - ❌ **F3 β falsified**: β = 0.572, just below [0.7, 1.3]
-  - ❌ **F5 avalanche falsified**: tail not power-law (KS p = 0, α ≈ 3.0; with a measurement-validity caveat)
-  - ⚠️ **F6 η non-discriminating**: η = 0.997 > 0.5 but essentially identical to the Transformer baseline (0.998); the metric saturates
-  - ❌ **F8 ET term falsified**: no benefit, marginally harmful (−3.2%); **note: the theory states ET is NOT original to UID and credits Hoover et al. 2023**
-  - ⏳ **Multi-scale scaling law (F1/F2) and iso-PPL energy (F7) not yet done** — the **only decisive tests** of T2 (5–10× parameter efficiency) and C13 (≥3× energy), deferred to Phase 1b
-- ✅ **Independent third-party reproduction archived** (bit-for-bit on the key numbers, negative findings reproduced too)
+The v2.3 edition:
+- ✅ **T1 (core thesis) strongly supported, and the advantage GROWS with scale**: in the multi-scale ablation, the cid_full/transformer perplexity ratio is **3.35× (10M) → 3.71× (30M) → 4.09× (100M)**; **cid_full at 10M (~4.8M params) already beats transformer at 100M (~49M params)** — winning at roughly **1/10 the parameters**, a strong directional signal toward 5–10× parameter efficiency
+- ✅ **"Attention is not all you need" replicated at all three scales**: known tricks give < 1% at every scale
+- ✅ **§14.2 OU noise supported** (magnitude scale-dependent: ~7× at 10M, ~1.24× at 100M)
+- ✅ **Memory kernel is the dominant physical term** (+15–22% on removal at every scale)
+- ✅ **F4 Hurst supported**: H=0.803 ∈ [0.6,0.8], surrogate 0.519 validates genuine long-range correlation
+- ❌ **F3 β falsified** (0.572), **F5 avalanche falsified** (not power-law)
+- ⚠️ **F6 η non-discriminating** (0.997 ≈ baseline 0.998; metric saturates)
+- 🔧 **F8 ET term**: v2.3 proves the ET symmetric term is **non-causal and cannot be realized in a causal LM**; it is dropped and `cid_full ≡ cid_full_no_et`. This **supersedes** the v2.2 "F8 falsified" reading — the correct statement is that **CID's advantage comes entirely from its three causal-safe physical terms, and ET is inapplicable here**
+- ⏳ **Equal-compute multi-scale scaling-law (F1/F2) and iso-PPL energy (F7)** deferred to Phase 1b (H100) — the decisive tests of T2 and C13
 - 🎯 Commits to **publishing all results** (positive or negative)
 
 **Falsifying a theory is as valuable as confirming it** — the fundamental principle of scientific progress.
 
 ---
 
-## 🧪 First Empirical Results (Phase 1 Complete · 2026-06-22)
+## 🧪 First Empirical Results (Phase 1 · v2.3 · 2026-06-24)
 
-> **Status**: SUBSTANTIALLY COMPLETE (ablation + scaling-law families + critical exponents + decode energy done; multi-scale scaling law F1/F2 and iso-PPL energy F7 deferred to Phase 1b)
-> **Dataset**: MiniMind Chinese pretraining corpus, 100k subset (~10M tokens)
-> **Scale**: 10M params · **Seeds**: [42, 43, 44] · **Hardware**: NVIDIA RTX 4090 (24GB)
-> **Reproduction commands**: see Quick Start §Step 5. Full report: [`results/phase1/REPORT.md`](./results/phase1/REPORT.md).
+> **Status**: SUBSTANTIALLY COMPLETE (multi-scale ablation + critical exponents + decode energy done; equal-compute scaling-law F1/F2 and iso-PPL energy F7 deferred to Phase 1b)
+> **Dataset**: MiniMind Chinese pretraining corpus, 100k subset (~10M tokens) · **Seeds**: [42,43,44] · **Hardware**: RTX 4090 (Phase 1b on H100)
+> Full report: [`results/phase1/REPORT.md`](./results/phase1/REPORT.md).
 
-### Finding 1: With full training, CID's framework advantage GROWS (T1 strongly supported)
+### Headline: the framework advantage GROWS with scale; CID wins at ~1/10 the parameters (T1 strongly supported)
 
-| Family | Non-emb params | Perplexity (mean of 3 seeds) | vs CID |
-|---|---|---|---|
-| `transformer` | 5,115,136 | **31.12** | 3.94× worse |
-| `transformer_plus_tricks` | 5,213,470 | **31.23** | 3.95× worse |
-| **`cid_full`** | **4,831,268** | **7.90** (std ≈ 0.01) | — |
+Multi-scale ablation (memory_length=512, 1 epoch, 3 seeds):
 
-CID reaches perplexity 7.90 with **fewer parameters**, **3.94×** below Transformer (31.12); the advantage grew from the 3.22× seen in 1-epoch ablation, with near-zero seed variance. Known tricks (conv/linear/noise) are useless, and `transformer_plus_tricks` costs 2.3× the compute yet is worse — a third independent replication of "attention is not all you need."
+| Scale | cid_full non-emb params | cid_full PPL | transformer PPL | **PPL ratio** |
+|---|---|---|---|---|
+| 10M | ~4.8M | **21.95** | 73.58 | **3.35×** |
+| 30M | ~22.7M | **12.49** | 46.36 | **3.71×** |
+| 100M | ~49.3M | **10.21** | 41.76 | **4.09×** |
 
-### Finding 2: Ablation — UID's original physical terms supported, the borrowed ET term falsified
+**Two key points**:
+1. **The ratio grows monotonically with scale** (3.35→3.71→4.09×) — an advantage that grows with size, the opposite of the "baseline catches up" failure mode.
+2. **cid_full at 10M (~4.8M params, PPL 21.95) is far better than transformer at 100M (~49M params, PPL 41.76)** — CID wins at roughly **1/10 the parameters**, a strong directional signal toward 5–10× parameter efficiency (T2).
 
-> Ablation is single-epoch (1 epoch); the ratio is a single-scale iso-parameter perplexity ratio, a **different training budget** from the 3.94× above.
+> ⚠️ Honest note: the table uses the **ablation budget (1 epoch)** and is a **directional lower bound** on T2, **not** the strict verdict; strict T2 needs equal-compute multi-scale curves (Phase 1b). For reference, the fully-trained single point (tpp=200, memory_length=64) at 10M was cid_full 7.90 vs transformer 31.12 (3.94×).
 
-| Contrast | Meaning (theory §) | `cid_full` | Control | PPL ratio | z(eval_loss) | Verdict |
-|---|---|---|---|---|---|---|
-| **A** | CID physical framework vs known tricks (T1) | 23.62 | `transformer_plus_all_tricks` = 73.33 | **3.10×** | 182.19 | ✅ supported |
-| **C** | §14.2 OU vs FFT noise | 23.62 | `cid_full_fft_noise` = 169.93 | **6.87×** | 37.14 | ✅ supported |
-| **B** | §8.5 ET symmetric term (F8) | 23.62 | `cid_full_no_et` = 22.87 | 0.97× | −6.39 | ❌ **not_supported** |
+### "Attention is not all you need": replicated at all three scales
 
-The **colored-damping memory kernel is the single largest physical contributor** (removing it raises perplexity by 21%). The ET falsification concerns only the borrowed, non-original component; removing it makes CID *better*, "purifying" the attribution. (Note: Contrast A is 3.22× as a loss ratio and 3.10× as a perplexity ratio; the repository's headline number is the well-trained scaling-law **3.94×**.)
+Known Transformer tricks (conv/linear/noise) give < 1% at every scale; `transformer_plus_tricks` is not better than plain transformer yet costs ~2.3× the compute. CID's advantage cannot be attributed to "more tricks."
 
-### Finding 3: Critical exponents — partial support, and NO discrimination from baseline (consistent with the theory's own caveat)
+### Ablation attribution: memory kernel dominates; ET inapplicable to causal LMs
 
-> Tooling validated after fixes: shuffle-surrogate Hurst = 0.519 ≈ 0.5; spectral-fit R² = 0.94.
+| Physical term | Δ PPL on removal (per scale) | Conclusion |
+|---|---|---|
+| Colored-damping memory kernel ∫γ | +21.7% (10M) / +14.7% (30M) / +14.8% (100M) | **Largest single contributor** |
+| Vortex v(φ) | +0.2–0.4% | Small ablation effect; necessity tested via critical exponents (Prop. C3.3) |
+| Colored noise (presence) | ~0% | Type (OU vs FFT) matters, not presence |
+| OU → FFT noise | ~7× worse (10M) / ~1.24× (100M) | OU supports §14.2 (magnitude scale-dependent) |
+| ET symmetric term (§8.5) | `cid_full ≡ cid_full_no_et` | **Non-causal, not realizable in causal LM, dropped** (below) |
+
+**On ET (formerly F8), v2.3 conclusion**: ET's symmetric second term requires key positions to depend on future query positions, causing ~0.11 future-token leakage in a causal LM — **ET's dual-softmax symmetry and autoregressive causality are mathematically incompatible**. v2.3 drops the term; `use_et_symmetric=True` reduces to standard causal attention and `cid_full ≡ cid_full_no_et`. This **supersedes** the v2.2 "F8 falsified": the correct statement is not "ET is useless" but **"ET is inapplicable to causal LMs; CID's advantage comes entirely from its three causal-safe physical terms (vortex/memory/noise)."**
+
+### Critical exponents (10M): partial support, no discrimination
+
+> Tooling validated: shuffle-surrogate Hurst = 0.519 ≈ 0.5; spectral-fit R² = 0.94.
 
 | Exponent (F#) | Predicted | `cid_full` | Transformer baseline | Verdict |
 |---|---|---|---|---|
-| **Hurst (F4)** | [0.6, 0.8] | **0.803** (surrogate 0.519) | 0.813 | ✅ **PASS** |
-| **β 1/f (F3)** | [0.7, 1.3] | **0.572** (R²=0.94) | 0.709 | ❌ FAIL |
-| **Avalanche τ (F5)** | ~1.5 | not power-law (α≈3.0, p=0) | not power-law | ❌ FAIL |
-| **η anisotropy (F6)** | > 0.5 | 0.997 | 0.998 | ⚠️ no discrimination |
+| Hurst (F4) | [0.6, 0.8] | **0.803** (surrogate 0.519) | 0.813 | ✅ PASS |
+| β 1/f (F3) | [0.7, 1.3] | 0.572 (R²=0.94) | 0.709 | ❌ FAIL |
+| Avalanche τ (F5) | ~1.5 | not power-law (p=0) | not power-law | ❌ FAIL |
+| η (F6) | > 0.5 | 0.997 | 0.998 | ⚠️ no discrimination |
 
-**Key honesty point**: none of the four exponents distinguish CID from a plain Transformer — exactly as the abstract pre-states ("these universal exponents have limited falsifying power and cannot separate CID from other critical models"). They are descriptive corroboration that "CID shows brain-like critical statistics," **not** independent evidence that CID is superior to Transformer.
+**Key honesty point**: none of the four exponents distinguish CID from a plain Transformer — as the abstract pre-states. They are descriptive corroboration only, **not** independent evidence that CID is superior.
 
-### Finding 4: Energy — clean after the idle fix; the iso-PPL verdict awaits multi-scale
+### Energy (10M): clean after the idle fix; iso-PPL verdict deferred
 
-> Robust shared idle baseline = 61.9 W (inter-window spread 0.06 W), fixing a prior 87 W CID/Transformer idle artifact.
+> Robust shared idle baseline = 61.9 W (spread 0.06 W).
 
 | Family | Perplexity | above-idle energy (mJ/token) | vs baseline |
 |---|---|---|---|
-| `transformer` | 31.12 | **0.141** | 1.00× |
-| **`cid_full`** | **7.90** | 0.160 | 1.13× (overhead) |
-| `transformer_plus_tricks` | 31.23 | 0.164 | 1.17× |
+| transformer | 31.12 | **0.141** | 1.00× |
+| cid_full | 7.90 | 0.160 | 1.13× (overhead) |
+| transformer_plus_tricks | 31.23 | 0.164 | 1.17× |
 
-At iso-parameter, CID's per-token energy is only ~**13%** higher (and *lower* than tricks, with the fewest params and the lowest peak power), yet it buys a **3.9×** perplexity advantage — i.e. "3.9× quality for 13% more energy." **Note: this is the iso-parameter overhead, NOT the C13 ≥3× energy verdict (F7)**, which must be measured on a multi-scale iso-PPL curve where the Transformer reaches CID's perplexity; untestable at a single scale and deferred to Phase 1b.
+At iso-parameter, CID uses only ~13% more per-token energy (and less than tricks, with the fewest params), for ~3.9× lower perplexity. **This is the iso-parameter overhead, NOT the C13 ≥3× verdict (F7)**, which needs a multi-scale iso-PPL curve (Phase 1b).
 
 ### Phase 1 falsification scorecard
 
 | Verdict | Conditions |
 |---|---|
 | ✅ PASS (1) | F4 (Hurst) |
-| ❌ FAIL (3) | F3 (β), F5 (avalanche), F8 (borrowed ET) |
-| ⚠️ INCONCLUSIVE (1) | F6 (η, no discrimination) |
-| ⏳ ABSTAIN (3) | F1/F2 (multi-scale not run), F7 (iso-PPL untestable at single scale) |
+| ❌ FAIL (2) | F3 (β), F5 (avalanche) |
+| ⚠️ INCONCLUSIVE (1) | F6 (η) |
+| 🔧 RESOLVED_not_realizable (1) | F8 (ET non-causal, not realizable) |
+| ⏳ ABSTAIN (3) | F1/F2 (equal-compute curve), F7 (iso-PPL) |
 
-> All negative results are presented with **equal prominence** to positive ones and permanently retained. Cite these results with the v2.2 commit hash and the per-claim caveats in [`results/phase1/REPORT.md`](./results/phase1/REPORT.md) §6.
+> All negative results are presented with equal prominence and permanently retained. Cite with the v2.3 commit hash and the per-claim caveats in [`REPORT.md`](./results/phase1/REPORT.md) §6.
 
 ### ✅ Independent Third-Party Reproduction
 
-The repository's Phase 1 core results have been independently reproduced by **Xingyu Zhao (Neutron Technology Application Research Center, Institute of Energy, Hefei Comprehensive National Science Center)** in a fresh environment, on commit `53f2aa06` (10M scale, 3 seeds, RTX 4090), built from scratch following the official `requirements.txt` and documentation.
+The repository's Phase 1 core results have been independently reproduced by **Xingyu Zhao (Neutron Technology Application Research Center, Institute of Energy, Hefei Comprehensive National Science Center)** in a fresh environment, on commit `53f2aa06` (RTX 4090, 3 seeds). Key numbers match bit-for-bit: ablation Contrast A **3.11× / z=182.2**; fully-trained scaling law **cid 7.89 / tf 31.12 (3.94× ± 0.03)**. The reproduction equally confirms the negative/neutral findings (critical exponents cannot distinguish CID from Transformer; iso-parameter energy ~20% higher for CID; transformer throughput ~27% higher; iso-PPL energy undecidable), and independently flagged several engineering issues (since fixed). Full report: [`results/phase1/independent-reports/`](./results/phase1/independent-reports/) (excludes ~880MB weights; available on request).
 
-| Experiment | Reproduced | Repo published | Match |
-|---|---|---|---|
-| Ablation Contrast A (z) | **3.11×, z=182.2** | 3.10×, z=182 | ✅ bit-for-bit |
-| Scaling law tpp=200 (3 seeds) | **3.94× ± 0.03** (cid 7.89 / tf 31.12) | 3.94× | ✅ bit-for-bit |
-| Iso-parameter energy (decode) | **1.20×** (CID +20%) | 1.13× (prefill, same direction) | ✅ same direction |
-| Iso-PPL energy (C13) | **undecidable at this scale** | deferred | ✅ same conclusion |
-| Critical-exponent emergence | **emergence_not_confirmed** | same (no baseline discrimination) | ✅ same conclusion |
-
-The reproduction confirms not only the positive results bit-for-bit but **equally reproduces the negative and neutral findings** (critical exponents cannot distinguish CID from Transformer; iso-parameter energy is ~20% higher for CID; raw inference throughput is ~27% higher for Transformer; the iso-PPL energy verdict is undecidable at this scale), and independently flagged several engineering issues (dependency-version pins, a sampling cap for the critical-exponent statistics, inconsistent training-budget defaults across entry points), which the repository has since fixed.
-
-The full reproduction report (zh/en), aggregated JSON, and provenance are in [`results/phase1/independent-reports/`](./results/phase1/independent-reports/) (model weights `.pt`, ~880MB intermediate products, not included but available on request; every number is recomputable from the JSON files and the report's commands).
-
-> **Acknowledgment**: We thank Xingyu Zhao for the independent reproduction of our Phase 1 experiments and the engineering feedback. The report and all aggregated data are archived as-is, including the negative findings consistent with this repository.
-> **Note**: the reproduction used commit `53f2aa06`, whose critical-exponent tool is the pre-DFA-fix version, so the reproduced Hurst (0.766) differs slightly from the repository's fixed value (0.803), though in the same direction (both inside [0.6,0.8] and both non-discriminating vs the baseline).
+> **Acknowledgment**: We thank Xingyu Zhao for the independent reproduction and engineering feedback.
+> **Note**: the reproduction used commit `53f2aa06` (before the v2.3 memory_length and ET fixes; memory_length=64), so its numbers differ from v2.3 by an expected amount, in the same direction.
 
 ---
 
 ## 📦 What Is This
 
-**UID (Unified Intelligo-Dynamics)** treats intelligent architectures as **stochastic fields far from thermal equilibrium**. From three axioms of open-system physics, via Mori-Zwanzig projection, it derives the **generalized Langevin equation** as the general evolution structure of intelligent systems, and argues that mainstream architectures (Transformer, Mamba, diffusion models, …) are its special cases in particular limits.
+**UID** treats intelligent architectures as **stochastic fields far from thermal equilibrium**; from three open-system axioms, via Mori-Zwanzig projection, it derives the **generalized Langevin equation** and argues mainstream architectures are its special-case limits. This repository provides a **reference CID implementation** and a **falsifiable verification suite**: adding three **causal-safe** physical terms — **vortex v(φ), colored-damping memory kernel ∫γ, OU colored noise ξ** — onto a standard attention backbone.
 
-This repository provides a **reference engineering implementation of the CID (Classical Intelligo-Dynamics) tier** plus a **falsifiable verification suite**: adding UID's three physical terms — **vortex v(φ), colored-damping memory kernel ∫γ, OU colored noise ξ** — onto a standard attention backbone, with four experiment classes (ablation, scaling law, critical exponents, energy).
-
-- 📄 Full theory: [`theory.md`](./theory.md) (zh) / [`theory_en.md`](./theory_en.md) (en)
-- ⏱️ 30-minute read: [`30minutes_report.md`](./30minutes_report.md) (zh) / [`30minutes_report_en.md`](./30minutes_report_en.md) (en)
-- 🧪 Full experiment report: [`results/phase1/REPORT.md`](./results/phase1/REPORT.md)
+- Full theory: [`theory.md`](./theory.md) / [`theory_en.md`](./theory_en.md)
+- Full experiment report: [`results/phase1/REPORT.md`](./results/phase1/REPORT.md)
 
 ---
 
 ## 🚀 Quick Start
 
-### Step 1: Clone & install
-
 ```bash
-git clone https://github.com/gwailee/uid.git
-cd uid
+git clone https://github.com/gwailee/uid.git && cd uid
 pip install -e .
 pip install modelscope transformers torch tqdm protobuf
-```
+# Dependency note: the typeguard pin in requirements.txt is fixed; pin transformers<5.0
 
-> Dependency note: following third-party reproduction feedback, the `typeguard` version constraint in `requirements.txt` has been fixed; pin `transformers<5.0` (4.5x verified).
-
-### Step 2: Download the MiniMind dataset
-
-```bash
 modelscope download --dataset gongjy/minimind_dataset --local_dir dataset
-```
-
-### Step 3: Convert the data format
-
-```bash
 python convert_minimind_data.py
-```
+python -c "from transformers import AutoTokenizer; AutoTokenizer.from_pretrained('bert-base-chinese').save_pretrained('tokenizers/bert-base-chinese')"
 
-### Step 4: Download the BERT-Chinese tokenizer
-
-```bash
-python -c "from transformers import AutoTokenizer; \
-AutoTokenizer.from_pretrained('bert-base-chinese').save_pretrained('tokenizers/bert-base-chinese')"
-```
-
-### Step 5: Reproduce Phase 1
-
-```bash
 head -n 100000 data/minimind/pretrain.jsonl > data/minimind/pretrain_100k.jsonl
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-# (a) Ablation (11 variants × 3 seeds, single epoch)
-python experiments/run_all.py \
+# (a) Multi-scale ablation (v2.3, memory_length=512)
+for S in 10M 30M 100M; do
+  python experiments/run_all.py \
     --data_path data/minimind/pretrain_100k.jsonl \
     --tokenizer_path tokenizers/bert-base-chinese \
-    --scale 10M --seeds 42 43 44 --batch_size 64 --max_seq_len 512 \
-    --output_root ./output/minimind_100k \
+    --scale $S --seeds 42 43 44 --batch_size 64 --max_seq_len 512 \
+    --output_root ./output/minimind_100k_v2.3 \
     --skip_scaling --skip_critical --skip_energy
+done
 
-# (b) Scaling-law family training (3 families × 3 seeds, well-trained tpp=200)
-python experiments/run_scaling_law.py \
-    --data_path data/minimind/pretrain_100k.jsonl \
-    --tokenizer_path tokenizers/bert-base-chinese \
-    --scales 10M --families transformer transformer_plus_tricks cid_full \
-    --seeds 42 43 44 --batch_size 64 --max_seq_len 512 \
-    --target_tokens_per_param 200 \
-    --output_dir ./output/minimind_100k/scaling_law_v2.1
-
-# (c) Critical exponents (fixed toolchain; n_sequences=2000 to avoid OOM)
+# (b) Critical exponents (fixed toolchain)
 python experiments/run_critical_exponents.py \
     --checkpoint output/minimind_100k/scaling_law_v2.1/checkpoints/cid_full_10M_seed42.pt \
     --baseline_checkpoint output/minimind_100k/scaling_law_v2.1/checkpoints/transformer_10M_seed42.pt \
-    --data_path data/minimind/pretrain_100k.jsonl \
-    --tokenizer_path tokenizers/bert-base-chinese \
+    --data_path data/minimind/pretrain_100k.jsonl --tokenizer_path tokenizers/bert-base-chinese \
     --max_seq_len 512 --batch_size 4 --n_sequences 2000 --eta_max_samples 50000 \
     --output_dir output/minimind_100k/critical_exponents_v2.2.1
 
-# (d) Decode energy (seq_len + new_tokens <= max_seq_len)
+# (c) Decode energy
 python experiments/run_energy_benchmark.py \
     --families transformer cid_full transformer_plus_tricks \
     --checkpoint_dir output/minimind_100k/scaling_law_v2.1/checkpoints \
@@ -252,24 +213,26 @@ python experiments/run_energy_benchmark.py \
     --vocab_size 21128 --mode decode --new_tokens_per_decode 64 \
     --scaling_law_json output/minimind_100k/scaling_law_v2.1/results.json \
     --output_dir output/minimind_100k/energy_v2.2
+
+# Phase 1b (H100, decisive F1/F2/F7): equal-compute multi-scale scaling law + iso-PPL energy
+#   --scaling_scales 10M 30M 100M --target_tokens_per_param 200 --force_stage scaling energy
 ```
 
-> **On training budgets (important)**: ablation defaults to `epochs=1`; `run_scaling_law.py` itself defaults to `tokens_per_param=20` (Chinchilla-optimal); the `run_all.py` end-to-end pipeline defaults to `tokens_per_param=200` (full convergence on the small corpus). Different entry points use different budgets and yield different advantage ratios (ablation 3.1–3.22× vs well-trained 3.94×); always state the budget when citing.
+> **On training budgets**: ablation defaults to `epochs=1`; `run_scaling_law.py` defaults to `tokens_per_param=20`; `run_all.py` defaults to `tokens_per_param=200`. Different entry points → different budgets → different ratios; always state the budget when citing.
 
 ---
 
 ## 🔬 Falsifiable Predictions & Decision Points
 
-| # | Prediction | Evidence grade | Phase 1 status |
+| # | Prediction | Grade | Phase 1 status |
 |---|---|---|---|
-| **T1** | CID physical terms beat plain Transformer | C (falsifiable engineering target) | ✅ Supported (ablation 3.22× / scaling 3.94×) |
-| **T2** | 5–10× parameter efficiency (multi-scale iso-FLOP) | C | ⏳ Pending Phase 1b (**a decisive test**) |
-| **C3.3** | Vortex necessity (prediction implies non-equilibrium) | B | Partial (critical exponents cannot discriminate baseline) |
-| **§14.2** | OU colored noise > FFT spectral shaping | C | ✅ Supported (6.9×, z=37) |
-| **Critical universality** | τ≈1.5 / H≈0.7 / β≈1 | B | Hurst PASS, β/avalanche FAIL, no baseline discrimination |
-| **C13** | ≥3× energy efficiency at iso-PPL | C | ⏳ Pending Phase 1b (undecidable at single scale) |
-
-> The genuinely discriminating decision points are **T2 (parameter efficiency)** and **C13 (energy)**; the critical universal exponents have limited discriminating power (empirically confirmed: they cannot distinguish CID from Transformer) and serve only as descriptive corroboration.
+| **T1** | CID physical terms > Transformer | C | ✅ Supported, grows with scale (3.35→4.09×, wins at ~1/10 params) |
+| **T2** | 5–10× parameter efficiency (equal-compute) | C | ⏳ Strong directional support; verdict pending Phase 1b (F1/F2) |
+| **C3.3** | Vortex necessity | B | Partial (exponents cannot discriminate baseline) |
+| **§14.2** | OU > FFT | C | ✅ Supported at all scales (magnitude scale-dependent) |
+| **Critical universality** | τ≈1.5 / H≈0.7 / β≈1 | B | Hurst PASS; β/avalanche FAIL; no baseline discrimination |
+| **C13** | ≥3× energy at iso-PPL | C | ⏳ Pending Phase 1b (undecidable at single scale) |
+| **ET §8.5** | ET symmetric term | borrowed (Hoover 2023) | 🔧 Non-causal, not realizable in causal LM, dropped |
 
 ---
 
@@ -287,21 +250,31 @@ python experiments/run_energy_benchmark.py \
 }
 ```
 
-> When citing Phase 1 results, attach the v2.2 commit hash and the per-claim caveats in [`results/phase1/REPORT.md`](./results/phase1/REPORT.md) §6.
+> When citing Phase 1 results, attach the v2.3 commit hash and the per-claim caveats in [`REPORT.md`](./results/phase1/REPORT.md) §6.
 
 ---
 
 ## 🙏 Acknowledgments
 
-We thank Xingyu Zhao (Neutron Technology Application Research Center, Institute of Energy, Hefei Comprehensive National Science Center) for the independent reproduction of our Phase 1 experiments and the engineering feedback.
+We thank Xingyu Zhao (Neutron Technology Application Research Center, Institute of Energy, Hefei Comprehensive National Science Center) for the independent reproduction and engineering feedback.
 
 ---
 
 ## 📄 License
 
-Dual-licensed:
+Dual-licensed: **PolyForm Noncommercial 1.0.0** (academic/personal, [`LICENSE-NONCOMMERCIAL`](./LICENSE-NONCOMMERCIAL)) + **Commercial License** (production use requires written authorization from Suzhou Jodell Robotics Co., Ltd., [`LICENSE-COMMERCIAL`](./LICENSE-COMMERCIAL)). Inquiries: lig@jodell.cn
 
-- **PolyForm Noncommercial License 1.0.0**: free for academic / personal non-commercial use, see [`LICENSE-NONCOMMERCIAL`](./LICENSE-NONCOMMERCIAL).
-- **Commercial License**: any commercial / for-profit / production use requires prior written authorization from Suzhou Jodell Robotics Co., Ltd., see [`LICENSE-COMMERCIAL`](./LICENSE-COMMERCIAL).
+---
 
-Commercial licensing inquiries: lig@jodell.cn
+<div align="center">
+
+> **The core goal of Unified Intelligo-Dynamics**: To elevate "intelligence" from an engineering phenomenon to a physical theory.
+>
+> CID is codable, QID is simulable, FID is explorable. **All results are falsifiable — this is the core of science.**
+>
+> *First empirical (10M ablation): UID's original three physical terms make model 3.1× more efficient than Transformer (z=182);*
+> *the ET term borrowed from Hoover 2023 shows no benefit — falsifying the borrowed part, purifying the value of the original.*
+
+**[⭐ Star this repo](https://github.com/gwailee/uid) | [📖 Read the theory](./theory_en.md) | [🚀 Quick start](#-quick-start-training-uid-model-with-minimind-dataset)**
+
+</div>
