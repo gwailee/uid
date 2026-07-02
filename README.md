@@ -2,7 +2,7 @@
 Copyright (c) 2026 Suzhou Jodell Robotics Co., Ltd.
 Author: Gui LI <guilichina@163.com>
 Date:   2026-05-30
-UPDATE: 2026-06-24 (v2.3 — 多尺度消融 + ET 非因果结构性结论 + memory_length 修正 + 第三方复现)
+UPDATE: 2026-06-24 (v2.3 — 多尺度消融 + ET 非因果结构性结论 + 第三方复现)
 
 This README is part of the UID Theory reference implementation (v2.3).
 
@@ -51,32 +51,31 @@ For commercial licensing inquiries, contact: lig@jodell.cn
 
 </div>
 
-***通讯作者***：李贵（Gui LI），博士。学士毕业于西北大学物理学院，硕士、博士均毕业于中国科学院合肥物质科学研究院，现任职于苏州钧舵机器人有限公司，主要从事统一智动力学（Unified Intelligo-Dynamics, UID）的理论与工程研究。提出并发展面向智能架构的开放系统物理统一理论框架——CID/QID/FID 三层体系，并主导其在机器人认知大脑、运动控制小脑、灵巧手操作系统、大语言模型与专用智能芯片中的可证伪验证与工程落地。E-mail：guilichina@163.com
+***通讯作者***：李贵（Gui LI），博士。学士毕业于西北大学物理学院，硕士、博士均毕业于中国科学院合肥物质科学研究院，现任职于苏州钧舵机器人有限公司，主要从事**统一智动力学（Unified Intelligo-Dynamics, UID）**的理论与工程研究。提出并发展面向智能架构的开放系统物理统一理论框架——CID/QID/FID 三层体系，并主导其在机器人认知大脑、运动控制小脑、灵巧手操作系统、大语言模型与专用智能芯片中的可证伪验证与工程落地。E-mail：guilichina@163.com
 
 ---
 
 ## ⚠️ 重要提示：v2.3 诚实版本说明
 
-**本仓库当前为 v2.3（诚实验证版 · 多尺度消融完成版）**，在 v2.2 基础上完成 **10M/30M/100M 三尺度消融**、修复了 **ET 项与因果性的根本冲突**、并将**记忆核长度从 64 提升到 512**，同时收录**第三方独立复现**：
+**本仓库当前为 v2.3（诚实验证版 · 多尺度消融完成版）**，在 v2.2 基础上完成 **10M/30M/100M 三尺度消融**、修复了 **ET 项与因果性的根本冲突**，并收录**第三方独立复现**：
 
 | v2.3 关键进展 | 对应理论章节 / 修复点 |
 |---|---|
-| 完成 **10M/30M/100M 三尺度消融**（3 seeds），比值随规模放大 3.35→3.71→4.09× | T1 / T2（方向） |
+| 完成 **10M/30M/100M 三尺度消融**（3 seeds），比值随规模放大 3.12→3.71→4.09× | T1 / T2（方向） |
 | **ET 对称项被证明本质非因果**：其对称第二项要求 key 依赖未来 query（实测泄漏 ~0.11），与自回归因果性数学不可兼容；因果 LM 下**舍弃该项，ET 退化为标准注意力** | §8.5 |
-| 记忆核 `memory_length` 64→512，cid_full(10M) 困惑度从 23.62 降至 21.95 | §5 |
 | 临界指数工具链修三处 bug（噪声OFF/ON 退化→shuffle 替代；η 病态→全局协方差；Hurst 差分补偿错误→标准 DFA-2，surrogate H=0.519 验证）| §6.1 |
 | 能耗改用全局稳健 idle 基线 + iso-parameter/iso-performance 三视图 | §0.1 / §13 |
 | 收录第三方独立复现（赵星宇）| §16.9 |
 
 v2.3 版本：
-- ✅ **T1（核心论断）强支持，且优势随规模放大**：多尺度消融中 cid_full/transformer 困惑度比 **3.35×（10M）→3.71×（30M）→4.09×（100M）**；**cid_full 在 10M（~4.8M 参数）即优于 transformer 在 100M（~49M 参数）**——约 **1/10 参数**胜出，方向性地支持 5–10× 参数效率
+- ✅ **T1（核心论断）强支持，且优势随规模放大**：多尺度消融中 cid_full/transformer 困惑度比 **3.12×（10M）→3.71×（30M）→4.09×（100M）**；**cid_full 在 10M（~4.8M 参数）即优于 transformer 在 100M（~49M 参数）**——约 **1/10 参数**胜出，方向性地支持 5–10× 参数效率
 - ✅ **"注意力并不够"跨三尺度复现**：堆叠已知技巧在每个尺度均无效（<1%）
 - ✅ **§14.2 OU 噪声支持**（幅度随规模变化：10M 约 7×、100M 约 1.24×）
 - ✅ **记忆核为主导物理项**（各尺度移除均 +15~22%）
 - ✅ **F4 Hurst 支持**：H=0.803 ∈ [0.6,0.8]，surrogate 0.519 验证真实长程相关
 - ❌ **F3 β 证伪**（0.572 略低）、**F5 雪崩证伪**（非幂律）
 - ⚠️ **F6 η 无区分力**（0.997 ≈ 基线 0.998，指标饱和）
-- 🔧 **F8 ET 项**：v2.3 证明 **ET 对称项在因果 LM 中不可实现**（非因果），据此舍弃；`cid_full ≡ cid_full_no_et`。这**取代** v2.2 的"F8 证伪"表述——正确结论是 **CID 的优势全部来自其三个因果安全的物理项，ET 在此不适用**
+- 🔧 **F8 ET 项**：v2.3 证明 **ET 对称项在因果 LM 中不可实现**（非因果），据此舍弃；`cid_full ≡ cid_full_no_et`。这**取代** v2.2 的"F8 证伪"——正确结论是 **CID 的优势全部来自其三个因果安全的物理项，ET 在此不适用**
 - ⏳ **等算力多尺度标度曲线（F1/F2）与 iso-PPL 能耗（F7）**列入 Phase 1b（H100）——这是 T2 与 C13 的**判决点**
 - 🎯 承诺**公开发布所有结果**（无论正面还是负面）
 
@@ -92,19 +91,19 @@ v2.3 版本：
 
 ### 头条结论：框架优势随规模放大，CID 用约 1/10 参数胜出（T1 强支持）
 
-多尺度消融（memory_length=512，1 epoch，3 seeds）：
+多尺度消融（memory_length=64，1 epoch，3 seeds）：
 
 | 尺度 | cid_full 非嵌入参数 | cid_full 困惑度 | transformer 困惑度 | **困惑度比** |
 |---|---|---|---|---|
-| 10M | ~4.8M | **21.95** | 73.58 | **3.35×** |
+| 10M | ~4.8M | **23.62** | 73.58 | **3.12×** |
 | 30M | ~22.7M | **12.49** | 46.36 | **3.71×** |
 | 100M | ~49.3M | **10.21** | 41.76 | **4.09×** |
 
 **两个关键点**：
-1. **比值随规模单调放大**（3.35→3.71→4.09×）——架构优势"越大越强"，与"基线追平"的失效模式相反。
-2. **cid_full 在 10M（~4.8M 参数，困惑度 21.95）远优于 transformer 在 100M（~49M 参数，困惑度 41.76）**——即 CID 用约 **1/10 参数**已胜出，方向性地支持 5–10× 参数效率（T2）。
+1. **比值随规模单调放大**（3.12→3.71→4.09×）——架构优势"越大越强"，与"基线追平"的失效模式相反。
+2. **cid_full 在 10M（~4.8M 参数，困惑度 23.62）远优于 transformer 在 100M（~49M 参数，困惑度 41.76）**——即 CID 用约 **1/10 参数**已胜出，方向性地支持 5–10× 参数效率（T2）。
 
-> ⚠️ 诚实标注：上表为**消融预算（1 epoch）**下的趋势，是 T2 的**方向性下界**，**非**严格判决；严格 T2 须等算力多尺度标度曲线（Phase 1b）。作为对照，充分训练（tpp=200，memory_length=64）的 10M 单点为 cid_full 7.90 vs transformer 31.12（3.94×）。
+> ⚠️ 诚实标注：上表为**消融预算（1 epoch）**下的趋势，是 T2 的**方向性下界**，**非**严格判决；严格 T2 须等算力多尺度标度曲线（Phase 1b）。作为对照，充分训练（tpp=200）的 10M 单点为 cid_full 7.90 vs transformer 31.12（3.94×）。
 
 ### "注意力并不够"：跨三尺度复现
 
@@ -117,7 +116,7 @@ v2.3 版本：
 | 色阻尼记忆核 ∫γ | +21.7%（10M）/ +14.7%（30M）/ +14.8%（100M）| **单项贡献最大** |
 | 旋度 v(φ) | +0.2~0.4% | 消融效应小；必要性应由临界指数检验（命题 C3.3）|
 | 色噪声（存在性）| ~0% | 关键在类型（OU vs FFT），非存在 |
-| OU → FFT 噪声 | 10M 约 7× 变差 / 100M 约 1.24× | OU 支持 §14.2（幅度随规模变化）|
+| OU → FFT 噪声 | 10M 约 7× / 100M 约 1.24× 更差 | OU 支持 §14.2（幅度随规模变化）|
 | ET 对称项（§8.5）| `cid_full ≡ cid_full_no_et` | **ET 非因果、因果 LM 下不可实现，已舍弃**（见下）|
 
 **关于 ET（原 F8）的 v2.3 结论**：ET 的对称第二项要求 key 位置依赖未来 query 位置，实测在因果 LM 中造成约 0.11 的未来 token 泄漏——**ET 的双向对称性与自回归因果性数学上不可兼容**。因此 v2.3 舍弃该项，`use_et_symmetric=True` 退化为标准因果注意力，`cid_full ≡ cid_full_no_et`。这**取代** v2.2 的"F8 证伪"：正确结论不是"ET 无用"，而是**"ET 不适用于因果 LM；CID 的优势全部来自其三个因果安全的物理项（旋度/记忆核/色噪声）"**。
@@ -164,7 +163,7 @@ v2.3 版本：
 本仓库 Phase 1 核心结果已由**赵星宇（合肥综合性国家科学中心能源研究院中子技术应用研究中心）**在独立环境下复现（commit `53f2aa06`，RTX 4090，3 seeds）。关键数值逐位吻合：消融对照 A **3.11×/z=182.2**；充分训练缩放律 **cid 7.89 / tf 31.12（3.94×±0.03）**。复现同等地验证了负面/中性结论（临界指数无法区分 CID 与 Transformer、等参数能耗 CID 高约 20%、推理吞吐 transformer 快约 27%、iso-PPL 能效不可判定），并独立发现若干工程问题（已据此修订）。完整报告见 [`results/phase1/independent-reports/`](./results/phase1/independent-reports/)（不含约 880MB 权重，可另行索取）。
 
 > **致谢**：感谢赵星宇对本仓库 Phase 1 实验的独立复现与工程反馈。
-> **说明**：复现使用 commit `53f2aa06`（早于 v2.3 的 memory_length 与 ET 修正），其数字对应 memory_length=64 且 ET 修正前，与 v2.3 数字存在预期差异，方向一致。
+> **说明**：复现使用 commit `53f2aa06`（早于 v2.3 的 ET 修正），其临界指数工具为修复前版本，故复现的 Hurst（0.77）与本仓库修正后值（0.803）略有差异，方向一致。
 
 ---
 
@@ -172,40 +171,46 @@ v2.3 版本：
 
 **UID（统一智动力学）** 把智能架构当作**远离热平衡的随机场**，从开放系统物理三条公理出发经 Mori-Zwanzig 投影推导出**广义 Langevin 方程**，并指出 Transformer、Mamba、扩散模型等都是其特定极限下的特解。本仓库提供 **CID 层工程参考实现**与**可证伪验证套件**：在标准注意力骨架上加入三个**因果安全**的物理项——**旋度 v(φ)、色阻尼记忆核 ∫γ、OU 色噪声 ξ**。
 
-- 理论全文：[`theory.md`](./theory.md) / [`theory_en.md`](./theory_en.md)
-- 完整实验报告：[`results/phase1/REPORT.md`](./results/phase1/REPORT.md)
+- 📄 理论全文：[`theory.md`](./theory.md) / [`theory_en.md`](./theory_en.md)
+- 🧪 完整实验报告：[`results/phase1/REPORT.md`](./results/phase1/REPORT.md)
 
 ---
 
 ## 🚀 快速开始
 
 ```bash
-# 1. 克隆与安装
 git clone https://github.com/gwailee/uid.git && cd uid
 pip install -e .
 pip install modelscope transformers torch tqdm protobuf
 # 依赖说明：经复现反馈，requirements.txt 的 typeguard 版本约束已修正；transformers 固定 <5.0
 
-# 2-4. 下载数据/分词器（见下）
 modelscope download --dataset gongjy/minimind_dataset --local_dir dataset
 python convert_minimind_data.py
 python -c "from transformers import AutoTokenizer; AutoTokenizer.from_pretrained('bert-base-chinese').save_pretrained('tokenizers/bert-base-chinese')"
 
-# 5. 复现 Phase 1（10 万条子集）
 head -n 100000 data/minimind/pretrain.jsonl > data/minimind/pretrain_100k.jsonl
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-# (a) 多尺度消融（v2.3，memory_length=512）
+# (a) 多尺度消融（10M/30M/100M）
 for S in 10M 30M 100M; do
   python experiments/run_all.py \
     --data_path data/minimind/pretrain_100k.jsonl \
     --tokenizer_path tokenizers/bert-base-chinese \
     --scale $S --seeds 42 43 44 --batch_size 64 --max_seq_len 512 \
-    --output_root ./output/minimind_100k_v2.3 \
+    --output_root ./output/minimind_100k \
     --skip_scaling --skip_critical --skip_energy
 done
 
-# (b) 临界指数（已修复工具链）
+# (b) 缩放律家族训练（3 家族 × 3 seeds，tpp=200）
+python experiments/run_scaling_law.py \
+    --data_path data/minimind/pretrain_100k.jsonl \
+    --tokenizer_path tokenizers/bert-base-chinese \
+    --scales 10M --families transformer transformer_plus_tricks cid_full \
+    --seeds 42 43 44 --batch_size 64 --max_seq_len 512 \
+    --target_tokens_per_param 200 \
+    --output_dir ./output/minimind_100k/scaling_law_v2.1
+
+# (c) 临界指数（已修复工具链）
 python experiments/run_critical_exponents.py \
     --checkpoint output/minimind_100k/scaling_law_v2.1/checkpoints/cid_full_10M_seed42.pt \
     --baseline_checkpoint output/minimind_100k/scaling_law_v2.1/checkpoints/transformer_10M_seed42.pt \
@@ -213,7 +218,7 @@ python experiments/run_critical_exponents.py \
     --max_seq_len 512 --batch_size 4 --n_sequences 2000 --eta_max_samples 50000 \
     --output_dir output/minimind_100k/critical_exponents_v2.2.1
 
-# (c) 解码能耗（seq_len + new_tokens <= max_seq_len）
+# (d) 解码能耗（seq_len + new_tokens <= max_seq_len）
 python experiments/run_energy_benchmark.py \
     --families transformer cid_full transformer_plus_tricks \
     --checkpoint_dir output/minimind_100k/scaling_law_v2.1/checkpoints \
@@ -226,7 +231,7 @@ python experiments/run_energy_benchmark.py \
 #   --scaling_scales 10M 30M 100M --target_tokens_per_param 200 --force_stage scaling energy
 ```
 
-> **训练预算说明**：消融默认 `epochs=1`；`run_scaling_law.py` 默认 `tokens_per_param=20`；`run_all.py` 默认 `tokens_per_param=200`。不同入口预算不同、比值不同，引用时须注明口径。
+> **训练预算说明**：消融默认 `epochs=1`；`run_scaling_law.py` 默认 `tokens_per_param=20`；`run_all.py` 默认 `tokens_per_param=200`。不同入口预算不同、比值不同（消融 3.12× vs 充分训练 3.94×），引用时须注明口径。
 
 ---
 
@@ -234,7 +239,7 @@ python experiments/run_energy_benchmark.py \
 
 | # | 预言 | 等级 | Phase 1 状态 |
 |---|---|---|---|
-| **T1** | CID 物理项 > Transformer | C | ✅ 支持，随规模放大（3.35→4.09×，~1/10 参数胜出）|
+| **T1** | CID 物理项 > Transformer | C | ✅ 支持，随规模放大（3.12→4.09×，~1/10 参数胜出）|
 | **T2** | 5–10× 参数效率（等算力多尺度）| C | ⏳ 方向性强支持，判决待 Phase 1b（F1/F2）|
 | **C3.3** | 旋度必要性（预测蕴含非平衡）| B | 部分（临界指数无法区分基线）|
 | **§14.2** | OU > FFT | C | ✅ 各尺度支持（幅度随规模变化）|
@@ -256,6 +261,7 @@ python experiments/run_energy_benchmark.py \
   doi    = {10.5281/zenodo.20372493},
   url    = {https://github.com/gwailee/uid}
 }
+
 ```
 
 > 引用 Phase 1 结果请附 v2.3 提交哈希及 [`REPORT.md`](./results/phase1/REPORT.md) §6 逐项注意事项。
@@ -270,50 +276,4 @@ python experiments/run_energy_benchmark.py \
 
 ## 📄 许可证
 
-双许可证：**PolyForm Noncommercial 1.0.0**（学术/个人非商业，见 [`LICENSE-NONCOMMERCIAL`](./LICENSE-NONCOMMERCIAL)）＋**商业许可证**（商业用途须苏州钧舵机器人有限公司书面授权，见 [`LICENSE-COMMERCIAL`](./LICENSE-COMMERCIAL)）。商业咨询：lig@jodell.cn
-
-**重要说明**：
-- ✅ 学术论文、课程作业、个人项目：免费使用
-- ✅ 开源项目（非商业）：免费使用
-- ❌ 公司产品、SaaS 服务、商业咨询：需商业授权
-- ❌ 在商业产品中集成 UID：需商业授权
-- ❌ 使用 UID 进行商业宣传或产品命名：需商业授权
-
-### 免责声明
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM USE OF THIS SOFTWARE.
-
----
-
-## 🙏 致谢
-
-- **同行评审者**：特别感谢匿名评审者对 v0.1 / v2.0 的详细批评，分别促成了 v2.0 的完整重写与 v2.1 的 §8.5 / §14.2 实现修正。诚实的批评让 UID 成为了更严谨的项目。详情见 [KNOWN_LIMITATIONS.md](./KNOWN_LIMITATIONS.md)。
-- **[MiniMind](https://github.com/jingyaogong/minimind) by jingyaogong**：提供高质量的小模型基础架构与数据集。
-- **[Energy Transformer (Hoover et al. 2023)](https://arxiv.org/abs/2302.07253)**：ET 对称双项与 Lyapunov 单调下降的在先工作；本仓库 §8.5 的对应实现以其为基础（该命题非 UID 首创）。
-- **UID 理论的物理先驱们**（按时间顺序）：Langevin、Einstein、Fokker、Planck、Mori、Zwanzig、Lindblad、Caldeira-Leggett、Berry、Amari、Hopfield、Bak-Tang-Wiesenfeld、Bialek、Friston、Beggs-Plenz、Linkenkaer-Hansen、Karakida-Akaho-Amari 等。
-- **现代深度学习架构的奠基者**：Vaswani et al.（Transformer）、Ramsauer et al.（Modern Hopfield Networks）、Hoover et al.（Energy Transformer，§8.5 关键参考）、Gu & Dao（Mamba）、He et al.（ResNet）。
-- **统计方法学先驱**：Clauset、Shalizi & Newman（幂律拟合金标准）、Peng et al.（DFA 方法）。
-- **开放科学工具生态**：PyTorch、Hugging Face、pynvml、pytest、ruff —— 让严格验证成为可能。
-
----
-
-## 📧 联系方式
-
-- **通讯作者**：李贵 <guilichina@163.com>
-- **商业授权**：lig@jodell.cn
-- **GitHub Issues**：[https://github.com/gwailee/uid/issues](https://github.com/gwailee/uid/issues)
-- **单位**：苏州钧舵机器人有限公司（Suzhou Jodell Robotics Co., Ltd.）
-
----
-
-<div align="center">
-
-> **统一智动力学的核心目标**：把"智能"从一种工程现象提升为一种物理理论。
->
-> CID 可编码，QID 可模拟，FID 可探索。**所有结果都是可证伪的——这是科学的核心。**
->
-> *首批实证（10M 消融）：UID 原创三物理项使模型比 Transformer 高效 3.1×（z=182）；*
-> *借自 Hoover 2023 的 ET 项未显收益——证伪借来的部分，提纯了原创的价值。*
-
-**[⭐ Star this repo](https://github.com/gwailee/uid) | [📖 Read the theory](./theory.md) | [🚀 Quick start](#-快速开始使用-minimind-数据集训练-uid-模型)**
-
-</div>
+本仓库采用**双许可证**：**PolyForm Noncommercial License 1.0.0**（学术/个人非商业，见 [`LICENSE-NONCOMMERCIAL`](./LICENSE-NONCOMMERCIAL)）＋**商业许可证**（商业用途须苏州钧舵机器人有限公司书面授权，见 [`LICENSE-COMMERCIAL`](./LICENSE-COMMERCIAL)）。商业咨询：lig@jodell.cn
