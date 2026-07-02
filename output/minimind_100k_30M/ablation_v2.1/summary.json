@@ -1,0 +1,124 @@
+{
+  "summary": [
+    {
+      "ablation": "cid_full",
+      "n_seeds": 3,
+      "eval_loss_mean": 2.5250821965653714,
+      "eval_loss_std": 0.0021117061736838872,
+      "eval_ppl_mean": 12.491949877514855,
+      "eval_ppl_std": 0.02639403917984639
+    },
+    {
+      "ablation": "cid_full_no_et",
+      "n_seeds": 3,
+      "eval_loss_mean": 2.5250821965653714,
+      "eval_loss_std": 0.0021117061736838872,
+      "eval_ppl_mean": 12.491949877514855,
+      "eval_ppl_std": 0.02639403917984639
+    },
+    {
+      "ablation": "cid_no_noise",
+      "n_seeds": 3,
+      "eval_loss_mean": 2.5253239726596903,
+      "eval_loss_std": 0.00176273863777145,
+      "eval_ppl_mean": 12.494962032255145,
+      "eval_ppl_std": 0.022011819619998197
+    },
+    {
+      "ablation": "cid_no_vortex",
+      "n_seeds": 3,
+      "eval_loss_mean": 2.5339147382454903,
+      "eval_loss_std": 0.00605758728615255,
+      "eval_ppl_mean": 12.602977696959499,
+      "eval_ppl_std": 0.07650428113455102
+    },
+    {
+      "ablation": "cid_no_memory",
+      "n_seeds": 3,
+      "eval_loss_mean": 2.6614887581610103,
+      "eval_loss_std": 0.007835462586520132,
+      "eval_ppl_mean": 14.318028642490276,
+      "eval_ppl_std": 0.11236380916061106
+    },
+    {
+      "ablation": "cid_full_fft_noise",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.5939203458145843,
+      "eval_loss_std": 0.02655800145484996,
+      "eval_ppl_mean": 36.389177321678545,
+      "eval_ppl_std": 0.959804261612711
+    },
+    {
+      "ablation": "transformer_plus_noise",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.828628718676036,
+      "eval_loss_std": 0.006974326810891134,
+      "eval_ppl_mean": 46.000533728521845,
+      "eval_ppl_std": 0.32002877484824116
+    },
+    {
+      "ablation": "transformer_plus_all_tricks",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.8315652376433516,
+      "eval_loss_std": 0.016607717492947746,
+      "eval_ppl_mean": 46.141046126739646,
+      "eval_ppl_std": 0.7644583816647866
+    },
+    {
+      "ablation": "transformer_plus_conv",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.8325454518842528,
+      "eval_loss_std": 0.01632674538626488,
+      "eval_ppl_mean": 46.1860690047416,
+      "eval_ppl_std": 0.74966607220246
+    },
+    {
+      "ablation": "transformer_plus_linear",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.834491986428153,
+      "eval_loss_std": 0.02249385745358383,
+      "eval_ppl_mean": 46.28157791819282,
+      "eval_ppl_std": 1.0350079085176995
+    },
+    {
+      "ablation": "transformer_baseline",
+      "n_seeds": 3,
+      "eval_loss_mean": 3.836349396776044,
+      "eval_loss_std": 0.018944875705052093,
+      "eval_ppl_mean": 46.36428168790368,
+      "eval_ppl_std": 0.8821791649668681
+    }
+  ],
+  "critical_comparisons": [
+    {
+      "title": "CRITICAL COMPARISON A: cid_full vs transformer_plus_all_tricks\n  (UID physical framework vs known tricks)",
+      "name_a": "cid_full",
+      "name_b": "transformer_plus_all_tricks",
+      "loss_a": 2.5250821965653714,
+      "loss_b": 3.8315652376433516,
+      "advantage": 1.3064830410779802,
+      "z_score": 135.16734131382822,
+      "verdict": "supported"
+    },
+    {
+      "title": "CRITICAL COMPARISON B: cid_full vs cid_full_no_et\n  (§8.5 ET symmetric term's engineering contribution)",
+      "name_a": "cid_full",
+      "name_b": "cid_full_no_et",
+      "loss_a": 2.5250821965653714,
+      "loss_b": 2.5250821965653714,
+      "advantage": 0.0,
+      "z_score": 0.0,
+      "verdict": "falsified"
+    },
+    {
+      "title": "CRITICAL COMPARISON C: cid_full vs cid_full_fft_noise\n  (§14.2 OU vs FFT noise's engineering contribution)",
+      "name_a": "cid_full",
+      "name_b": "cid_full_fft_noise",
+      "loss_a": 2.5250821965653714,
+      "loss_b": 3.5939203458145843,
+      "advantage": 1.068838149249213,
+      "z_score": 69.48781111865306,
+      "verdict": "supported"
+    }
+  ]
+}

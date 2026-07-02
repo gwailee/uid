@@ -1,0 +1,35 @@
+{
+  "device": "cuda",
+  "vocab_size": 21128,
+  "base_batch_size": 64,
+  "max_seq_len": 512,
+  "scale": "50M",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "target_tokens_per_param": 200.0,
+  "critical_n_sequences": 2000,
+  "energy_target_ppl": null,
+  "energy_new_tokens": 64,
+  "resume": {
+    "force": false,
+    "force_stage": [],
+    "fresh": false
+  },
+  "stages": {
+    "scaling_law": "skipped_or_done",
+    "ablation": "skipped_or_done",
+    "critical": "skipped_or_done",
+    "energy": "skipped_by_flag"
+  },
+  "experiments_run": [],
+  "experiments_skipped": [
+    "scaling_law",
+    "ablation",
+    "critical",
+    "energy"
+  ],
+  "warnings": []
+}
